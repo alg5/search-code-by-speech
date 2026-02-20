@@ -1,0 +1,16 @@
+<div class="container">
+  <h2>Поиск по scale_code</h2>
+
+  <input [(ngModel)]="searchText" placeholder="Введите текст..." />
+  <button (click)="search()">Искать</button>
+  <button (click)="startVoiceSearch()">🎤 Голос</button>
+
+   <button (click)="simulateVoice()">Тест голосом</button>
+    <p>Результат: {{ resultScaleCode }}</p>
+
+  <ul>
+    <li *ngFor="let f of results">
+      <b>{{f.scale_code}}</b>: {{f.en}} | {{f.ru}} | {{f.he}}
+    </li>
+  </ul>
+</div>
