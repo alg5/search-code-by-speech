@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { ScaleService } from './services/scale.service';
 import { CommonModule } from '@angular/common';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { HighlightPipe } from './shared/pipes/highlight-pipe';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +14,9 @@ import { CommonModule } from '@angular/common';
     RouterOutlet,
     HttpClientModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    AutoCompleteModule,
+    HighlightPipe
     
   ],
   templateUrl: './app.html',
@@ -64,6 +68,7 @@ export class App {
     }
 
     const recognition = new SpeechRecognition();
+
     recognition.lang = 'ru-RU'; // можно менять под нужный язык
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -74,6 +79,17 @@ export class App {
     };
 
     recognition.start();
+  }
+  selectCode(event: any) {
+    // event — это выбранный объект из suggestions
+    if (!event) return;
+
+    // Сохраняем код выбранного продукта
+    this.resultScaleCode = event.scale_code;
+
+    // Можно сразу вызвать поиск или другую логику
+    // Например, показать подробности продукта
+    console.log('Выбран продукт:', event.product_name, 'код:', event.scale_code);
   }
   simulateVoice() {
     const text = prompt('Введите текст (имитация голоса):');
