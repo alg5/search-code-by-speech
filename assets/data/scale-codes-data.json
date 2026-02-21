@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "scale_code": 159,
+    "product_name": "Alfalfa sprouts, raw",
+    "key_ru": "Ростки люцерны, сырые",
+    "key_he": "נבטי אלפלפה, טרי"
+  },
+  {
+    "id": 2,
+    "scale_code": 818,
+    "product_name": "Alfredo egg noodles, dry mix",
+    "key_ru": "Яичная лапша Альфредо, сухая смесь",
+    "key_he": "אטריות ביצים אלפרדו, תערובת יבשה"
+  },
+  {
+    "id": 3,
+    "scale_code": 99,
+    "product_name": "All Bran cereal",
+    "key_ru": "Хлопья \"All Bran\"",
+    "key_he": "דגני אול-ברן"
+  },
+  {
+    "id": 4,
+    "scale_code": 995,
+    "product_name": "Almonds Nuts",
+    "key_ru": "Миндаль",
+    "key_he": "שקדים"
+  },
+  {
+    "id": 5,
+    "scale_code": 20,
+    "product_name": "Anchovy Fish, canned in oil",
+    "key_ru": "Анчоусы, консервированные в масле",
+    "key_he": "אנשובי, משומר בשמן"
+  },
+  {
+    "id": 6,
+    "scale_code": 668,
+    "product_name": "Angelfood cake",
+    "key_ru": "Торт \"Ангел фуд\"",
+    "key_he": "עוגת אנג'ל פוד"
+  },
+  {
+    "id": 7,
+    "scale_code": 100,
+    "product_name": "Apple cinnamon cereal",
+    "key_ru": "Хлопья с яблоком и корицей",
+    "key_he": "דגני תפוחים וקינמון"
+  },
+  {
+    "id": 8,
+    "scale_code": 101,
+    "product_name": "Apple jacks cereal",
+    "key_ru": "Хлопья \"Apple Jacks\"",
+    "key_he": "דגני אפל ג'קס"
+  },
+  {
+    "id": 9,
+    "scale_code": 973,
+    "product_name": "Apple juice, bottled or canned",
+    "key_ru": "Яблочный сок, бутылочный или консервированный",
+    "key_he": "מיץ תפוחים, בבקבוק או משומר"
+  },
+  {
+    "id": 10,
+    "scale_code": 974,
+    "product_name": "Apple juice, concentrate, frozen, undiluted",
+    "key_ru": "Яблочный сок, концентрат, замороженный, неразбавленный",
+    "key_he": "מיץ תפוחים, ריכוז קפוא, לא מדולל"
+  },
+  {
+    "id": 11,
+    "scale_code": 975,
+    "product_name": "Apple juice, frozen, concentrate, diluted",
+    "key_ru": "Яблочный сок, концентрат, замороженный, разбавленный",
+    "key_he": "מיץ תפוחים, ריכוז קפוא, מדולל"
+  },
+  {
+    "id": 12,
+    "scale_code": 66,
+    "product_name": "Apple pie",
+    "key_ru": "Яблочный пирог",
+    "key_he": "פאי תפוחים"
+  },
+  {
+    "id": 13,
+    "scale_code": 987,
+    "product_name": "Apple Pie Filling",
+    "key_ru": "Начинка для яблочного пирога",
+    "key_he": "מילוי לפאי תפוחים"
+  },
+  {
+    "id": 14,
+    "scale_code": 327,
+    "product_name": "Apples, dried",
+    "key_ru": "Яблоки сушёные",
+    "key_he": "תפוחים מיובשים"
+  },
+  {
+    "id": 15,
+    "scale_code": 326,
+    "product_name": "Apples, fresh, peeled",
+    "key_ru": "Яблоки свежие, очищенные",
+    "key_he": "תפוחים טריים, קלופים"
+  },
+  {
+    "id": 16,
+    "scale_code": 325,
+    "product_name": "Apples, fresh, with skin",
+    "key_ru": "Яблоки свежие, с кожурой",
+    "key_he": "תפוחים טריים, עם קליפה"
+  },
+  {
+    "id": 17,
+    "scale_code": 328,
+    "product_name": "Apples, stewed with added sugar",
+    "key_ru": "Яблоки тушёные с добавленным сахаром",
+    "key_he": "תפוחים מבושלים עם סוכר נוסף"
+  },
+  {
+    "id": 18,
+    "scale_code": 329,
+    "product_name": "Apples, stewed without added sugar",
+    "key_ru": "Яблоки тушёные без добавленного сахара",
+    "key_he": "תפוחים מבושלים ללא סוכר נוסף"
+  },
+  {
+    "id": 19,
+    "scale_code": 330,
+    "product_name": "Applesauce, canned, sweetened",
+    "key_ru": "Яблочное пюре, сладкое, консервированное",
+    "key_he": "רסק תפוחים, מתוק, משומר"
+  },
+  {
+    "id": 20,
+    "scale_code": 331,
+    "product_name": "Applesauce, canned, unsweetened",
+    "key_ru": "Яблочное пюре, несладкое, консервированное",
+    "key_he": "רסק תפוחים, לא מתוק, משומר"
+  }
+]
