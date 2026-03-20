@@ -6,7 +6,7 @@ import { ScaleService } from './services/scale.service';
 import { CommonModule } from '@angular/common';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { HighlightPipe } from './shared/pipes/highlight-pipe';
-import { SupabaseService } from './services/supabase.service';
+import Fuse from 'fuse.js';
 
 @Component({
   selector: 'app-root',
@@ -28,31 +28,21 @@ export class App {
   protected readonly title = signal('voice-code-search');
   private readonly http = inject(HttpClient);
   private readonly scaleService = inject(ScaleService);
-  private readonly supabaseService = inject(SupabaseService);
 
   searchText: string = '';
   results: any[] = [];
   foods: IScaleItem[] = [];
+  fuse:any;
 
   resultScaleCode: number | null = null;
 
 
   constructor(){
     this.loadFoods();
+    this.initFuse();
   }
-  async ngOnInit() {
-    console.log('Попытка получить продукты из Supabase...');
-    
-    // Вызываем метод из сервиса, чтобы получить данные
-    const products = await this.supabaseService.getAllProducts();
 
-    // Выводим результат в консоль браузера
-    if (products) {
-      console.log('Успех! Получены продукты:', products);
-    } else {
-      console.log('Не удалось получить продукты. Проверьте консоль на наличие ошибок.');
-    }
-  }
+
   loadFoods() {
     this.http.get<any[]>('assets/data/scale-codes-data.json').subscribe(data => {
       console.log("data", data);
@@ -60,6 +50,15 @@ export class App {
           console.error("foods", this.foods);
     });
   }
+    initFuse(){
+      const options = {
+      includeScore: true, // Чтобы видеть, насколько результат релевантен
+      threshold: 0.3, // Порог нечеткости (0.0 - идеально, 1.0 - что угодно)
+      keys: ['product_name', 'key_ru', 'key_he'] // По каким полям искать
+    };
+    this.fuse = new Fuse(this.foods, options);
+  }
+
   search() {
     const term = this.searchText.trim().toLowerCase();
     if (!term) {

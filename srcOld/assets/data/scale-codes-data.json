@@ -1,0 +1,702 @@
+[
+  {
+    "id": 1,
+    "scale_code": 159,
+    "product_name": "Alfalfa sprouts, raw",
+    "key_ru": "Ростки люцерны, сырые",
+    "key_he": "נבטי אלפלפה, טרי"
+  },
+  {
+    "id": 2,
+    "scale_code": 818,
+    "product_name": "Alfredo egg noodles, dry mix",
+    "key_ru": "Яичная лапша Альфредо, сухая смесь",
+    "key_he": "אטריות ביצים אלפרדו, תערובת יבשה"
+  },
+  {
+    "id": 3,
+    "scale_code": 99,
+    "product_name": "All Bran cereal",
+    "key_ru": "Хлопья \"All Bran\"",
+    "key_he": "דגני אול-ברן"
+  },
+  {
+    "id": 4,
+    "scale_code": 995,
+    "product_name": "Almonds Nuts",
+    "key_ru": "Миндаль",
+    "key_he": "שקדים"
+  },
+  {
+    "id": 5,
+    "scale_code": 20,
+    "product_name": "Anchovy Fish, canned in oil",
+    "key_ru": "Анчоусы, консервированные в масле",
+    "key_he": "אנשובי, משומר בשמן"
+  },
+  {
+    "id": 6,
+    "scale_code": 668,
+    "product_name": "Angelfood cake",
+    "key_ru": "Торт \"Ангел фуд\"",
+    "key_he": "עוגת אנג'ל פוד"
+  },
+  {
+    "id": 7,
+    "scale_code": 100,
+    "product_name": "Apple cinnamon cereal",
+    "key_ru": "Хлопья с яблоком и корицей",
+    "key_he": "דגני תפוחים וקינמון"
+  },
+  {
+    "id": 8,
+    "scale_code": 101,
+    "product_name": "Apple jacks cereal",
+    "key_ru": "Хлопья \"Apple Jacks\"",
+    "key_he": "דגני אפל ג'קס"
+  },
+  {
+    "id": 9,
+    "scale_code": 973,
+    "product_name": "Apple juice, bottled or canned",
+    "key_ru": "Яблочный сок, бутылочный или консервированный",
+    "key_he": "מיץ תפוחים, בבקבוק או משומר"
+  },
+  {
+    "id": 10,
+    "scale_code": 974,
+    "product_name": "Apple juice, concentrate, frozen, undiluted",
+    "key_ru": "Яблочный сок, концентрат, замороженный, неразбавленный",
+    "key_he": "מיץ תפוחים, ריכוז קפוא, לא מדולל"
+  },
+  {
+    "id": 11,
+    "scale_code": 975,
+    "product_name": "Apple juice, frozen, concentrate, diluted",
+    "key_ru": "Яблочный сок, концентрат, замороженный, разбавленный",
+    "key_he": "מיץ תפוחים, ריכוז קפוא, מדולל"
+  },
+  {
+    "id": 12,
+    "scale_code": 66,
+    "product_name": "Apple pie",
+    "key_ru": "Яблочный пирог",
+    "key_he": "פאי תפוחים"
+  },
+  {
+    "id": 13,
+    "scale_code": 987,
+    "product_name": "Apple Pie Filling",
+    "key_ru": "Начинка для яблочного пирога",
+    "key_he": "מילוי לפאי תפוחים"
+  },
+  {
+    "id": 14,
+    "scale_code": 327,
+    "product_name": "Apples, dried",
+    "key_ru": "Яблоки сушёные",
+    "key_he": "תפוחים מיובשים"
+  },
+  {
+    "id": 15,
+    "scale_code": 326,
+    "product_name": "Apples, fresh, peeled",
+    "key_ru": "Яблоки свежие, очищенные",
+    "key_he": "תפוחים טריים, קלופים"
+  },
+  {
+    "id": 16,
+    "scale_code": 325,
+    "product_name": "Apples, fresh, with skin",
+    "key_ru": "Яблоки свежие, с кожурой",
+    "key_he": "תפוחים טריים, עם קליפה"
+  },
+  {
+    "id": 17,
+    "scale_code": 328,
+    "product_name": "Apples, stewed with added sugar",
+    "key_ru": "Яблоки тушёные с добавленным сахаром",
+    "key_he": "תפוחים מבושלים עם סוכר נוסף"
+  },
+  {
+    "id": 18,
+    "scale_code": 329,
+    "product_name": "Apples, stewed without added sugar",
+    "key_ru": "Яблоки тушёные без добавленного сахара",
+    "key_he": "תפוחים מבושלים ללא סוכר נוסף"
+  },
+  {
+    "id": 19,
+    "scale_code": 330,
+    "product_name": "Applesauce, canned, sweetened",
+    "key_ru": "Яблочное пюре, сладкое, консервированное",
+    "key_he": "רסק תפוחים, מתוק, משומר"
+  },
+  {
+    "id": 20,
+    "scale_code": 331,
+    "product_name": "Applesauce, canned, unsweetened",
+    "key_ru": "Яблочное пюре, несладкое, консервированное",
+    "key_he": "רסק תפוחים, לא מתוק, משומר"
+  },
+  {
+    "id": 21,
+    "scale_code": 333,
+    "product_name": "Apricots, canned, halves, heavy syrup",
+    "key_ru": "Абрикосы консервированные, половинки, в сиропе",
+    "key_he": "משמש משומר, חצאים, בסירופ כבד"
+  },
+  {
+    "id": 22,
+    "scale_code": 334,
+    "product_name": "Apricots, canned, halves, juice pack",
+    "key_ru": "Абрикосы консервированные, половинки, в собственном соку",
+    "key_he": "משמש משומר, חצאים, במיץ"
+  },
+  {
+    "id": 23,
+    "scale_code": 335,
+    "product_name": "Apricots, dried",
+    "key_ru": "Абрикосы сушёные",
+    "key_he": "משמש מיובש"
+  },
+  {
+    "id": 24,
+    "scale_code": 332,
+    "product_name": "Apricots, fresh",
+    "key_ru": "Абрикосы свежие",
+    "key_he": "משמש טרי"
+  },
+  {
+    "id": 25,
+    "scale_code": 160,
+    "product_name": "Artichokes, cooked, drained",
+    "key_ru": "Артишоки, приготовленные, отцеженные",
+    "key_he": "ארטישוק מבושל, מסונן"
+  },
+  {
+    "id": 26,
+    "scale_code": 336,
+    "product_name": "Asian pears, fresh",
+    "key_ru": "Азиатские груши, свежие",
+    "key_he": "אגסים אסייתיים, טריים"
+  },
+  {
+    "id": 27,
+    "scale_code": 51,
+    "product_name": "Asparagus Soup, condensed, canned prep. w. milk",
+    "key_ru": "Суп из спаржи, концентрат, консервированный, с молоком",
+    "key_he": "מרק אספרגוס, מרוכז, משומר, עם חלב"
+  },
+  {
+    "id": 28,
+    "scale_code": 163,
+    "product_name": "Asparagus, canned, spears, drained",
+    "key_ru": "Спаржа консервированная, стебли, отцеженные",
+    "key_he": "אספרגוס משומר, חצבים, מסונן"
+  },
+  {
+    "id": 29,
+    "scale_code": 162,
+    "product_name": "Asparagus, frozen, cooked, drained",
+    "key_ru": "Спаржа замороженная, приготовленная, отцеженная",
+    "key_he": "אספרגוס קפוא, מבושל, מסונן"
+  },
+  {
+    "id": 30,
+    "scale_code": 161,
+    "product_name": "Asparagus, raw, cooked, drained",
+    "key_ru": "Спаржа сырая, приготовленная, отцеженная",
+    "key_he": "אספרגוס טרי, מבושל, מסונן"
+  },
+  {
+    "id": 31,
+    "scale_code": 337,
+    "product_name": "Avocados, fresh, without skin & pit",
+    "key_ru": "Авокадо свежий, без кожи и косточки",
+    "key_he": "אבוקדו טרי, ללא קליפה וללא גרעין"
+  },
+  {
+    "id": 32,
+    "scale_code": 925,
+    "product_name": "Bacon bits",
+    "key_ru": "Бекон, кусочки",
+    "key_he": "חלקי בייקון"
+  },
+  {
+    "id": 33,
+    "scale_code": 2,
+    "product_name": "Bagels, cinnamon-raisin",
+    "key_ru": "Бейглы с корицей и изюмом",
+    "key_he": "בייגלה קינמון וצימוקים"
+  },
+  {
+    "id": 34,
+    "scale_code": 3,
+    "product_name": "Bagels, egg",
+    "key_ru": "Бейглы с яйцом",
+    "key_he": "בייגלה ביצה"
+  },
+  {
+    "id": 35,
+    "scale_code": 1,
+    "product_name": "Bagels, plain",
+    "key_ru": "Бейглы простые",
+    "key_he": "בייגלה רגיל"
+  },
+  {
+    "id": 36,
+    "scale_code": 977,
+    "product_name": "Baked beans, with franks, canned",
+    "key_ru": "Запечённые бобы с сосисками, консервированные",
+    "key_he": "פולי שעועית אפויים עם נקניקיות, משומר"
+  },
+  {
+    "id": 37,
+    "scale_code": 86,
+    "product_name": "Baked potato, with cheese, fast food",
+    "key_ru": "Запечённый картофель с сыром, фастфуд",
+    "key_he": "תפוח אדמה אפוי עם גבינה, מזון מהיר"
+  },
+  {
+    "id": 38,
+    "scale_code": 926,
+    "product_name": "Baking powder, sodium aluminium sulfate",
+    "key_ru": "Разрыхлитель, сульфат алюминия натрия",
+    "key_he": "אבקת אפייה, סולפט אלומיניום נתרן"
+  },
+  {
+    "id": 39,
+    "scale_code": 929,
+    "product_name": "Baking soda",
+    "key_ru": "Сода пищевая",
+    "key_he": "סודה לשתייה"
+  },
+  {
+    "id": 40,
+    "scale_code": 164,
+    "product_name": "Bamboo shoots, canned, drained",
+    "key_ru": "Ростки бамбука, консервированные, отцеженные",
+    "key_he": "נבטי במבוק, משומרים, מסוננים"
+  },
+  {
+    "id": 41,
+    "scale_code": 4,
+    "product_name": "Banana bread, recipe, margarine",
+    "key_ru": "Банановый хлеб, по рецепту, с маргарином",
+    "key_he": "לחם בננה, לפי מתכון, עם מרגרינה"
+  },
+  {
+    "id": 42,
+    "scale_code": 87,
+    "product_name": "Banana cream pie, prep. from recipe",
+    "key_ru": "Пирог с банановым кремом, по рецепту",
+    "key_he": "פאי קרם בננה, לפי מתכון"
+  },
+  {
+    "id": 43,
+    "scale_code": 338,
+    "product_name": "Bananas, fresh",
+    "key_ru": "Бананы свежие",
+    "key_he": "בננות טריות"
+  },
+  {
+    "id": 44,
+    "scale_code": 774,
+    "product_name": "Bar, fruit & juice, frozen",
+    "key_ru": "Фруктово-сливочный батончик, замороженный",
+    "key_he": "חטיף פרי ומיץ, קפוא"
+  },
+  {
+    "id": 45,
+    "scale_code": 911,
+    "product_name": "Barbecue sauce",
+    "key_ru": "Соус барбекю",
+    "key_he": "רוטב ברביקיו"
+  },
+  {
+    "id": 46,
+    "scale_code": 5,
+    "product_name": "Barley, cooked",
+    "key_ru": "Ячмень, приготовленный",
+    "key_he": "שעורה מבושלת"
+  },
+  {
+    "id": 47,
+    "scale_code": 102,
+    "product_name": "Basic 4 cereal",
+    "key_ru": "Хлопья \"Basic 4\"",
+    "key_he": "דגני בסיס 4"
+  },
+  {
+    "id": 48,
+    "scale_code": 497,
+    "product_name": "Bass, freshwater, cooked, dry heat",
+    "key_ru": "Басс пресноводный, приготовленный на сухом огне",
+    "key_he": "בס מים מתוקים, מבושל, חום יבש"
+  },
+  {
+    "id": 49,
+    "scale_code": 498,
+    "product_name": "Bass, sea, cooked, dry heat",
+    "key_ru": "Басс морской, приготовленный на сухом огне",
+    "key_he": "בס ים, מבושל, חום יבש"
+  },
+  {
+    "id": 50,
+    "scale_code": 166,
+    "product_name": "Bean sprouts cooked, drained",
+    "key_ru": "Ростки фасоли, приготовленные, отцеженные",
+    "key_he": "נבטי שעועית, מבושל, מסונן"
+  },
+  {
+    "id": 51,
+    "scale_code": 165,
+    "product_name": "Bean sprouts, raw",
+    "key_ru": "Ростки фасоли, сырые",
+    "key_he": "נבטי שעועית, טרי"
+  },
+  {
+    "id": 52,
+    "scale_code": 339,
+    "product_name": "Blackberries, fresh",
+    "key_ru": "Ежевика свежая",
+    "key_he": "פטל שחור טרי"
+  },
+  {
+    "id": 53,
+    "scale_code": 340,
+    "product_name": "Blackberries, frozen",
+    "key_ru": "Ежевика замороженная",
+    "key_he": "פטל שחור קפוא"
+  },
+  {
+    "id": 54,
+    "scale_code": 341,
+    "product_name": "Blackberries, canned",
+    "key_ru": "Ежевика консервированная",
+    "key_he": "פטל שחור משומר"
+  },
+  {
+    "id": 55,
+    "scale_code": 922,
+    "product_name": "Black-eyed peas, dry",
+    "key_ru": "Черноглазый горох, сухой",
+    "key_he": "שעועית עין שחורה, יבשה"
+  },
+  {
+    "id": 56,
+    "scale_code": 167,
+    "product_name": "Black-eyed peas, cooked",
+    "key_ru": "Черноглазый горох, приготовленный",
+    "key_he": "שעועית עין שחורה, מבושלת"
+  },
+  {
+    "id": 57,
+    "scale_code": 342,
+    "product_name": "Black currants, fresh",
+    "key_ru": "Смородина чёрная, свежая",
+    "key_he": "דומדמניות שחורות, טרי"
+  },
+  {
+    "id": 58,
+    "scale_code": 343,
+    "product_name": "Black currants, frozen",
+    "key_ru": "Смородина чёрная, замороженная",
+    "key_he": "דומדמניות שחורות, קפוא"
+  },
+  {
+    "id": 59,
+    "scale_code": 344,
+    "product_name": "Black currants, canned",
+    "key_ru": "Смородина чёрная, консервированная",
+    "key_he": "דומדמניות שחורות, משומר"
+  },
+  {
+    "id": 60,
+    "scale_code": 345,
+    "product_name": "Blueberries, fresh",
+    "key_ru": "Голубика, свежая",
+    "key_he": "אוכמניות, טרי"
+  },
+  {
+    "id": 61,
+    "scale_code": 346,
+    "product_name": "Blueberries, frozen",
+    "key_ru": "Голубика, замороженная",
+    "key_he": "אוכמניות, קפוא"
+  },
+  {
+    "id": 62,
+    "scale_code": 347,
+    "product_name": "Blueberries, canned",
+    "key_ru": "Голубика, консервированная",
+    "key_he": "אוכמניות, משומר"
+  },
+  {
+    "id": 63,
+    "scale_code": 6,
+    "product_name": "Blueberry muffin, recipe",
+    "key_ru": "Маффин с черникой, по рецепту",
+    "key_he": "מאפין אוכמניות, לפי מתכון"
+  },
+  {
+    "id": 64,
+    "scale_code": 1021,
+    "product_name": "Boiled eggs",
+    "key_ru": "Яйца варёные",
+    "key_he": "ביצים מבושלות"
+  },
+  {
+    "id": 65,
+    "scale_code": 168,
+    "product_name": "Bok choy, cooked",
+    "key_ru": "Бок чой, приготовленный",
+    "key_he": "בוק צ'וי, מבושל"
+  },
+  {
+    "id": 66,
+    "scale_code": 169,
+    "product_name": "Bok choy, raw",
+    "key_ru": "Бок чой, сырой",
+    "key_he": "בוק צ'וי, טרי"
+  },
+  {
+    "id": 67,
+    "scale_code": 170,
+    "product_name": "Broccoli, cooked, drained",
+    "key_ru": "Брокколи, приготовленные, отцеженные",
+    "key_he": "ברוקולי, מבושל, מסונן"
+  },
+  {
+    "id": 68,
+    "scale_code": 171,
+    "product_name": "Broccoli, raw",
+    "key_ru": "Брокколи, сырые",
+    "key_he": "ברוקולי, טרי"
+  },
+  {
+    "id": 69,
+    "scale_code": 172,
+    "product_name": "Broccoli rabe, cooked, drained",
+    "key_ru": "Брокколи рабе, приготовленные, отцеженные",
+    "key_he": "ברוקולי ראבה, מבושל, מסונן"
+  },
+  {
+    "id": 70,
+    "scale_code": 173,
+    "product_name": "Broccoli rabe, raw",
+    "key_ru": "Брокколи рабе, сырые",
+    "key_he": "ברוקולי ראבה, טרי"
+  },
+  {
+    "id": 71,
+    "scale_code": 348,
+    "product_name": "Broccoli, frozen, chopped",
+    "key_ru": "Брокколи замороженная, нарезанная",
+    "key_he": "ברוקולי קפוא, קצוץ"
+  },
+  {
+    "id": 72,
+    "scale_code": 349,
+    "product_name": "Brussels sprouts, cooked, drained",
+    "key_ru": "Брюссельская капуста, приготовленная, отцеженная",
+    "key_he": "נבטים בריסל, מבושל, מסונן"
+  },
+  {
+    "id": 73,
+    "scale_code": 350,
+    "product_name": "Brussels sprouts, raw",
+    "key_ru": "Брюссельская капуста, сырые",
+    "key_he": "נבטים בריסל, טרי"
+  },
+  {
+    "id": 74,
+    "scale_code": 351,
+    "product_name": "Brussels sprouts, frozen",
+    "key_ru": "Брюссельская капуста, замороженная",
+    "key_he": "נבטים בריסל, קפוא"
+  },
+  {
+    "id": 75,
+    "scale_code": 913,
+    "product_name": "Butter, salted",
+    "key_ru": "Масло сливочное, солёное",
+    "key_he": "חמאה, ממולחת"
+  },
+  {
+    "id": 76,
+    "scale_code": 914,
+    "product_name": "Butter, unsalted",
+    "key_ru": "Масло сливочное, несолёное",
+    "key_he": "חמאה, לא ממולחת"
+  },
+  {
+    "id": 77,
+    "scale_code": 915,
+    "product_name": "Buttermilk",
+    "key_ru": "Молочная сыворотка",
+    "key_he": "מי גבינה"
+  },
+  {
+    "id": 78,
+    "scale_code": 352,
+    "product_name": "Cabbage, cooked, drained",
+    "key_ru": "Капуста, приготовленная, отцеженная",
+    "key_he": "כרוב, מבושל, מסונן"
+  },
+  {
+    "id": 79,
+    "scale_code": 353,
+    "product_name": "Cabbage, raw",
+    "key_ru": "Капуста, сырая",
+    "key_he": "כרוב, טרי"
+  },
+  {
+    "id": 80,
+    "scale_code": 354,
+    "product_name": "Cabbage, frozen, chopped",
+    "key_ru": "Капуста замороженная, нарезанная",
+    "key_he": "כרוב קפוא, קצוץ"
+  },
+  {
+    "id": 81,
+    "scale_code": 1733,
+    "product_name": "Cactus pear, raw",
+    "key_ru": "Кактус, плод свежий",
+    "key_he": "תפוח קקטוס, טרי"
+  },
+  {
+    "id": 82,
+    "scale_code": 355,
+    "product_name": "Canola oil",
+    "key_ru": "Масло канола",
+    "key_he": "שמן קנולה"
+  },
+  {
+    "id": 83,
+    "scale_code": 356,
+    "product_name": "Cantaloupe, fresh",
+    "key_ru": "Канталупа, свежая",
+    "key_he": "מלון כתום, טרי"
+  },
+  {
+    "id": 84,
+    "scale_code": 357,
+    "product_name": "Cantaloupe, frozen",
+    "key_ru": "Канталупа, замороженная",
+    "key_he": "מלון כתום, קפוא"
+  },
+  {
+    "id": 85,
+    "scale_code": 358,
+    "product_name": "Cantaloupe, canned",
+    "key_ru": "Канталупа, консервированная",
+    "key_he": "מלון כתום, משומר"
+  },
+  {
+    "id": 86,
+    "scale_code": 359,
+    "product_name": "Carambola, fresh",
+    "key_ru": "Карамбола, свежая",
+    "key_he": "קרמבולה, טרי"
+  },
+  {
+    "id": 87,
+    "scale_code": 360,
+    "product_name": "Carambola, frozen",
+    "key_ru": "Карамбола, замороженная",
+    "key_he": "קרמבולה, קפוא"
+  },
+  {
+    "id": 88,
+    "scale_code": 361,
+    "product_name": "Carambola, canned",
+    "key_ru": "Карамбола, консервированная",
+    "key_he": "קרמבולה, משומר"
+  },
+  {
+    "id": 89,
+    "scale_code": 362,
+    "product_name": "Carrots, cooked, drained",
+    "key_ru": "Морковь, приготовленная, отцеженная",
+    "key_he": "גזר, מבושל, מסונן"
+  },
+  {
+    "id": 90,
+    "scale_code": 363,
+    "product_name": "Carrots, raw",
+    "key_ru": "Морковь, сырая",
+    "key_he": "גזר, טרי"
+  },
+  {
+    "id": 91,
+    "scale_code": 364,
+    "product_name": "Carrots, canned",
+    "key_ru": "Морковь, консервированная",
+    "key_he": "גזר משומר"
+  },
+  {
+    "id": 92,
+    "scale_code": 365,
+    "product_name": "Carrots, frozen",
+    "key_ru": "Морковь, замороженная",
+    "key_he": "גזר קפוא"
+  },
+  {
+    "id": 93,
+    "scale_code": 916,
+    "product_name": "Cashew nuts",
+    "key_ru": "Кешью",
+    "key_he": "קשיו"
+  },
+  {
+    "id": 94,
+    "scale_code": 103,
+    "product_name": "Celery, cooked, drained",
+    "key_ru": "Сельдерей, приготовленный, отцеженный",
+    "key_he": "סלרי, מבושל, מסונן"
+  },
+  {
+    "id": 95,
+    "scale_code": 104,
+    "product_name": "Celery, raw",
+    "key_ru": "Сельдерей, сырой",
+    "key_he": "סלרי, טרי"
+  },
+  {
+    "id": 96,
+    "scale_code": 105,
+    "product_name": "Celery, canned",
+    "key_ru": "Сельдерей, консервированный",
+    "key_he": "סלרי משומר"
+  },
+  {
+    "id": 97,
+    "scale_code": 106,
+    "product_name": "Celery, frozen",
+    "key_ru": "Сельдерей, замороженный",
+    "key_he": "סלרי קפוא"
+  },
+  {
+    "id": 98,
+    "scale_code": 367,
+    "product_name": "Cereals, cooked, ready-to-eat",
+    "key_ru": "Каши, приготовленные, готовые к употреблению",
+    "key_he": "דגנים מבושלים, מוכנים לאכילה"
+  },
+  {
+    "id": 99,
+    "scale_code": 368,
+    "product_name": "Cereals, dry, ready-to-eat",
+    "key_ru": "Каши, сухие, готовые к употреблению",
+    "key_he": "דגנים יבשים, מוכנים לאכילה"
+  },
+  {
+    "id": 100,
+    "scale_code": 369,
+    "product_name": "Chard, cooked, drained",
+    "key_ru": "Мангольд, приготовленный, отцеженный",
+    "key_he": "סלק עלים, מבושל, מסונן"
+  }
+]
