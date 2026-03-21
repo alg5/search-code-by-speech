@@ -1,0 +1,105 @@
+<div class="container" style="display: none;">
+
+  <h2>{{ 'search.title' | translate }}</h2>
+
+  <div class="search-row">
+
+
+
+<div class="p-inputgroup">
+  <!-- Лупа слева -->
+  <span class="p-inputgroup-addon">
+    <i class="pi pi-search"></i>
+  </span>
+
+  <!-- Autocomplete -->
+  <p-autoComplete
+    [(ngModel)]="searchText"
+    (ngModelChange)="searchText.set($event); search({ query: $event })"
+    [suggestions]="results()"
+    (completeMethod)="search($event)"
+    (onSelect)="selectCode($event)"
+    [placeholder]="'search.placeholder' | translate"
+    [forceSelection]="false"
+    field="fieldName">
+
+    <ng-template let-item pTemplate="item">
+        <div class="item">
+        <span class="code">{{ item.scale_code.toString().padStart(3, '0') }} - </span>
+        <span>{{ displayName(item) }}</span>
+        </div>
+    </ng-template>
+  </p-autoComplete>
+
+  <!-- Микрофон справа -->
+  <button class="p-button p-component p-button-icon p-button-outlined"
+          type="button"
+          (click)="startVoiceSearch()">
+    <i class="pi pi-microphone"></i>
+  </button>
+</div>
+
+
+    <!-- 🎤 -->
+    <button
+      pButton
+      type="button"
+      icon="pi pi-microphone"
+      (click)="startVoiceSearch()">
+    </button>
+
+  </div>
+
+  <!-- 📦 Выбранный результат -->
+  <div *ngIf="selectedProduct as p" class="result">
+    <div class="code-big">{{ p.scale_code.toString().padStart(3) }} - </div>
+    <div class="name">{{ displayName(p) }}</div>
+  </div>
+
+</div>
+<div class="search-wrapper">
+
+  <h2 class="search-title">
+    Поиск кода продукта
+  </h2>
+
+  <div class="search-row">
+    <div class="p-inputgroup glossy-search">
+
+      <!-- Лупа -->
+      <span class="p-inputgroup-addon search-icon">
+        <i class="pi pi-search"></i>
+      </span>
+
+      <!-- Autocomplete -->
+      <p-autoComplete
+        [(ngModel)]="searchText"
+        (ngModelChange)="searchText.set($event); search({ query: $event })"
+        [suggestions]="results()"
+        (completeMethod)="search($event)"
+        (onSelect)="selectCode($event)"
+        [placeholder]="'Введите название продукта...'"
+        [forceSelection]="false"
+        field="fieldName">
+
+        <ng-template let-item pTemplate="item">
+          <div class="item">
+            <span class="code">{{ item.scale_code.toString().padStart(3, '0') }} — </span>
+            <span>{{ displayName(item) }}</span>
+          </div>
+        </ng-template>
+
+      </p-autoComplete>
+
+      <!-- Микрофон -->
+      <button
+        type="button"
+        class="mic-btn"
+        (click)="startVoiceSearch()">
+        <i class="pi pi-microphone"></i>
+      </button>
+
+    </div>
+  </div>
+
+</div>

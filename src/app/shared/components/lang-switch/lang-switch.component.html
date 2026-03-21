@@ -1,0 +1,11 @@
+<div class="lang-switch">
+  @for (l of langs; track l.code) {
+    <button
+      class="lang-btn"
+      [class.active]="l.code === currentLangCode()"
+      (click)="changeLang(l)"
+    >
+      <span [class]="l.iconClass"></span>
+    </button>
+  }
+</div>

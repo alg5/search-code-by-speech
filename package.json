@@ -30,6 +30,7 @@
     "@angular/router": "^20.3.0",
     "@primeuix/themes": "^2.0.3",
     "@supabase/supabase-js": "^2.99.3",
+    "flag-icons": "^7.5.0",
     "fuse.js": "^7.1.0",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
