@@ -43,8 +43,8 @@
     </li>
   </ul>
 </div>
-<!-- =========================== -->
- <div class="app-container">
+
+ <div class="app-container"  style="display: none;">
   <header class="app-header">
     <spr-lang-switch></spr-lang-switch>
   </header>
@@ -57,3 +57,21 @@
     <!-- Можно добавить футер позже -->
   </footer>
 </div>
+
+<!-- ====================== -->
+ <!-- src/app/app.component.html -->
+<!-- <div class="app-container">
+  <header class="app-header">
+    <spr-lang-switch></spr-lang-switch>
+    <button pButton type="button" label="Log In" class="p-button-sm p-button-secondary" (click)="goToAuth()"></button>
+    <button pButton type="button" label="Admin" class="p-button-sm p-button-info" (click)="goToAdmin()"></button>
+  </header>
+
+  <main class="app-main">
+  </main>
+
+  <footer class="app-footer">
+  </footer>
+</div>
+ -->
+    <router-outlet></router-outlet> <!-- Здесь будет отображаться либо SearchLayout, либо Auth, либо AdminLayout -->

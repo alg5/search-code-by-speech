@@ -1,0 +1,26 @@
+<!-- src/app/main-layout/main-layout.component.html -->
+<div class="app-container">
+  <!-- <header class="app-header">
+    <spr-lang-switch></spr-lang-switch>
+
+    <div class="header-actions">
+      @if (!isLoggedIn) {
+        <button pButton type="button" label ="'auth.signIn' | translate" class="p-button-sm p-button-secondary" (click)="goToAuth()"></button>
+      } @else {
+        <button pButton type="button" label ="'auth.signOut' | translate" class="p-button-sm p-button-secondary" (click)="signOut()"></button>
+        @if (isAdmin) {
+          <button pButton type="button" label ="'admin.title' | translate" class="p-button-sm p-button-info ml-2" (click)="goToAdmin()"></button>
+        }
+      }
+    </div>
+  </header> -->
+  <spr-header></spr-header>
+  <main class="app-main">
+    <router-outlet></router-outlet> <!-- Здесь будет отображаться содержимое маршрутов / (spr-search-layout) или других публичных страниц -->
+  </main>
+
+  <footer class="app-footer">
+    <!-- Ваш футер -->
+  </footer>
+</div>
+

@@ -44,47 +44,58 @@
       "sourceRoot": "src",
       "prefix": "spr",
       "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "node_modules/primeflex/primeflex.css",
-               "node_modules/flag-icons/css/flag-icons.min.css",
-              "src/styles.scss"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "outputHashing": "media",
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
+"build": {
+  "builder": "@angular/build:application",
+  "options": {
+    "stylePreprocessorOptions": {
+      "includePaths": [        "src/scss",
+        "src/assets/images",
+        "src/assets/data"
+      ]
+    },
+    "browser": "src/main.ts",
+    "tsConfig": "tsconfig.app.json",
+    "inlineStyleLanguage": "scss",
+    "assets": [      "src/favicon.ico",
+      "src/assets"
+    ],
+    "styles": [      
+      "node_modules/primeflex/primeflex.css",
+      "node_modules/flag-icons/css/flag-icons.min.css",
+      "src/styles.scss"
+    ]
+  },
+  "configurations": {
+    "production": {
+      "budgets": [        {
+          "type": "initial",
+          "maximumWarning": "500kB",
+          "maximumError": "1MB"
         },
+        {
+          "type": "anyComponentStyle",
+          "maximumWarning": "4kB",
+          "maximumError": "8kB"
+        }
+      ],
+      "outputHashing": "all",
+      "fileReplacements": [
+        {
+          "replace": "src/environments/environment.ts",
+          "with": "src/environments/environment.prod.ts"
+        }
+      ]
+    },
+    "development": {
+      "outputHashing": "media",
+      "optimization": false,
+      "extractLicenses": false,
+      "sourceMap": true
+    }
+  },
+  "defaultConfiguration": "production"
+  },
+
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {

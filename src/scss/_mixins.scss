@@ -1,0 +1,49 @@
+@import './_breakpoints';
+// Small devices
+@mixin sm {
+    @media (min-width: #{$screen-sm-min}) {
+        @content;
+    }
+ }
+ // Medium devices
+ @mixin md {
+    @media (min-width: #{$screen-md-min}) {
+        @content;
+    }
+ }
+ // Large devices
+ @mixin lg {
+    @media (min-width: #{$screen-lg-min}) {
+        @content;
+    }
+ }
+ // Extra large devices
+ @mixin xl {
+    @media (min-width: #{$screen-xl-min}) {
+        @content;
+    }
+ }
+ // Custom devices
+@mixin rwd($screen) {
+    @media (min-width: #{$screen +'px'}) {
+        @content;
+    }
+ }
+
+ @mixin media($minmax, $media) {
+    @each $size, $resolution in $sizes {
+      @if $media == $size {
+        @media only screen and (#{$minmax}-width: $resolution) {
+          @content;
+        }
+      }
+    }
+  }
+// ie10 and ie11 only - css hack for the crap IE :)
+@mixin ie11() {
+  // @media screen and (min-width:0\0) {
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+
+    @content;
+  }
+}

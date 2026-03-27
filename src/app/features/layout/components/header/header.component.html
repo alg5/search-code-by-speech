@@ -1,0 +1,25 @@
+<header class="app-header">
+  <div class="header-container">
+    <div class="header-logo">
+      <span class="greeting">
+        {{ 'header.greeting' | translate }}, {{ userName | translate }}!
+      </span>
+      <span class="visit-time">
+        {{ visitTime | date:'dd.MM.yyyy HH:mm' }}
+      </span>
+    </div>
+
+    <div class="header-actions">
+      <spr-lang-switch class="lang-switch"></spr-lang-switch>
+
+      <div class="sign-in-icon-wrapper"
+           tabindex="0"
+           aria-label="{{ 'auth.signIn' | translate }}"
+           title="{{ 'auth.signIn' | translate }}"
+           (click)="onSignIn()"
+           (keydown.enter)="onSignIn()">
+        <i class="pi pi-user sign-in-icon"></i>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,93 @@
+
+<div class="flex justify-content-center align-items-center min-h-screen">
+  <p-card styleClass="p-card-shadow" [style]="{width: '400px'}">
+    
+    <!-- Заголовок карточки -->
+    <ng-template pTemplate="header">
+      <h3 class="text-center p-mt-2">{{ isSignUp ? ('auth.signUp' | translate) : ('auth.signIn' | translate) }}</h3>
+    </ng-template>
+
+    <!-- Компонент для вывода сообщений (Toast) -->
+    <p-toast></p-toast>
+
+    <!-- Форма аутентификации -->
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <div class="p-fluid">
+        <!-- Поле для полного имени (только для регистрации) -->
+        @if (isSignUp) {
+          <div class="field">
+            <label for="fullName">{{ 'auth.fullName' | translate }}</label>
+            <input id="fullName" type="text" pInputText formControlName="fullName"
+              [class.ng-invalid]="authForm.get('fullName')?.invalid && authForm.get('fullName')?.touched"
+              [class.ng-dirty]="authForm.get('fullName')?.touched">
+            @if (authForm.get('fullName')?.invalid && authForm.get('fullName')?.touched) {
+              <small class="p-error">
+                {{ 'auth.fullNameRequired' | translate }}
+              </small>
+            }
+          </div>
+        }
+
+        <!-- Поле для email -->
+        <div class="field">
+          <label for="email">{{ 'auth.email' | translate }}</label>
+          <input id="email" type="email" pInputText formControlName="email"
+            [class.ng-invalid]="authForm.get('email')?.invalid && authForm.get('email')?.touched"
+            [class.ng-dirty]="authForm.get('email')?.touched">
+          @if (authForm.get('email')?.invalid && authForm.get('email')?.touched) {
+            @if (authForm.get('email')?.errors?.['required']) {
+              <small class="p-error">
+                {{ 'auth.emailRequired' | translate }}
+              </small>
+            } @else if (authForm.get('email')?.errors?.['email']) {
+              <small class="p-error">
+                {{ 'auth.emailInvalid' | translate }}
+              </small>
+            }
+          }
+        </div>
+
+        <!-- Поле для пароля -->
+        <div class="field">
+          <label for="password">{{ 'auth.password' | translate }}</label>
+          <input id="password" type="password" pInputText formControlName="password"
+            [class.ng-invalid]="authForm.get('password')?.invalid && authForm.get('password')?.touched"
+            [class.ng-dirty]="authForm.get('password')?.touched">
+          @if (authForm.get('password')?.invalid && authForm.get('password')?.touched) {
+            @if (authForm.get('password')?.errors?.['required']) {
+              <small class="p-error">
+                {{ 'auth.passwordRequired' | translate }}
+              </small>
+            } @else if (authForm.get('password')?.errors?.['minlength']) {
+              <small class="p-error">
+                <!-- {{ 'auth.passwordMinLength' | translate: '':{ requiredLength: authForm.get('password')?.errors?.['minlength']?.requiredLength ?? 0 } }} -->
+              </small>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Кнопка отправки формы (Sign Up / Sign In) -->
+      <div class="p-mt-4">
+        <button pButton type="submit" [disabled]="authForm.invalid || loading">
+          {{ isSignUp ? ('auth.signUpButton' | translate) : ('auth.signInButton' | translate) }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Футер карточки (кнопки переключения режима и "забыли пароль") -->
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-between p-mt-3">
+        <button pButton type="button" class="p-button-text" (click)="toggleMode()">
+          {{ isSignUp ? ('auth.alreadyHaveAccount' | translate) : ('auth.noAccount' | translate) }}
+        </button>
+        @if (!isSignUp) {
+          <button pButton type="button" class="p-button-text">
+            {{ 'auth.forgotPassword' | translate }}
+          </button>
+        }
+      </div>
+    </ng-template>
+
+  </p-card>
+</div>

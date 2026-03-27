@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { ScaleService } from './services/scale.service';
 import { CommonModule } from '@angular/common';
-import { AutoCompleteModule } from 'primeng/autocomplete';
+// import { AutoCompleteModule } from 'primeng/autocomplete';
 import { HighlightPipe } from './shared/pipes/highlight-pipe';
 import { SupabaseService } from './core/services/supabase.service';
 import { ProductsStateService } from './core/services/products-state.service';
 import { SearchLayoutComponent } from './features/search/components/search-layout/search-layout.component';
 import { LangSwitchComponent } from './shared/components/lang-switch/lang-switch.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-root',
@@ -19,14 +20,14 @@ import { LangSwitchComponent } from './shared/components/lang-switch/lang-switch
     HttpClientModule,
     FormsModule,
     CommonModule,
-    AutoCompleteModule,
+     AutoCompleteModule,
     HighlightPipe,
     LangSwitchComponent, 
     SearchLayoutComponent
     
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 
@@ -115,5 +116,14 @@ export class AppComponent {
       this.resultScaleCode = this.scaleService.findScaleCodeByText(text);
     }
   }
- 
+  goToAuth() {
+    // Логика перехода на страницу авторизации
+    // Например, используя Angular Router:
+    // this.router.navigate(['/auth']);
+  }
+  goToAdmin() {
+    // Логика перехода на страницу админки
+    // Например, используя Angular Router:
+    // this.router.navigate(['/admin']);
+  } 
 }

@@ -6,6 +6,13 @@ export interface ILang {
   label: string;        // текстовое название
   iconClass?: string;    // for flag-icons
 }
+
+export interface ILang {
+  code: LangCode;
+  label: string;
+  iconClass?: string;
+}
+
 export interface TranslationValue {
   en: string;
   ru: string;

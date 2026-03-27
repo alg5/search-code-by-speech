@@ -7,3 +7,4 @@ export interface IProduct {
   category_code: string;
   processing_code: string;
 }
+export type NewProduct = Omit<IProduct, 'id'>; // Пример для автогенерируемого ID

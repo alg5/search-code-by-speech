@@ -14,7 +14,7 @@ import { SearchResultsComponent } from '../search-results/search-results.compone
 })
 export class SearchLayoutComponent {
   searchTerm = '';
-
+  
   // сюда можно добавить фильтры
   filters = {};
 

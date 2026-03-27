@@ -1,0 +1,45 @@
+@import './_breakpoints';
+@import './_mixins';
+
+// widthes
+$item-width: 30%;
+$input-width:187px;
+// $input-width-mobile:93vw;
+$input-width-mobile:87vw;
+$input-width-sel-time: calc(187px - 12px);
+// $caption-width: 86px;
+$caption-width: 7rem;
+//heights
+$input-height: 42px;
+
+// colors
+$color-blue:#16254f;
+$color-blue-active: #3d53de;
+$title-color: #393939;
+$color-error:#dc3545;
+$bg-gray:#f6f8fa;
+$bg-gray-odd:#f0f2fd;
+$bg-td-standart:#fcfbfc;
+$bg-td-standart-gray:#f0f0f0;
+$bgcolor :#f0f2ff;
+
+//backgrounds
+// $bg-image-mobile:linear-gradient(196deg, #26a5ff 106%, #3d53de 51%, #2f18bc -2%);
+$bg-image-mobile:linear-gradient(196deg, #CED3F6 10%, #CED3F6 50%,  #CBE0FC 110%);
+$bg-gray-light: #f0f2fd;
+$bg-highlight: #dbebf5;
+
+//borders
+$border-gray-light: 1px solid $bg-gray-light;
+$border-gray: 1px solid #D4D4D4;
+$border-active: 1px solid $color-blue-active;
+$table-header-row-border:  1px solid  #e2e5fa;
+$border-td-standart:solid 1px #f0f0f0;
+$border-color-blue: solid 1px $color-blue;
+
+//border-colors
+$border-color-focus: #80bdff;
+$border-color-gray: #D4D4D4;
+
+
+$box-shadow-error: 0 0 0 0.2rem rgba(220,53,69,.25)

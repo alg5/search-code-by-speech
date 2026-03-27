@@ -1,11 +1,31 @@
 <div class="lang-switch">
-  @for (l of langs; track l.code) {
-    <button
-      class="lang-btn"
-      [class.active]="l.code === currentLangCode()"
-      (click)="changeLang(l)"
-    >
-      <span [class]="l.iconClass"></span>
-    </button>
-  }
+  <p-select
+    [(ngModel)]="langValue"
+    [options]="langs"
+    optionLabel="label"
+    optionValue="code"
+    placeholder="{{ 'language.selectPlaceholder' | translate }}"
+    class="lang-select"
+    [showClear]="false">
+    
+    <!-- выбранный вариант -->
+    <ng-template #selectedItem let-selected>
+      <div class="selected-item">
+        @if (selected?.iconClass) {
+          <span [class]="selected.iconClass"></span>
+        }
+        <span class="lang-label">{{ selected?.code }}</span>
+      </div>
+    </ng-template>
+    
+    <!-- вариант в списке -->
+    <ng-template let-lang #item>
+      <div class="lang-item">
+        @if (lang.iconClass) {
+          <span [class]="lang.iconClass"></span>
+        }
+        <span class="lang-label">{{ lang.label }}</span>
+      </div>
+    </ng-template>
+  </p-select>
 </div>

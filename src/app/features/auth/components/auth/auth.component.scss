@@ -1,0 +1,98 @@
+/* src/app/auth/auth.component.scss */
+
+// Основной контейнер, который занимает всю высоту экрана и центрирует контент
+:host {
+  display: flex;
+  justify-content: center; // Центрирование по горизонтали
+  align-items: center;     // Центрирование по вертикали
+  min-height: 100vh;       // Занимает всю высоту viewport
+  background-color: var(--surface-100); // Используем переменную PrimeNG для фона
+  padding: 1rem; // Небольшой отступ по краям для маленьких экранов
+  box-sizing: border-box; // Учитываем padding в расчете ширины/высоты
+}
+
+// Стили для карточки PrimeNG
+.p-card {
+  width: 100%; // По умолчанию ширина 100%
+  max-width: 400px; // Максимальная ширина, чтобы форма не была слишком широкой
+  box-shadow: var(--p-card-shadow); // Используем переменную PrimeNG для тени
+  border-radius: var(--border-radius); // Используем переменную PrimeNG для скругления углов
+}
+
+// Заголовок в карточке
+.p-card-header h3 {
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
+}
+
+// Отступы для полей формы
+.field {
+  margin-bottom: 1.5rem; // Отступ между полями
+}
+
+// Стили для меток (labels)
+label {
+  display: block; // Каждая метка на новой строке
+  margin-bottom: 0.5rem; // Отступ между меткой и полем ввода
+  font-weight: 600; // Жирный шрифт
+  color: var(--text-color); // Цвет текста из переменных PrimeNG
+}
+
+// Стили для полей ввода PrimeNG (текстовые поля, пароли)
+input.p-inputtext {
+  width: 100%; // Поле ввода занимает всю доступную ширину
+  // PrimeNG уже предоставляет базовые стили, но можно переопределить:
+  // padding: 0.75rem 0.75rem;
+  // border: 1px solid var(--surface-300);
+  // border-radius: var(--border-radius);
+}
+
+// Стили для кнопки отправки формы
+.p-button {
+  width: 100%; // Кнопка занимает всю доступную ширину
+  // PrimeNG уже предоставляет хорошие стили, но можно переопределить:
+  // padding: 0.75rem 1rem;
+  // font-size: 1rem;
+}
+
+// Стили для вспомогательного текста ошибок (small.p-error)
+small.p-error {
+  display: block; // Каждая ошибка на новой строке
+  color: var(--red-500); // Красный цвет текста для ошибок (из палитры PrimeNG)
+  margin-top: 0.25rem; // Отступ сверху
+  font-size: 0.8rem; // Меньший размер шрифта
+}
+
+// Стили для футера карточки (где кнопки переключения режима и "забыли пароль")
+.p-card-footer {
+  padding-top: 1rem; // Отступ сверху для футера
+  border-top: 1px solid var(--surface-200); // Разделитель
+  margin-top: 1.5rem; // Отступ сверху от основного контента
+}
+
+// Стили для кнопок в футере (текстовые кнопки)
+.p-button-text {
+  // PrimeNG уже стилизует их, но можно добавить:
+  // color: var(--primary-color);
+}
+
+// PrimeFlex утилитарные классы (убедитесь, что PrimeFlex установлен и импортирован глобально)
+.flex { display: flex; }
+.justify-content-center { justify-content: center; }
+.align-items-center { align-items: center; }
+.min-h-screen { min-height: 100vh; }
+.p-fluid .field { /* PrimeNG p-fluid уже хорошо работает */ }
+.p-mt-2 { margin-top: 0.5rem; }
+.p-mt-3 { margin-top: 1rem; }
+.p-mt-4 { margin-top: 1.5rem; }
+
+// Адаптация для мобильных устройств
+@media screen and (max-width: 576px) {
+  .p-card {
+    max-width: 95%; // Чуть меньше максимальная ширина на очень маленьких экранах
+  }
+}

@@ -1,25 +1,55 @@
 // src/app/supabase.service.ts
 
-import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Injectable, OnDestroy } from '@angular/core';
+import { AuthSession, createClient, SupabaseClient, User, Subscription } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-import { IProduct } from '../../shared/models/product.model';
-// import { environment } from 'src/environments/environment';
+import { IProduct, NewProduct } from '../../shared/models/product.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+// <--- НОВОЕ: Определение локального типа для состояния аутентификации
+// Тип `event` теперь `string`
+export interface AuthState {
+  event: string; // ИСПРАВЛЕНО: event теперь string
+  session: AuthSession | null;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class SupabaseService {
-  private supabase: SupabaseClient;
+export class SupabaseService implements OnDestroy{
+  public supabase: SupabaseClient; 
+   private _supabaseAuthSubscription: Subscription; // Переименовал, чтобы не путать с RxJS Subscription
 
+  private _authState = new BehaviorSubject<AuthState | null>(null);
+  public authStateChanges$: Observable<AuthState | null> = this._authState.asObservable();  
+  
   constructor() {
     this.supabase = createClient(
       environment.supabaseUrl, 
       environment.supabaseKey
     );
+    // Инициализация слушателя Supabase Auth
+    const { data: { subscription } } = this.supabase.auth.onAuthStateChange(
+      (event: string, session: AuthSession | null) => { // <--- ИСПРАВЛЕНО: event явно типизирован как string
+        console.log('Supabase Auth state changed:', event, session);
+        this._authState.next({ event, session });
+      }
+    );
+    this._supabaseAuthSubscription = subscription;
   }
 
-   async getAllProducts() {
+  // --- МЕТОД ЖИЗНЕННОГО ЦИКЛА ДЛЯ ОЧИСТКИ ---
+  // Этот метод будет вызван автоматически, когда сервис уничтожается,
+  // и отменит подписку, предотвращая утечки памяти.
+  ngOnDestroy(): void {
+ if (this._supabaseAuthSubscription) {
+      this._supabaseAuthSubscription.unsubscribe();
+    }
+    // Завершаем BehaviorSubject
+    this._authState.complete();
+  }
+  // --- МЕТОДЫ CRUD ДЛЯ ПРОДУКТОВ 
+  async getAllProducts() {
      const { data, error } = await this.supabase
       .from('products')
       .select('*');
@@ -31,20 +61,172 @@ export class SupabaseService {
 
     return data ?? [];
   }
-//  async addProduct(product: IProduct): Promise<IProduct | null> {
-//   const { data, error } = await this.supabase
-//   // .from<IProduct>('products')
-//   // .insert(product)
-//   // .select() // здесь '*' по умолчанию
-//   // .single();
+  async addProduct(product: NewProduct): Promise<IProduct> {
+  // `product` - это один объект. Мы оборачиваем его в массив [product].
+  const { data, error } = await this.supabase
+    .from('products')
+    .insert([product]) // <-- Оборачиваем объект в массив!
+    .select()         // <-- Говорим Supabase вернуть вставленную строку
+    .single();        // <-- Так как мы вставили 1 объект, мы ожидаем 1 объект в ответе.
+                      //     .single() извлечет его из массива и выдаст ошибку, если вернется не 1 запись.
 
-//   // if (error) {
-//   //   console.error('Ошибка при добавлении продукта:', error);
-//   //   return null;
-//   // }
+  if (error) {
+    console.error('Supabase error inserting product:', error);
+    throw error;
+  }
 
-//   return data;
-// }
+  return data; // `data` теперь будет иметь тип IProduct, а не IProduct[]
+  }
+async updateProduct(id: number, updates: Partial<IProduct>): Promise<IProduct> {
+    const { data, error } = await this.supabase
+      .from('products')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+}
+async deleteProduct(id: number): Promise<void> {
+  const { error } = await this.supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+}
+
+// Эта версия вернет удаленный объект или null, если ничего не найдено
+async deleteProductAndGetData(id: number): Promise<IProduct | null> {
+  const { data, error } = await this.supabase
+    .from('products')
+    .delete()
+    .eq('id', id)
+    .select()  // <-- Возвращаем данные удаленной строки
+    .single(); // <-- Ожидаем одну запись
+
+  if (error) {
+    console.error('Supabase error deleting product:', error);
+    throw error;
+  }
+  
+  // data будет содержать удаленный объект или null, если строка с таким id не была найдена
+  return data;
+}
+// --- МЕТОДЫ АУТЕНТИФИКАЦИИ ---
+
+  /**
+   * Регистрирует нового пользователя.
+   * @param email - Email пользователя.
+   * @param password - Пароль пользователя.
+   * @param fullName - Полное имя пользователя (для сохранения в profiles).
+   * @returns Данные пользователя Supabase, если успешно.
+   */
+  async signUp(email: string, password: string, fullName: string = ''): Promise<{ user: User | null, session: AuthSession | null }> {
+    const { data, error } = await this.supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        // user_metadata будет передано в триггер handle_new_user для full_name
+        data: { full_name: fullName } 
+      }
+    });
+
+    if (error) {
+      console.error('Supabase SignUp Error:', error);
+      throw error;
+    }
+    // Supabase по умолчанию требует подтверждение почты.
+    // Если вы это отключили, то data.session будет сразу доступен.
+    // Если подтверждение включено, data.session будет null до подтверждения.
+    return { user: data.user, session: data.session };
+  }
+
+  /**
+   * Выполняет вход пользователя.
+   * @param email - Email пользователя.
+   * @param password - Пароль пользователя.
+   * @returns Данные сессии пользователя Supabase, если успешно.
+   */
+  async signIn(email: string, password: string): Promise<{ user: User | null, session: AuthSession | null }> {
+    const { data, error } = await this.supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      console.error('Supabase SignIn Error:', error);
+      throw error;
+    }
+    return { user: data.user, session: data.session };
+  }
+
+  /**
+   * Выполняет выход пользователя.
+   */
+  async signOut(): Promise<void> {
+    const { error } = await this.supabase.auth.signOut();
+    if (error) {
+      console.error('Supabase SignOut Error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Получает текущего авторизованного пользователя.
+   * @returns Объект пользователя или null, если не авторизован.
+   */
+  async getCurrentUser(): Promise<User | null> {
+    const { data: { user }, error } = await this.supabase.auth.getUser();
+    if (error) {
+      console.error('Supabase GetUser Error:', error);
+      throw error;
+    }
+    return user;
+  }
+
+  /**
+   * Получает текущую сессию пользователя.
+   * @returns Объект сессии или null.
+   */
+  async getSession(): Promise<AuthSession | null> {
+    const { data: { session }, error } = await this.supabase.auth.getSession();
+    if (error) {
+      console.error('Supabase GetSession Error:', error);
+      throw error;
+    }
+    return session;
+  }
+
+  // --- СЛУШАТЕЛЬ СОСТОЯНИЙ АУТЕНТИФИКАЦИИ ---
+  // Это очень полезно для отслеживания изменений в состоянии аутентификации (вход/выход)
+  // и реагирования на них в приложении.
+  // public authChanges = this.supabase.auth.onAuthStateChange(
+  //   (event, session) => {
+  //     console.log('Auth state changed:', event, session);
+  //     // Здесь вы можете добавить свою логику, например, обновить observable в сервисе
+  //     // или отправить событие, которое слушают компоненты.
+  //   }
+  // );
+
+  // Метод для profiles
+  async getProfile(): Promise<{ role: string, full_name: string } | null> {
+    const user = await this.getCurrentUser();
+    if (!user) return null;
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('role, full_name')
+      .eq('id', user.id)
+      .single();
+    if (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
+    return data;
+  }
 
 
 }
