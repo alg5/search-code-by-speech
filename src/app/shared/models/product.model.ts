@@ -6,5 +6,6 @@ export interface IProduct {
   key_he: string;
   category_code: string;
   processing_code: string;
+  fuseScore?: number;
 }
 export type NewProduct = Omit<IProduct, 'id'>; // Пример для автогенерируемого ID

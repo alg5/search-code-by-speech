@@ -115,40 +115,112 @@ export class SearchInputComponent implements OnInit {
     return score;
   }
 
-  search(event: any) {
-    const query = (event?.query ?? '').toLowerCase().trim();
-    if (!query) {
-      this.results.set([]);
-      return;
-    }
 
-    if (/^\d+$/.test(query)) {
-      const exact = this.products().filter(p =>
-        p.scale_code?.toString().startsWith(query)
-      );
-      this.results.set(exact.slice(0, 5));
-      return;
-    }
 
-    const fuseResults = this.fuse.search(query);
-    const productsFound: IProduct[] = fuseResults.map(r => r.item);
+// search(event: any) {
+//   const query = (event?.query ?? '').toLowerCase().trim();
+//   if (!query) {
+//     this.results.set([]);
+//     return;
+//   }
 
-    const boosted: IProduct[] = [];
-    const rest: IProduct[] = [];
+//   // поиск по числовому коду
+//   if (/^\d+$/.test(query)) {
+//     const exact = this.products().filter(p =>
+//       p.scale_code?.toString().startsWith(query)
+//     );
+//     this.results.set(exact.slice(0, 5));
+//     return;
+//   }
 
-    productsFound.forEach(p => {
-      if (p.category_code === 'fruit_fresh' && p.processing_code === 'natural') {
-        boosted.push(p);
-      } else if (p.category_code === 'fruit_fresh') {
-        boosted.push(p);
-      } else {
-        rest.push(p);
-      }
-    });
+//   // поиск через Fuse.js
+//   const fuseResults = this.fuse.search(query);
+//   const productsFound: IProduct[] = fuseResults.map(r => r.item);
 
-    const finalResults = [...boosted, ...rest];
-    this.results.set(finalResults.slice(0, 10));
+//   // разделяем на boosted (fresh) и остальное
+//   const boosted: IProduct[] = [];
+//   const rest: IProduct[] = [];
+
+//   productsFound.forEach(p => {
+//     if (p.category_code?.includes('fresh')) {   // защита от null
+//       boosted.push(p);
+//     } else {
+//       rest.push(p);
+//     }
+//   });
+
+//   // сортируем boosted по приоритету: natural → все остальные fresh
+//   boosted.sort((a, b) => {
+//     const getPriority = (p: IProduct) => {
+//       if (p.processing_code === 'natural') return 0; // первыми
+//       return 1;                                     // все остальные fresh
+//     };
+//     return getPriority(a) - getPriority(b);
+//   });
+
+//   // объединяем и показываем топ-10
+//   const finalResults = [...boosted, ...rest];
+//   this.results.set(finalResults.slice(0, 10));
+// }
+
+search(event: any) {
+  const query = (event?.query ?? '')?.toLowerCase().trim();
+  if (!query) {
+    this.results.set([]);
+    return;
   }
+
+  // поиск по числовому коду
+  if (/^\d+$/.test(query)) {
+    const exact = this.products().filter(p =>
+      p.scale_code?.toString().startsWith(query)
+    );
+    this.results.set(exact.slice(0, 5));
+    return;
+  }
+
+  // поиск через Fuse.js
+  const fuseResults = this.fuse.search(query);
+  const productsFound: IProduct[] = fuseResults.map(r => ({
+    ...r.item,
+    fuseScore: r.score ?? 0  // временное поле для сортировки
+  }));
+
+  // разделяем на три группы по приоритету
+  const group0: IProduct[] = []; // natural fresh
+  const group1: IProduct[] = []; // fresh обработанные/пустые
+  const group2: IProduct[] = []; // всё остальное
+
+  productsFound.forEach(p => {
+    const isFresh = p.category_code?.includes('fresh');
+    const isNatural = p.processing_code === 'natural';
+
+    if (isFresh && isNatural) {
+      group0.push(p);
+    } else if (isFresh) {
+      group1.push(p);
+    } else {
+      group2.push(p);
+    }
+  });
+
+  // сортируем каждую группу по Fuse-рейтингу (score)
+  const sortByFuse = (arr: IProduct[]) =>
+    arr.sort((a, b) => (a.fuseScore ?? 0) - (b.fuseScore ?? 0));
+
+  const finalResults = [
+    ...sortByFuse(group0),
+    ...sortByFuse(group1),
+    ...sortByFuse(group2)
+  ];
+
+  // удаляем временное поле fuseScore перед показом
+  const finalResultsClean = finalResults.map(({ fuseScore, ...rest }) => rest);
+
+  // показываем топ-10
+  this.results.set(finalResultsClean.slice(0, 10));
+}
+
 
   selectCode(event: any) {
     const product = event?.value;
@@ -179,17 +251,21 @@ startMockSpeech() {
   
   setTimeout(() => {
     console.log('🎤 [MOCK] Распознано:', randomProduct);
+    
     this.searchTextValue = randomProduct;
-    
-    // ✅ КЛЮЧЕВОЙ МОМЕНТ: программно вызываем completeMethod!
+
     const event = { query: randomProduct };
-    this.search(event); // ← вызовет поиск И покажет панель!
-    
+    this.search(event);
+
+    // 🔥 ВАЖНО: принудительно открыть dropdown
+    setTimeout(() => {
+      this.autoComplete.show();
+    }, 0);
+
     console.log('📊 results():', this.results().length);
     this.isListening = false;
   }, 1500);
 }
-
 
 
 

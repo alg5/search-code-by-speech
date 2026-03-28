@@ -13,7 +13,7 @@
 
       <!-- Autocomplete -->
       <p-autoComplete #autoComplete
-   [(ngModel)]="searchTextValue"
+   [(ngModel)]="searchText"
         (ngModelChange)="searchText.set($event); search({ query: $event })"
          [suggestions]="results()"
         (completeMethod)="search($event)"
