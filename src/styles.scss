@@ -1,10 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
+@use 'variables' as *;
 @import "primeicons/primeicons.css";
-// @use 'variables' as *;
 
 body {
-  color: #16254f;
+  background-color: #ffffff !important;
+  color: $color-blue !important;
   font-family: 
     system-ui,
     -apple-system,
@@ -20,4 +21,8 @@ body {
 .highlight {
   color: red;
 
+}
+.autocomplete-results {
+  background-color: #ffffff !important;
+  color: $color-blue !important;
 }

@@ -1,5 +1,5 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, Renderer2, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { ScaleService } from './services/scale.service';
@@ -36,6 +36,7 @@ export class AppComponent {
   private readonly scaleService = inject(ScaleService);
   private readonly supabaseService = inject(SupabaseService);
   private readonly productsState = inject(ProductsStateService);
+  private readonly renderer = inject(Renderer2) ;
 
   searchText: string = '';
   results: any[] = [];
@@ -48,6 +49,9 @@ export class AppComponent {
     // this.loadFoods();
   }
   async ngOnInit() {
+    // Принудительно светлая тема
+    this.renderer.setStyle(document.body, 'background-color', '#ffffff');
+    this.renderer.setStyle(document.body, 'color', '#16254f');
     const products = await this.supabaseService.getAllProducts();
     if (products) {
       console.log('success:',);
