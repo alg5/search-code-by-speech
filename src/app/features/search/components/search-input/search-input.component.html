@@ -1,7 +1,15 @@
 <div class="search-wrapper">
-  <h2 class="search-title">
+  <div class="search-title">
     {{ 'search.title' | translate }}
-  </h2>
+  </div>
+  <div class="voice-input-container">
+    @if(!isListening) {
+      <div class="subtitle">🎤 {{ 'search.subtitle' | translate }}</div>
+    }
+    @else {
+      <div class="subtitle active">🗣️ {{ 'search.subtitle2' | translate }}</div>
+    }
+  </div>
 
   <div class="search-row">
     <div class="p-inputgroup glossy-search">
@@ -12,15 +20,15 @@
 
       <!-- Autocomplete -->
       <p-autoComplete #autoComplete
-                      [(ngModel)]="searchTextValue"
-                      (ngModelChange)="onSearchTextChange($event)"
-                      [suggestions]="results()"
-                      (completeMethod)="search($event)"
-                      (onSelect)="selectCode($event)"
-                      [placeholder]="'search.placeholder' | translate"
-                      [forceSelection]="false"
-                      field="fieldName"
-                      class="search-autocomplete">
+        [(ngModel)]="searchTextValue"
+        (ngModelChange)="onSearchTextChange($event)"
+        [suggestions]="results()"
+        (completeMethod)="search($event)"
+        (onSelect)="selectCode($event)"
+        [placeholder]="'search.placeholder' | translate"
+        [forceSelection]="false"
+        field="fieldName"
+        class="search-autocomplete">
 
         <ng-template let-item pTemplate="item">
           <div class="item">
@@ -32,11 +40,16 @@
 
       <!-- Микрофон справа -->
       <button type="button"
-              class="mic-btn"
-              (click)="startVoiceSearch()"
-              [class.active]="isListening"
-              title="🎤 Реальный микрофон">
-        <i class="pi pi-microphone"></i>
+        class="mic-btn"
+        (click)="startVoiceSearch()"
+        [class.on]="isListening"
+        [class.off]="!isListening"
+        [attr.title]="isListening 
+          ? ('search.tooltip.microphone.off' | translate) 
+          : ('search.tooltip.microphone.on' | translate)
+        "
+        >
+        {{ isListening ? '🎙️' : '🎤' }}
       </button>
     </div>
   </div>

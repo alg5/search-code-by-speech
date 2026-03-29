@@ -5,10 +5,13 @@
 }
 
 .lang-select {
-  // используем ::ng-deep для PrimeNG v20
+  background: #fff !important;   
+  color: $color-blue !important;      
+
   ::ng-deep &.p-select {
     // border: 1px solid red !important; // для отладки
     // min-width: 55px !important;  // компактная ширина
+    background-color: white !important;
     display: flex !important;
     gap: 4px;
     align-items: center;

@@ -8,11 +8,17 @@
   // color: #3a3a3a;
   margin-bottom: 16px;
 }
+.voice-input-container{
+  display: flex;
+  justify-content: center;
+  padding-bottom: 16px;
+}
 
 // /* ===== Центрирование ===== */
 .search-row {
   display: flex;
   justify-content: center;
+  gap: 8px;
 }
 
 :host ::ng-deep {
@@ -54,8 +60,16 @@
   // Поле ввода - главное изменение!
   .p-autocomplete {
     flex: 1 !important;
+    .p-autocomplete-list{
+      background-color: #fff !important;
+      // color: $color-blue !important;
+      .p-autocomplete-option{
+        color: $color-blue !important;
+      }
+    }
     
     .p-autocomplete-input {
+      color: $color-blue !important; 
       border: none !important;
       background: transparent !important;
       outline: none !important;
@@ -76,25 +90,16 @@
 
   // Микрофон справа - ключевой стиль!
   .mic-btn {
-    margin: 0 !important;
-    border: none !important;
-    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s ease !important;
-    
-    .pi-microphone {
-      color: white !important;
-      font-size: 1.3rem !important;
-    }
-    
+
+    font-size: 1.8rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+      
     &:hover:not(.active) {
       transform: scale(1.05) !important;
-      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4) !important;
+      // box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4) !important;
     }
     
     &.active {
@@ -104,10 +109,32 @@
   }
 }
 
-@keyframes micPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+/* выключен */
+.mic-btn.off {
+  opacity: 0.6;
 }
+
+/* включен */
+.mic-btn.on {
+  color: #ff3b3b;
+  animation: micPulse 1.2s infinite;
+}
+
+@keyframes micPulse {
+  0% {
+    text-shadow: 0 0 0px #ff3b3b00;
+    opacity: 0.9;
+  }
+  50% {
+    text-shadow: 0 0 12px #ff3b3b88;
+    opacity: 1;
+  }
+  100% {
+    text-shadow: 0 0 0px #ff3b3b00;
+    opacity: 0.9;
+  }
+}
+
 
 // Результат
 .result {
