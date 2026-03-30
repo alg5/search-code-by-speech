@@ -59,10 +59,10 @@
 
   // Поле ввода - главное изменение!
   .p-autocomplete {
-    flex: 1 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
     .p-autocomplete-list{
       background-color: #fff !important;
-      // color: $color-blue !important;
       .p-autocomplete-option{
         color: $color-blue !important;
       }
@@ -90,7 +90,7 @@
 
   // Микрофон справа - ключевой стиль!
   .mic-btn {
-
+    flex-shrink: 0;
     font-size: 1.8rem;
     border: none;
     background: transparent;

@@ -47,7 +47,8 @@ export class SearchInputComponent implements OnInit {
   // ✅ НОВОЕ: переменная для видимости кнопки Mock
   isDev = environment.enableMockSpeech;
   searchTextValue = ''; // обычная переменная для ngModel
-
+  isSearchActive = false; // для управления классами и стилями
+  
   constructor() {
     effect(() => {
       const data = this.products();
@@ -184,10 +185,10 @@ console.log('[COMPONENT] speechService instance:', this.speechService);
     // удаляем временное поле fuseScore перед показом
     const finalResultsClean = finalResults.map(({ fuseScore, ...rest }) => rest);
 
-    // показываем топ-10
-    this.results.set(finalResultsClean.slice(0, 10));
+    // показываем топ-20
+    this.results.set(finalResultsClean.slice(0, 20));
 
-    console.log('📊 search results for query:', query, finalResultsClean.slice(0, 10));
+    console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
   }
 
   selectCode(event: any) {
