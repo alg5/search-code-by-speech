@@ -1,6 +1,6 @@
 // src/app/auth/auth.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -39,24 +39,21 @@ import { LanguageService } from '../../../../core/services/language.service';
   providers: [MessageService] // <--- ОБЯЗАТЕЛЬНО: предоставляем MessageService здесь
 })
 export class AuthComponent implements OnInit {
-  authForm: FormGroup;
+  private readonly fb = inject(FormBuilder);
+  private readonly supabase = inject(SupabaseService);
+  private readonly router = inject(Router);
+  public readonly languageService = inject(LanguageService);
+  private readonly messageService = inject(MessageService);
+
+  authForm: FormGroup = this.fb.group({
+    fullName: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
+
   isSignUp: boolean = true;
   loading: boolean = false;
   // messages: Message[] = []; // <--- Этот массив больше не нужен для p-toast
-
-  constructor(
-    private fb: FormBuilder,
-    private supabase: SupabaseService,
-    private router: Router,
-    public languageService: LanguageService,
-    private messageService: MessageService // <--- ИНЖЕКТИРУЕМ MessageService
-  ) {
-    this.authForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-    });
-  }
 
   ngOnInit(): void {
     this.checkSessionAndRedirect();

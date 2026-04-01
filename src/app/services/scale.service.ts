@@ -1,16 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import data from '../../assets/data/scale-codes-data.json';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ScaleService {
+  private readonly http = inject(HttpClient);
   private dataUrl = 'assets/data/scale-codes-data.json';
   private items: IScaleItem[] = [];
    private scaleData = data;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.http.get<IScaleItem[]>(this.dataUrl).subscribe(d => this.items = d);
   }
 

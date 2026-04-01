@@ -1,0 +1,163 @@
+/* src/app/custom-multiselect-ex/custom-multiselect-ex.component.css */
+
+/*
+  Делаем компонент блочным и задаем ширину, чтобы он не растягивался
+  в зависимости от контента.
+*/
+:host {
+  display: block;
+  width: 100%; /* Или задайте фиксированную ширину, например, 250px */
+}
+
+/* Кастомизация p-multiSelect */
+::ng-deep .multiselect-custom {
+  width: 100%;
+}
+::ng-deep .tooltip-width-lg {
+   max-width: 400px !important; 
+  word-wrap: break-word !important;
+  white-space: pre-wrap !important;
+}
+/*
+  Стили для текста внутри выбранного элемента, чтобы он не переносился
+  и обрезался с многоточием. Это решает проблему растягивания.
+*/
+.p-multiselect-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Убедимся, что контейнер не выходит за рамки */
+  display: block;
+}
+/* СТИЛИ для обрезания текста в выпадающем списке */
+.option-item {
+  width: 225px;             
+  overflow: hidden;         
+  text-overflow: ellipsis;  
+  white-space: nowrap;      
+  height: 43px; /* corresponds to virtualScrollItemSize */
+  display: flex;
+  align-items: center;
+  box-sizing: border-box; 
+}
+:ng-deep .p-multiselect-item {
+  padding: 0 !important;
+}
+// :host(.sfr-search-multiselect) ::ng-deep .p-multiselect {
+//   width: 150px; /* Укажите здесь нужную вам ширину */
+//   max-width: 100%; /* Предотвращает выход за пределы родителя */
+//   border: 1px solid red !important; /* Для отладки, удалите позже */
+// }
+:host ::ng-deep .sfr-search-multiselect {
+
+  max-width: 150px; 
+  // border: 1px solid red !important; /* Для отладки, удалите позже */  
+}
+// :host(.sfr-search-multiselect) {
+//   width: 150px !important; 
+//   max-width: 100%;
+//   border: 1px solid red !important; /* Для отладки */
+// }
+/* Стили для OverlayPanel (попапа) */
+::ng-deep .p-overlaypanel {
+  // max-width: 300px; /* Можно задать максимальную ширину для попапа */
+  // min-width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.selected-items-popover-content {
+  // padding: 1rem;
+  min-width: 200px;
+}
+
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.popover-close-icon {
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #666;
+  transition: color 0.2s;
+  &:hover {
+    color: #333;
+  }
+}
+
+.selected-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 180px; /* Ограничиваем высоту для скролла */
+  overflow-y: auto;
+  margin-bottom: 0.75rem;
+}
+
+.selected-item-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed #f0f0f0; /* Легкий разделитель */
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.selected-item-entry:last-child {
+  border-bottom: none;
+}
+
+.remove-item-icon {
+  cursor: pointer;
+  color: #dc3545; /* Цвет PrimeNG для ошибки/опасности */
+  margin-left: 0.75rem;
+  font-size: 1rem;
+  transition: color 0.2s;
+  &:hover {
+    color: #c82333;
+  }
+}
+
+.popover-footer {
+  text-align: right;
+  padding-top: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.no-items-selected {
+  text-align: center;
+  color: #777;
+  padding: 1rem 0;
+  font-style: italic;
+}
+
+.custom-multiselect-label-popover-trigger {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.info-icon {
+  font-size: 1.1rem;
+  color: #007ad9; /* синий или другой цвет, чтобы иконка была заметна */
+  margin-left: 0.5rem;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.info-icon:hover {
+  color: #005b9e;
+}
+
+::ng-deep  .p-popover-content {
+  transform-origin: right top !important;
+  padding-left: 0 !important;
+  padding-right: 0.5rem !important;
+}

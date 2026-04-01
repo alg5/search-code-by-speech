@@ -1,0 +1,105 @@
+@if (model) {
+  <p-floatLabel>
+    <p-multiSelect  #multiSelectComponent
+      [options]="_optionsForDisplay"
+      [(ngModel)]="_multiSelectedValue"
+      (onChange)="onMultiSelectChange($event)"
+      (onClear)="onClearSelection()"
+      (onPanelShow)="onPanelShow()"
+      optionLabel="Text"
+      optionDisabled="Disabled"
+      [showClear]="true"
+      [disabled]="model.disabled"
+      [filter]="model.allowSearchFilter ?? true"
+      [selectionLimit]="null"
+      [display]="model.hideChips ? 'comma' : 'chip'"
+      [maxSelectedLabels]="model.itemsShowLimit ?? 1"
+      [selectAll]="model.singleSelection ? false : (model.selectAllText ? true : false)"
+      [virtualScroll]="true"
+      [virtualScrollItemSize]="43"
+      [showToggleAll]="model.singleSelection ? false : (model.selectAllText ? true : false)"
+      appendTo="body"
+      [ngClass]="model.customClassCss"
+    >
+
+<ng-template pTemplate="selectedItems">
+  <div class="p-multiselect-label custom-multiselect-label-popover-trigger">
+    <i
+      *ngIf="_multiSelectedValue && _multiSelectedValue.length > 0 "
+      #infoIcon
+      class="pi pi-info-circle info-icon"
+      (click)="togglePopoverFromIcon($event, infoIcon)"
+      title="הצג פריטים נבחרים"
+    ></i>
+    @if (!_multiSelectedValue || _multiSelectedValue.length === 0) {
+      <span>{{ model.placeholder }}</span>
+    }
+    @else if (model.singleSelection || _multiSelectedValue.length === 1) {
+      <span>{{ _multiSelectedValue[0].Value }}</span>
+    }
+    @else {
+      <span>נבחרו {{ _multiSelectedValue.length }}</span>
+    }
+  </div>
+</ng-template>
+
+      <ng-template let-option pTemplate="item">
+        <div
+          class="option-item"
+          [pTooltip]="option.Tooltip || option.Text"
+          tooltipPosition="top"
+          [showDelay]="400"
+        >
+          <span>{{ option.Text }}</span>
+        </div>
+      </ng-template>
+
+    </p-multiSelect>
+
+<p-popover 
+  #selectedItemsPopover 
+  [dismissable]="true" 
+  [style]="{width: '250px'}" 
+  [appendTo]="'body'" 
+  class="custom-popover"
+>
+  <ng-template pTemplate="content">
+    <div class="selected-items-popover-content">
+      <div class="popover-header">
+        <span>נבחרו:</span>
+        <i class="pi pi-times popover-close-icon" (click)="selectedItemsPopover.hide()"></i>
+      </div>
+      <ng-container *ngIf="_multiSelectedValue && _multiSelectedValue.length > 0; else noItems">
+        <ul class="selected-items-list">
+          <li *ngFor="let item of _multiSelectedValue; trackBy: trackByValue" class="selected-item-entry">
+            <span>{{ item.Text || item.Value }}</span>
+            <i class="pi pi-times-circle remove-item-icon" (click)="removeSelectedItem(item, $event)"></i>
+          </li>
+        </ul>
+        <div class="popover-footer">
+          <p-button
+            label="נקה הכל"
+            icon="pi pi-trash"
+            styleClass="p-button-text p-button-sm"
+            (click)="onClearSelection()"
+          ></p-button>
+        </div>
+      </ng-container>
+      <ng-template #noItems>
+        <div class="no-items-selected">
+          ללא פריטים נבחרים
+        </div>
+      </ng-template>
+    </div>
+  </ng-template>
+</p-popover>
+
+    @if (model.placeholder) {
+      <label>{{ model.placeholder }}
+        @if (model.required) {
+          <span class="field-required">*</span>
+        }
+      </label>
+    }
+  </p-floatLabel>
+}

@@ -1,0 +1,54 @@
+.dropdown-row{
+    display: flex;
+    align-items: center;
+    // border: 1px solid lime;
+}
+//*************************
+.custom-dropdown-wrapper {
+  position: relative;
+  width: 100%;
+
+  // Float label styles
+  .custom-dropdown-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+    
+    &.required::after {
+      content: ' *';
+      color: #dc3545;
+    }
+  }
+
+  // Invalid state
+  &.is-invalid {
+    .custom-dropdown-toggle {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+}
+
+.custom-dropdown .custom-dropdown-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem; 
+  cursor: pointer;
+}
+
+/* visual for disabled */
+.custom-dropdown .custom-dropdown-option.disabled-option {
+  color: #8a8a8a;
+  cursor: default;
+  opacity: 0.85;
+  /* NEVER use pointer-events: none (otherwise tooltips won't work) */
+}
+
+.option-disabled-icon {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #6c757d;
+}

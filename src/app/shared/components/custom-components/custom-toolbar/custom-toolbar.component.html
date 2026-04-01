@@ -1,0 +1,40 @@
+<div class="custom-toolbar" >
+    <div class="toolbar-buttons-block">
+        <!-- @if(showHandlingRequestsButton){
+            <p-button  severity="secondary" 
+                (click)="onClickHandlingRequestsButton()" 
+                [disabled]="requestsCount === 0">
+                <span>({{ requestsCount }})</span>
+                <span>{{ showHandlingRequestsButtonText}}</span>
+            </p-button>
+        }         -->
+        @if(showNewButton){
+            <button  class="btn bzq1 mx-2"
+                (click)="onClicknewButton()" 
+                [disabled]="newButtonDisabled"
+                >
+                <span>{{ showNewButtonText}}</span>
+                <span>+</span>
+            </button>
+        }
+        @if(showCalculatorIcon){
+            <div class="calculator-icon-container"
+                (click)="onClickCalculatorIcon()"
+                >
+                <span > 
+                    <img src="assets/images/calculator.svg" alt="מחשבון " height="36" width="36" />
+                </span>
+
+            </div>
+            <!-- <button class="btn bzq1 mx-2"
+                (click)="onClickCalculatorIcon()"
+                >
+                
+            </button> -->
+        }
+    </div>
+    @if(showNumResults){
+        <div class="num-results" [innerHtml]="numResultsText"></div>
+    }
+    
+</div>

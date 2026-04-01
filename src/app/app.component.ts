@@ -11,6 +11,7 @@ import { ProductsStateService } from './core/services/products-state.service';
 import { SearchLayoutComponent } from './features/search/components/search-layout/search-layout.component';
 import { LangSwitchComponent } from './shared/components/lang-switch/lang-switch.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MainLayoutComponent } from './features/layout/components/main-layout/main-layout.component';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
      AutoCompleteModule,
     HighlightPipe,
     LangSwitchComponent, 
-    SearchLayoutComponent
+    SearchLayoutComponent,
+    MainLayoutComponent
     
   ],
   templateUrl: './app.component.html',

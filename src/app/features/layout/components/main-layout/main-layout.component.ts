@@ -1,5 +1,5 @@
 // src/app/main-layout/main-layout.component.ts
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -33,15 +33,13 @@ import { HeaderComponent } from '../header/header.component';
   styleUrls: ['./main-layout.component.scss']
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
+  private readonly router = inject(Router);
+  private readonly supabase = inject(SupabaseService);
+  public readonly languageService = inject(LanguageService);
+
   isLoggedIn: boolean = false;
   isAdmin: boolean = false; // Будет определяться из профиля
  private _authSubscription: Subscription | undefined; // <--- Сохраняем RxJS подписку
-
-  constructor(
-    private router: Router,
-    private supabase: SupabaseService,
-    public languageService: LanguageService // Для переключателя языка
-  ) {}
 
 async ngOnInit() {
     // <--- ИСПРАВЛЕНО: Подписываемся на Observable `authStateChanges$`

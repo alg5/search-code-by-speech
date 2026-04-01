@@ -212,21 +212,34 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
   //   }
   // );
 
-  // Метод для profiles
-  async getProfile(): Promise<{ role: string, full_name: string } | null> {
+  // --- ПРОФИЛИ ---
+
+  async getProfile(): Promise<{ role: string; full_name: string; preferences: any } | null> {
     const user = await this.getCurrentUser();
     if (!user) return null;
     const { data, error } = await this.supabase
       .from('profiles')
-      .select('role, full_name')
+      .select('role, full_name, preferences')
       .eq('id', user.id)
       .single();
-    if (error) {
-      console.error('Error fetching profile:', error);
-      throw error;
-    }
+    if (error) throw error;
     return data;
   }
 
+  async updateProfile(updates: { full_name?: string; preferences?: any }): Promise<{ role: string; full_name: string; preferences: any } | null> {
+    const user = await this.getCurrentUser();
+    if (!user) throw new Error('Not authenticated');
+    const body: any = {};
+    if (updates.full_name !== undefined) body.full_name = updates.full_name;
+    if (updates.preferences !== undefined) body.preferences = updates.preferences;
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .update(body)
+      .eq('id', user.id)
+      .select('role, full_name, preferences')
+      .single();
+    if (error) throw error;
+    return data;
+  }
 
 }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { LangSwitchComponent } from '../../../../shared/components/lang-switch/lang-switch.component';
 
@@ -14,6 +15,8 @@ import { LangSwitchComponent } from '../../../../shared/components/lang-switch/l
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
+  private readonly router = inject(Router);
+
   userName = 'header.guest';
   // greeting = 'Привет';
   visitTime!: Date;
@@ -21,7 +24,9 @@ export class HeaderComponent {
   ngOnInit(): void {
     this.visitTime = new Date();
   }
-  onSignIn(){}
-}
 
+  onSignIn() {
+    this.router.navigate(['/auth']);
+  }
+}
 

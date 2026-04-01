@@ -1,0 +1,51 @@
+export enum GeneralContent {
+    BACK = '< חזרה',
+    SEARCH_BY_EMPLOYEE_NAME_AND_ID = `חיפוש לפי שם, ת''ז`,
+    SEARCH_BY_MAKAT_AND_DESC = `חיפוש לפי מק”ט או תאור מק”ט `,
+    SEARCH_BY_MAKAT = `חיפוש לפי מק”ט  `,
+       
+    ACTION_BUTTON_TEXT_NEXT = "הבא",
+    ACTION_BUTTON_TEXT_SEND = "שליחה",
+    ACTION_BUTTON_TEXT_RETURN = "חוזר למסך הרראשי",
+
+
+    SEARCH_BY_EMPLOYEE_NAME = 'חיפוש לפי שם העובד/ת',
+    DISPLAY = 'הצגה',
+    TO_MAIN_SCREEN = 'למסך הראשי',
+    SAVE_CHANGES = 'שמירת שינויים',
+    APPROVE = 'אישור',
+    // EMPTY_TEXT = "לא נמצאו נתונים ",
+    EMPTY_TEXT = "אין נתונים להצגה",
+    EMPTY_TEXT_BY_FILTERS = "אין נתונים לפי התנאים המבוקשים",
+
+    // REPORT_FOR_EMPLOYEE = 'דיווח עבור עובד/ת',
+    CHOOSE = 'בחרו',
+    ALL = 'הכל',
+    CANCEL_ALL = 'בטל הכל',
+    SEARCH = 'חיפוש...',
+    // DESKTOP_FOR_MANAGER_ATTENDANCE_CONFIRMATION = 'שולחן עבודה למנהל | אישור נוכחות',
+    // HANDLING_MONTHLY_OFFSET_REQUESTS = 'טיפול בבקשות קיזוז חודשי',
+    // HANDLING_TRAVEL_REFUND_REQUESTS = 'טיפול בבקשות להחזרי נסיעות',
+    // GENERATING_REPORTS = 'הפקת דוחות',
+    // HANDLING_VACATION_REQUESTS = 'טיפול בבקשות חופשה',
+    // ACTING_APPOINTMENT = 'מינוי ממלא מקום',
+    CLEAN_ALL_FILTERS = ' ניקוי כל הסננים',
+    // MANAGER_DESK = 'שולחן עבודה למנהל',
+    // ATTENDANCE_APPROVALS = 'אישורי נוכחות',
+    // PREVIOUS_MONTH = "חודש קודם",
+    // NEXT_MONTH = "חודש הבא",
+    DATA_SAVED_SUCCESSFULLY = 'הנתונים נשמרו בהצלחה',
+    COMMENT_SAVED_SUCCESSFULLY = 'הערה נשמרה בהצלחה',
+    COMMENT_DELETED_SUCCESSFULLY = 'הערה בוטלה בהצלחה',
+
+    // CONFIRM_MESSAGE = "האם אתה כן רוצה לשמור את התביעה",
+    CONFIRM_MESSAGE = "לאחר סיום טיפול לא תוכל/י לבצע שינויים – שיפול בתאונה יעבור לדורם הבא. \n\r האם להמשיך",
+    CONFIRM_DELETE_MESSAGE = "האם אתה כן רוצה לבטל את התביעה",
+    CONFIRM_DELETE_RELATIVE = "מחיקת עובד/ת",
+
+    ORDER_CARD_CIBUS_CONFIRM_MESSAGE = "במהלך היומיים הקרובים תקבל במייל  מספר כרטיס חדש לשימושך עד קבלת הכרטיס בפועל",
+    HR_FORM_SAVED_SUCCESSFULLY ="בקשתך נקלטה במערכת והועברה לטיפול.",
+    HR_FORM_RESIGNATION_LETTER_SAVED_SUCCESSFULLY = `מכתבך נשלח למנהל מוקד ולידיעתם של מנהל צוות, רכזת ור"צ משאבי אנוש`,
+    HR_FAMILY_MEMBERS_CONFIRM_MESSAGE = "במידה ויש לך קרוב משפחה ספק או שעובד אצל ספק, עליך להימנע ממצב של ניגוד עניינים מול החברה ו ליידע את הגורמים הרלבנטיים על כך",
+
+  }
