@@ -48,7 +48,8 @@
   "builder": "@angular/build:application",
   "options": {
     "stylePreprocessorOptions": {
-      "includePaths": [        "src/scss",
+      "includePaths": [        
+        "src/scss",
         "src/assets/images",
         "src/assets/data"
       ]

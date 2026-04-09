@@ -9,7 +9,7 @@ import { CommonService } from '../../../../core/services/common.service';
 import { ISelectOption } from '../../../models/generalModels';
 
 @Component({
-  selector: 'sap-custom-dropdown',
+  selector: 'spr-custom-dropdown',
   standalone: true,
   imports: [CommonModule,
     FormsModule,

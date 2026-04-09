@@ -31,6 +31,7 @@
     // color: #666;
     margin-top: 0.25rem;
   }
+  
 }
 
 .app-title {
@@ -113,4 +114,63 @@
     background-color: rgba($color-blue-active, 0.1);
   }
 }
+
+.user-dropdown-wrapper {
+  position: relative;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: inherit;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 180px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  padding: 0.3rem 0;
+}
+
+.user-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.95rem;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.user-dropdown button:hover {
+  background-color: #f7f7f7;
+}
+
+
+.admin-actions{
+  cursor: pointer;
+  text-decoration: underline;
+    &:hover {
+    color: $color-blue-active;
+    }
+}
+spr-breadcrumb {
+  margin-top: 1rem;
+  padding: 0 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 

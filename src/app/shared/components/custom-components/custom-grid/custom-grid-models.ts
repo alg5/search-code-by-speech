@@ -7,9 +7,11 @@ export enum GridColumType{
     text = 1,
     textComplex,
     textWithRemark,
+    textEditable,
     numeric ,
     numericClick,
     numericOrImageBoolean,
+    numericEditable,
     yesOnlyClick,
     cellClick,
     date,
@@ -64,6 +66,7 @@ export interface IColumn  {
     sticky?: boolean ;
     truncate? :boolean;
     hide?: boolean ;
+    required?: boolean;
     notSorting? : boolean;
     sortField? :string;
     dataColname?: string;

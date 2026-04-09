@@ -1,6 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
-@use 'variables' as *;
+// @use 'variables' as *;
+@use 'custom-primeng' as *;
+
+
+// @use 'custom-primeng' as *;
+// @import 'scss/_custom-primeng.scss';
+// @import 'custom-primeng';
 @import "primeicons/primeicons.css";
 
 body {
@@ -25,4 +31,9 @@ body {
 .autocomplete-results {
   background-color: #ffffff !important;
   color: $color-blue !important;
+}
+.page-container {
+  width: 100%;
+  max-width: 1200px;   
+  margin: 0 auto;
 }

@@ -1,7 +1,7 @@
 <div class="custom-grid-container" *ngIf="gridModel">
 <ng-container *ngIf="totalRecords > 0; else empty">
-    <div *ngIf="!withoutToolbar" class="custom-toolbar-block">
-        <sap-custom-toolbar [toolbarModel]="toolbarModel"></sap-custom-toolbar>
+    <div *ngIf="!withoutToolbar" class="custom-toolbar-block">  
+        <spr-custom-toolbar [toolbarModel]="toolbarModel"></spr-custom-toolbar>
     </div>
         <div class="table-container"   >
             <p-table #pTable class="custom-grid"
@@ -40,8 +40,8 @@
                             >
             
                             <div *ngIf="!col.isSpecialColumn" [class.cell-numeric]="col.dataType == GridColumType.numeric">
-                                <span *ngIf="col.isColFiltering" [innerHtml]="rowData[col.dataField] | highlight:filterString | formatted: col.formattedOptions"></span>
-                                <span *ngIf="!col.isColFiltering" [innerHtml]="rowData[col.dataField]  | formatted: col.formattedOptions"></span>
+                                <span *ngIf="col.isColFiltering" [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions | highlight:filterString()"></span>
+                                <span *ngIf="!col.isColFiltering" [innerHTML]="rowData[col.dataField]  | formatted: col.formattedOptions"></span>
                             </div> 
                             
 
@@ -64,21 +64,6 @@
                                 
                                                         
                             </div>
-                             <div *ngIf="col.dataType == GridColumType.makat" class="column-makat">
-                                <span> {{ rowData[col.dataField]  | formatted: col.formattedOptions}}</span>
-                                <span *ngIf="rowData.ymmDsfrRowsScreenHelperEtSerials.length > 0" class="serials"> 
-                                    <span>{{rowData.ymmDsfrRowsScreenHelperEtSerials.length}}</span>
-                                    <span>סיראלים</span>
-                                    
-                                    <span class="cell-link" 
-                                        [pTooltip]="getTooltipSerials(rowData)" 
-                                        [escape]="false" 
-                                        tooltipPosition="top" 
-                                        [tooltipEvent]="'focus'" 
-                                        tabindex="0"
-                                    ><img src="assets/images/info.svg" alt="סיראלים" height="14" width="14" /></span>
-                                </span>
-                             </div>
                             
                             <span *ngIf="col.dataType == GridColumType.cellClick"
                                 class="cell-link" (click)="onClickCell(col, rowData)">
@@ -86,8 +71,59 @@
                             </span>
                             <span *ngIf="col.dataType == GridColumType.deleteButton"
                                 class="cell-link" (click)="onClickCellDelete(rowData)">
-                                <img src="assets/images/trash.svg" alt=""  width="16px" height="16px" class="delete" />
-                            </span>                            
+                                <!-- <img src="assets/images/trash.svg" alt=""  width="16px" height="16px" class="delete" /> -->
+                                <i class="pi pi-trash delete"></i>
+                            </span>
+
+                            <span *ngIf="col.dataType == GridColumType.editButton">
+
+                            @if (editingRowId() !== rowData[idField]) {
+
+                                <!-- EDIT -->
+                                <span class="cell-link" (click)="startEdit(rowData)">
+                                <i class="pi pi-pencil"></i>
+                                </span>
+
+                            } @else {
+
+                                <!-- SAVE -->
+                                <span class="cell-link" (click)="onSaveRow()">
+                                <i class="pi pi-check save"></i>
+                                </span>
+
+                                <!-- CANCEL -->
+                                <span class="cell-link" (click)="onCancelEdit(rowData)">
+                                <i class="pi pi-times cancel"></i>
+                                </span>
+
+                            }
+
+                            </span>  
+                            <div *ngIf="col.dataType == GridColumType.textEditable">
+
+                                @if (editingRowId() === rowData[idField]) {
+                                    <input [(ngModel)]="editingRowData()[col.dataField]"
+                                        [class.is-invalid]="validationErrors()[col.dataField]"
+                                        class="form-control editable-input" />
+                                } @else {
+                                    <span [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions | highlight:filterString()"></span>
+                                }
+
+                            </div>                          
+                            <div *ngIf="col.dataType == GridColumType.numericEditable" class="cell-numeric">
+
+                            @if (editingRowId() === rowData[idField]) {
+                                    <input  type="number" [(ngModel)]="editingRowData()[col.dataField]" 
+                                        [class.is-invalid]="validationErrors()[col.dataField]"
+                                        class="form-control editable-input" />
+                            } @else {
+                                <span [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions | highlight:filterString()"></span>
+                            }
+
+                            </div>                            
+
+
+
                             <span *ngIf="col.dataType == GridColumType.numericClick" 
                                 class="count-link" 
                                 [class.count-link-disabled]="(rowData['subty']!= '40' && rowData['subty']!= '80') || (+rowData[col.dataField] == 0 && !col.formattedOptions?.ZeroAsClickabel) "
@@ -151,7 +187,7 @@
                     </tr>
                      <tr *ngIf="optionalRow" >
                         <td [attr.colspan]="colslength" class="optional-row">
-                            <!-- <sap-handle-request [empRequest]="dataSource[i]"></sap-handle-request> -->
+                            <!-- <spr-handle-request [empRequest]="dataSource[i]"></spr-handle-request> -->
                             <ng-container  *ngTemplateOutlet="optionalRowTemplate; context: { row: dataSource[i] }"></ng-container>
                         </td>
                      </tr>
@@ -209,7 +245,7 @@
                         <ng-container *ngFor="let col of columns">
                             <td >
                                 <span *ngIf="col.footerText">{{col.footerText}}</span>
-                                <span *ngIf="col.footerDataType == GridColumType.footerSum" class="cell-numeric" [innerHtml]="calcSumByField(col.dataField)"></span>
+                                <span *ngIf="col.footerDataType == GridColumType.footerSum" class="cell-numeric" [innerHTML]="calcSumByField(col.dataField)"></span>
                             </td>
                         </ng-container>
                         

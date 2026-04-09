@@ -9,13 +9,14 @@ export class HighlightPipe implements PipeTransform {
   private readonly sanitizer = inject(DomSanitizer);
 
   transform(value: string, search: string): SafeHtml {
-    if (!search) return value;
+    const text = value == null ? '' : String(value);
+    if (!search) return text;
 
     // Экранируем спецсимволы RegExp
     const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp(`(${escapedSearch})`, 'gi');
 
-    const replaced = value.replace(re, `<span class="highlight">$1</span>`);
+    const replaced = text.replace(re, `<span class="highlight">$1</span>`);
     return this.sanitizer.bypassSecurityTrustHtml(replaced);
   }
 

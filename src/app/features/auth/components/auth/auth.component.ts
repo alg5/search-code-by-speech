@@ -31,7 +31,7 @@ import { LanguageService } from '../../../../core/services/language.service';
     CardModule,
     ButtonModule,
     InputTextModule,
-    ToastModule, // <--- ИСПРАВЛЕНО
+    ToastModule, 
     TranslatePipe
   ],
   templateUrl: './auth.component.html',
@@ -47,14 +47,13 @@ export class AuthComponent implements OnInit {
 
   authForm: FormGroup = this.fb.group({
     fullName: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
+    email: ['' ],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  isSignUp: boolean = true;
+  isSignUp: boolean = false;
   loading: boolean = false;
-  // messages: Message[] = []; // <--- Этот массив больше не нужен для p-toast
-
+  
   ngOnInit(): void {
     this.checkSessionAndRedirect();
   }
@@ -62,31 +61,32 @@ export class AuthComponent implements OnInit {
   async checkSessionAndRedirect() {
     const session = await this.supabase.getSession();
     if (session) {
-      this.router.navigate(['/admin/dashboard']);
+      // this.router.navigate(['/admin/dashboard']);
     }
   }
 
   toggleMode(): void {
     this.isSignUp = !this.isSignUp;
     this.authForm.reset();
-    // this.messages = []; // <--- Этот массив больше не нужен
     this.messageService.clear(); // <--- Очищаем всплывающие сообщения
 
     const fullNameControl = this.authForm.get('fullName');
+    const emailControl = this.authForm.get('email');
     if (this.isSignUp) {
-      fullNameControl?.setValidators(Validators.required);
+      emailControl?.setValidators([Validators.required, Validators.email]);
     } else {
-      fullNameControl?.clearValidators();
+      emailControl?.clearValidators();
     }
     fullNameControl?.updateValueAndValidity();
   }
 
   async onSubmit(): Promise<void> {
-    this.messageService.clear(); // <--- Очищаем предыдущие всплывающие сообщения
+    this.messageService.clear(); 
     this.loading = true;
 
     if (this.authForm.invalid) {
-      this.messageService.add({ severity: 'error', summary: this.languageService.translate('auth.genericError'), detail: this.languageService.translate('auth.formInvalid') });
+      this.authForm.markAllAsTouched();
+      // this.messageService.add({ severity: 'error', summary: this.languageService.translate('auth.genericError'), detail: this.languageService.translate('auth.formInvalid') });
       this.loading = false;
       return;
     }
@@ -98,15 +98,16 @@ export class AuthComponent implements OnInit {
         const { user, session } = await this.supabase.signUp(email, password, fullName);
         if (user && session) {
           this.messageService.add({ severity: 'success', summary: this.languageService.translate('auth.signUp'), detail: this.languageService.translate('auth.signUpSuccess') });
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/']);
         } else if (user && !session) {
           this.messageService.add({ severity: 'info', summary: this.languageService.translate('auth.signUp'), detail: this.languageService.translate('auth.signUpCheckEmail') });
         }
       } else {
-        const { user, session } = await this.supabase.signIn(email, password);
+        // const { user, session } = await this.supabase.signIn(email, password);
+        const { user, session } = await this.supabase.signInWithUsername(fullName, password);
         if (user && session) {
           this.messageService.add({ severity: 'success', summary: this.languageService.translate('auth.signIn'), detail: this.languageService.translate('auth.signInSuccess') });
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/']);
         }
       }
     } catch (error: any) {

@@ -1,4 +1,4 @@
-import { Component, inject, Input, ViewChild, Output, EventEmitter, TemplateRef, DestroyRef, ElementRef, ChangeDetectorRef, ViewChildren, QueryList,effect } from '@angular/core';
+import { Component, inject, Input, ViewChild, Output, EventEmitter, TemplateRef, DestroyRef, ElementRef, ChangeDetectorRef, ViewChildren, QueryList,effect, signal } from '@angular/core';
 import { GridColumType, IColumn, ICustomGridEvent, ICustomGridModel } from './custom-grid-models';
 import { Paginator, PaginatorModule } from 'primeng/paginator';
 import { CellEditor, Table, TableModule } from 'primeng/table';
@@ -27,7 +27,7 @@ import { CommonService } from '../../../../core/services/common.service';
 import { GeneralContent } from '../../../models/enums';
 
 @Component({
-  selector: 'sap-custom-grid',
+  selector: 'spr-custom-grid',
   standalone: true,
   imports: [ 
     CommonModule,
@@ -79,6 +79,10 @@ export class CustomGridComponent {
 
   // @ViewChildren('pop') popCommentsManagers!: QueryList<PopoverDirective>;
 
+  validationErrors = signal<Record<string, boolean>>({});
+  editingRowId = signal<any>(null);
+  editingRowData = signal<any | null>(null);
+  private originalRowData: any | null = null;
 
   columns!: Array<IColumn>;
   columnsFooter!: Array<IColumn>;
@@ -133,7 +137,7 @@ export class CustomGridComponent {
   editRowId: any = null;
   placeholderDefault="בחרו ..."
   colslength = "1";
-  filterString = "";
+  filterString = signal<string>("");
   // commentsManagerInfo: IRemarkScreen;
 
   // #region paginator variable
@@ -151,8 +155,8 @@ export class CustomGridComponent {
     this.cdr
   }
   initTable() {
-    this.dataSource = this.gridModel.dataSource;
-    this.columns = this.gridModel.columns;
+    this.dataSource = [...this.gridModel.dataSource];
+    this.columns = [...this.gridModel.columns];
     this.cols = this.gridModel.columns.filter(x => !x.hide);
     this.idField = this.gridModel.idField!;
     this.columns = this.addPropertiesColumn();
@@ -173,7 +177,7 @@ export class CustomGridComponent {
     this.showSaveButton = this.gridModel.showSaveButton! && this.gridModel.dataSource.length > 0;
     this.pagingAPI = this.gridModel.pagingAPI!;
     this.showNoResults = this.gridModel.showNoResults!;
-    this. filterString = this.gridModel.filterStringInitial;
+    this.filterString.set(this.gridModel.filterStringInitial || '');
     this.showFooter = this.gridModel.showFooter!;
     if (this.showFooter){
       this.disableActions = this.gridModel.disableActions!;
@@ -202,18 +206,21 @@ export class CustomGridComponent {
     }
 
     if (!this.withoutToolbar && this.gridModel.toolbarModel) {
-      //add gridKey to toolbarModel
-      this.gridModel.toolbarModel.key = this.gridModel.toolbarModel.key ? this.gridModel.toolbarModel.key : this.gridKey;
-      const toolbarModel = this.gridModel.toolbarModel;
-      // this.toolbarModel.numResultsText = this.setNumResultText();
+      // add gridKey to toolbarModel and create new toolbarModel object
+      const toolbarModel = {
+        ...this.gridModel.toolbarModel,
+        key: this.gridModel.toolbarModel.key ? this.gridModel.toolbarModel.key : this.gridKey
+      };
+
       if (toolbarModel.numResultsTextBase) {
         const numResultsTextBase = toolbarModel.numResultsTextBase;
         const totalRecords = this.gridModel.totalRecords ?? this.dataSource.length;
         this.numResultsText = numResultsTextBase.replace('#', `<strong>${totalRecords}</strong>`);
         toolbarModel.numResultsText = this.numResultsText;
-        this.toolbarModel = toolbarModel;
       }
 
+      this.toolbarModel = toolbarModel;
+      this.customGridService.numResultsTextSignal.set({ key: this.gridKey, value: this.numResultsText });
     }
   }
   addPropertiesColumn() {
@@ -276,7 +283,9 @@ export class CustomGridComponent {
       || colType == GridColumType.more
       || colType == GridColumType.saveButton
       || colType == GridColumType.deleteButton
-
+      || colType == GridColumType.textEditable
+      || colType == GridColumType.numericEditable
+ 
     // || colType == GridColumType.editableCellNumber
 
   }
@@ -376,10 +385,77 @@ onSaveEditableCell(col, rowData, i){
   }
 
 }
+// при старте редактирования
+startEdit(row: any) {
+  const id = row[this.idField];
+  if (!id) return;
+  this.editingRowId.set(id);
+  this.editingRowData.set({ ...row });  // создаём копию текущих данных
+  this.originalRowData = { ...row };    // сохраняем отдельно для CANCEL
+}
+
+validateRow(): boolean {
+  const row = this.editingRowData();
+  if (!row) return false;
+
+  const errors: Record<string, boolean> = {};
+
+  this.columns.forEach(col => {
+    if (col.required) {
+      const value = row[col.dataField];
+
+      if (value === null || value === undefined || value === '') {
+        errors[col.dataField] = true;
+      }
+    }
+  });
+
+  this.validationErrors.set(errors);
+
+  return Object.keys(errors).length === 0;
+}
 
 
+onSaveRow() {
+  const row = this.editingRowData();
+  if (!row) return;
+  console.log("onSaveRow", row);
+  
+  if (!this.validateRow()) return;
+
+  this.customGridService.saveEditedRowSignal.set({
+    key: this.gridKey,
+    row: row
+  });
+
+  this.resetEdit();
+}
 
 
+onCancelEdit(rowData: any) {
+  const id = rowData[this.idField];
+  if (!id) return;
+  if (this.originalRowData) {
+    // восстанавливаем данные в оригинальном массиве 
+    let currentRowData = this.dataSource.findIndex(r => r[this.idField] === id);
+    if (currentRowData !== -1) {
+      currentRowData = { ...this.originalRowData };
+    }
+  }
+
+  // сброс состояния редактирования
+  this.resetEdit();
+  
+}
+
+resetEdit() {
+  this.editingRowId.set(null);
+  this.editingRowData.set(null);
+  this.originalRowData = null;
+}
+
+
+//TODO check in use
 edit(rowData){
   this.editRowId = rowData[this.idField];
   console.log("edit", rowData)
@@ -401,11 +477,7 @@ extensionOfValidity(rowData){
   console.log("extensionOfValidity", rowData);
   this.customGridService.extensionOfValiditySignal.set({ key: this.gridKey, row: rowData });
 }
-onSaveRow(rowData: any){
-  console.log("onSaveRow", rowData);
-  this.customGridService.saveEditedRowSignal.set({ key: this.gridKey, row: rowData });
-  this.editRowId = null
-}
+
 minDay: Date = (() => {
   const d = new Date();
   d.setMonth(d.getMonth() - 1);

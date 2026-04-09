@@ -13,7 +13,7 @@ import { IMultiselectModel, ISelectOption } from '../../../models/generalModels'
 
 
 @Component({
-  selector: 'sap-custom-multiselect-ex',
+  selector: 'spr-custom-multiselect-ex',
   standalone: true,
   imports: [
     CommonModule, 

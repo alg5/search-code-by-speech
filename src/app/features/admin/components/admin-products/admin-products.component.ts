@@ -1,0 +1,251 @@
+import { Component, effect, inject, signal } from '@angular/core';
+import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { MessageModule } from 'primeng/message';
+import { CustomGridComponent } from '../../../../shared/components/custom-components/custom-grid/custom-grid.component';
+import { ConfirmationService } from 'primeng/api';
+import { SupabaseService } from '../../../../core/services/supabase.service';
+import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
+import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
+import { IProduct } from '../../../../shared/models/product.model';
+import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
+import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
+import { IDropDownModel } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown-models';
+import { ProductsStateService } from '../../../../core/services/products-state.service';
+
+@Component({
+  selector: 'spr-admin-products',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule, 
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    ConfirmDialogModule,
+    FloatLabelModule,
+    MessageModule,
+    CustomGridComponent,
+    TranslatePipe
+  ],
+  providers: [ConfirmationService, TranslatePipe],  templateUrl: './admin-products.component.html',
+  styleUrl: './admin-products.component.scss',
+})
+export class AdminProductsComponent {
+   private readonly supabaseService = inject(SupabaseService);
+  private fb = inject(FormBuilder);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly toolbarService = inject(CustomToolbarService);
+  private readonly customGridService = inject(CustomGridService);
+  private readonly productsState = inject(ProductsStateService);
+  
+  private readonly translate = inject(TranslatePipe);
+
+  products = signal<IProduct[]>([]);
+  filteredProducts = signal<IProduct[]>([]);
+  loading = signal(false);
+  submited = signal(false);
+
+  searchText = signal('');
+  selectedCategory = signal<string | null>(null);
+  selectedProcessing = signal<string | null>(null);
+
+  dropDownModelCategory: IDropDownModel;
+  dropDownModelProcessing: IDropDownModel;
+
+   //#region custom-grid definition
+    customGridModel:ICustomGridModel;
+    customToolbar:IToolbarModel
+    columns: IColumn[] ;
+
+  //#endregion custom-grid definition
+
+
+  constructor() {
+
+    effect(() => {
+      const event = this.customGridService.saveEditedRowSignal();
+      if (!event?.row) return;
+      console.log('Save signal received in AdminProductsComponent', event.row);
+      this.saveEdit(event.row);
+    });
+
+    effect(() => {
+      
+      const text = this.searchText()?.toLowerCase() || '';
+      const cat = this.selectedCategory();
+      const proc = this.selectedProcessing();
+
+       if(!this.customGridModel) return;
+     
+
+      const filtered = this.products().filter(p =>
+        (
+          !text ||
+          p.product_name?.toLowerCase().includes(text) ||
+          p.key_ru?.toLowerCase().includes(text) ||
+          p.key_he?.toLowerCase().includes(text) ||
+          p.scale_code?.toString().includes(text)
+        ) &&
+        (!cat || p.category_code === cat) &&
+        (!proc || p.processing_code === proc)
+      );
+
+      this.filteredProducts.set(filtered);
+
+      // immutable update: создаём новый gridModel, чтобы дочерний компонент увидел изменение
+      this.customGridModel = {
+        ...this.customGridModel,
+        toolbarModel: {
+          ...this.customGridModel.toolbarModel
+        },
+        dataSource: filtered,
+        filterStringInitial: text,
+        // totalRecords: filtered.length
+      };
+
+
+
+    }); 
+    
+  }
+  ngOnInit(): void {
+    this.fillColumns();
+    this.fillToolbar();
+    this.loadInit();
+  }
+
+  async loadInit() {
+  try {
+    this.loading.set(true);
+
+    const [
+      products,
+      categories,
+      processing
+    ] = await Promise.all([
+      this.supabaseService.getAllProducts(),
+      this.supabaseService.getProductCategories(),
+      this.supabaseService.getProductProcessing()
+    ]);
+
+    // ===== products =====
+    this.products.set(products);
+    this.filteredProducts.set(products);
+
+    // ===== category dropdown =====
+    this.dropDownModelCategory = {
+      options: categories.map(c => ({
+        Value: c.code,
+        Text: c.name_ru,
+        Selected: false
+      })),
+      placeholder: 'Category',
+      floatLabel: true
+    };
+
+    // ===== processing dropdown =====
+    this.dropDownModelProcessing = {
+      options: processing.map(p => ({
+        Value: p.code,
+        Text: p.name_ru,
+        Selected: false
+      })),
+      placeholder: 'Processing',
+      floatLabel: true
+    };
+
+    console.log('Init loaded', {
+      products,
+      categories,
+      processing
+    });
+
+    } finally {
+      this.loading.set(false);
+      // this.submited.set(false);
+
+      this.fillCustomGridModel(); 
+    }
+  }
+   async loadProducts() {
+    try {
+       const data = await this.supabaseService.getAllProducts();
+      this.products.set(data);
+      console.log('Products loaded', data, this.products());
+    } finally {
+      this.loading.set(false);
+      this.submited.set(false);
+      this.fillCustomGridModel();
+    }
+  }
+
+  // ===== EDIT INLINE =====
+   
+    async saveEdit(row: IProduct) {
+      await this.supabaseService.updateProduct(row);
+      this.loadProducts();
+    }
+  //#region custom-grid actions
+//   export interface IProduct {
+//   id: number;
+//   scale_code: number;
+//   product_name: string; // key_en
+//   key_ru: string;
+//   key_he: string;
+//   category_code: string;
+//   processing_code: string;
+//   fuseScore?: number;
+// }
+  fillColumns() {
+    this.columns = [
+      { 
+        headerText: 'ID'
+        , dataField: 'id'
+        , dataType: GridColumType.numeric
+      },
+      { headerText: this.translate.transform('column.productCode')
+        , dataField: 'scale_code'
+        , dataType: GridColumType.numeric, isColFiltering: true
+      },
+      { headerText: this.translate.transform('column.productName'), dataField: 'product_name', dataType: GridColumType.textEditable, required: true, isColFiltering: true },
+      { headerText: this.translate.transform('column.nameRu'), dataField: 'key_ru', dataType: GridColumType.textEditable, isColFiltering: true },
+      { headerText: this.translate.transform('column.nameHe'), dataField: 'key_he', dataType: GridColumType.textEditable, isColFiltering: true },
+      { headerText: this.translate.transform('column.categoryCode'), dataField: 'category_code', dataType: GridColumType.textEditable },
+      { headerText: this.translate.transform('column.processingCode'), dataField: 'processing_code', dataType: GridColumType.textEditable },
+      { headerText: '', dataField: '', dataType: GridColumType.editButton},
+
+    ];
+  }
+  fillToolbar() {
+    this.customToolbar = {
+      showNumResults: true,
+      numResultsTextBase: `${this.translate.transform('admin.products.total')}: #`,
+  
+    }
+  }
+  fillCustomGridModel() {
+    this.customGridModel = {
+      dataSource: [...this.filteredProducts()],
+      columns: [...this.columns],
+      toolbarModel: { ...this.customToolbar },
+      pageSize: 1000,
+      withoutPaging: true,
+      innerScrollHeight: '46vh',
+      filterStringInitial: this.searchText(),
+      // totalRecords: this.filteredProducts().length,
+      idField: 'id',
+      key: 'products'
+    }
+  }
+
+  //#endregion custom-grid actions
+  
+
+}

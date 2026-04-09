@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
-  selector: 'sap-custom-toolbar',
+  selector: 'spr-custom-toolbar',
   standalone: true,
   imports: [CommonModule, ButtonModule],
   templateUrl: './custom-toolbar.component.html',

@@ -11,11 +11,9 @@
     <p-toast></p-toast>
 
     <!-- Форма аутентификации -->
-    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="authForm" >
       <div class="p-fluid">
-        <!-- Поле для полного имени (только для регистрации) -->
-        @if (isSignUp) {
-          <div class="field">
+           <div class="field">
             <label for="fullName">{{ 'auth.fullName' | translate }}</label>
             <input id="fullName" type="text" pInputText formControlName="fullName"
               [class.ng-invalid]="authForm.get('fullName')?.invalid && authForm.get('fullName')?.touched"
@@ -26,9 +24,9 @@
               </small>
             }
           </div>
-        }
-
-        <!-- Поле для email -->
+       
+       <!-- Поле для email (только для регистрации) -->
+      @if (isSignUp) {
         <div class="field">
           <label for="email">{{ 'auth.email' | translate }}</label>
           <input id="email" type="email" pInputText formControlName="email"
@@ -46,6 +44,7 @@
             }
           }
         </div>
+      }
 
         <!-- Поле для пароля -->
         <div class="field">
@@ -69,7 +68,7 @@
 
       <!-- Кнопка отправки формы (Sign Up / Sign In) -->
       <div class="p-mt-4">
-        <button pButton type="submit" [disabled]="authForm.invalid || loading">
+        <button pButton type="button" [disabled]=" loading" (click)="onSubmit()">
           {{ isSignUp ? ('auth.signUpButton' | translate) : ('auth.signInButton' | translate) }}
         </button>
       </div>

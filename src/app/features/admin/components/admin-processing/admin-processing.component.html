@@ -1,0 +1,51 @@
+<div class="admin-categories">
+  <h2>{{'admin.processing'| translate}}</h2>
+
+  @if(!loading ()){
+    @if (processingTypes().length > 0){
+      <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>
+    } @else {
+      <p>{{'admin.processing.notFound'| translate}}</p>
+    } 
+      
+  }
+  @if(loading()){
+    <p>{{'message.loading'| translate}}</p>
+  }
+
+
+
+</div>
+<p-dialog header="{{'admin.processing.add'| translate}}" 
+  [(visible)]="dialogVisible" 
+  [modal]="true" 
+  [closable]="true"
+  [style]="{ width: '450px' }"
+  (onHide)="dialogVisible.set(null)"
+  >
+
+  <form [formGroup]="fg" class="dialog-form">
+
+    <div class="form-container">
+      <div class="inputs-block">
+        <p-floatlabel>
+          <input pInputText  
+          formControlName="code" />
+          <label for="code">Code</label>
+        </p-floatlabel>
+        @if (submited() && fg.get('code')?.invalid ) {
+          <small class="p-error">Code {{'message.fieldRequired'| translate}}</small>
+        }
+        <input pInputText placeholder="{{'caption.name.en'| translate}}" formControlName="name_en" />
+        <input pInputText placeholder="{{'caption.name.ru'| translate}}" formControlName="name_ru" />
+        <input pInputText placeholder="{{'caption.name.he'| translate}}" formControlName="name_he" />
+      </div>
+      <div class="actions-block">
+        <button pButton label="{{'button.save'| translate}}" (click)="saveNew()"></button>
+        <button pButton label="{{'button.cancel'| translate}}" class="p-button-secondary" (click)="dialogVisible.set(null)"></button>
+      </div>
+    </div>
+  </form>
+
+</p-dialog>
+<p-confirmDialog></p-confirmDialog>

@@ -1,9 +1,9 @@
-@import 'src/scss/_variables';
+@import 'variables';
 
 // #region CustomGrid
 
 .p-datatable-table{
-  // background-color: aqua;
+  background-color: aqua !important;
   font-family: SimplerPro_BEZEQ_HEBREW2;
   font-size: 16px;
 //   color: #16254f;
@@ -13,7 +13,7 @@
 
     & p-sorticon .pi-sort-alt:before{
         content: "\2193";
-        content: url("~src/assets/img/right-arrow.svg");
+        // content: url("assets/images/right-arrow.svg");
         width: 8.2px;
         height: 9.6px;
         flex-grow: 0;
@@ -47,7 +47,7 @@
       height: 100% !important;
     }
     .th-info{
-      content: url("~src/assets/img/question 1.svg");      
+      // content: url("~src/assimg/question 1.svg");      
     }
 
 }
@@ -405,4 +405,9 @@ p-dropdown.invalid .p-dropdown, .p-dropdown.dropdown-invalid
 }
 .cdk-virtual-scroll-content-wrapper{
   right: 0 !important;
+}
+.p-error{
+  font-size: 12px;
+  color: $color-error !important;
+  margin-top: 4px;
 }

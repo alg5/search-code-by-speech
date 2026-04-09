@@ -1,0 +1,17 @@
+<div class="dashboard-container">
+  <div class="cards">
+    <div *ngFor="let card of cards()" class="card" [style.background]="card.color" (click)="goTo(card.route)">
+      <div class="label">{{ card.label| translate }}</div>
+      <div class="count">{{ card.count }}</div>
+    </div>
+  </div>
+
+  <!-- Место под диаграммы / статистику -->
+  <div class="charts">
+    <!-- Здесь можно вставить p-chart или любую диаграмму -->
+    <p>Статистика и графики появятся здесь</p>
+  </div>
+
+  <!-- Подчиненный view для admin/* маршрутов -->
+  <router-outlet></router-outlet>
+</div>

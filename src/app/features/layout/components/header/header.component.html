@@ -1,25 +1,52 @@
 <header class="app-header">
   <div class="header-container">
     <div class="header-logo">
-      <span class="greeting">
-        {{ 'header.greeting' | translate }}, {{ userName | translate }}!
-      </span>
+     
       <span class="visit-time">
         {{ visitTime | date:'dd.MM.yyyy HH:mm' }}
       </span>
     </div>
-
+    @if(isAdmin()){
+      <div class="admin-actions"  (click)="goToAdminDashboard()">
+        <a  class="admin-dashboard-link" (click)="goToAdminDashboard()">
+          {{ 'header.admin.dashboard' | translate }}
+        </a>
+      </div>
+    }
+    
     <div class="header-actions">
       <spr-lang-switch class="lang-switch"></spr-lang-switch>
 
-      <div class="sign-in-icon-wrapper"
-           tabindex="0"
-           aria-label="{{ 'auth.signIn' | translate }}"
-           title="{{ 'auth.signIn' | translate }}"
-           (click)="onSignIn()"
-           >
-        <i class="pi pi-user sign-in-icon"></i>
-      </div>
+      <ng-container *ngIf="!isUserLoggedIn; else loggedInTemplate">
+        <div class="sign-in-icon-wrapper"
+             tabindex="0"
+             aria-label="{{ 'auth.signIn' | translate }}"
+             title="{{ 'auth.signIn' | translate }}"
+             (click)="onSignIn()"
+             >
+          <i class="pi pi-user sign-in-icon"></i>
+        </div>
+      </ng-container>
+
+      <ng-template #loggedInTemplate>
+        <div class="user-dropdown-wrapper">
+          <button pButton type="button" class="p-button-text p-button-plain user-btn" (click)="toggleUserMenu()">
+              {{ 'header.greeting' | translate }}, {{ userName }} <i class="pi pi-chevron-down"></i>
+          </button>
+          <div class="user-dropdown" *ngIf="isUserMenuOpen">
+            <button type="button" class="p-button-text" (click)="goToDashboard()">
+              {{ 'header.user.dashboard' | translate }}
+            </button>
+            <button type="button" class="p-button-text" (click)="goToProfile()">
+              {{ 'header.user.profile' | translate }}
+            </button>
+            <button type="button" class="p-button-text" (click)="onSignOut()">
+              {{ 'auth.signOut' | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-template>
     </div>
   </div>
+  <spr-breadcrumb></spr-breadcrumb>
 </header>
