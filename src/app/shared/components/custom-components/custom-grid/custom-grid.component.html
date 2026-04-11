@@ -151,7 +151,31 @@
                                         'zero': rowData[col.dataField] == 0
                                     }">
                                     {{ rowData[col.dataField] | formatted: col.formattedOptions}}
-                                </span>  
+                                </span> 
+                                <div *ngIf="col.dataType == GridColumType.dropdownEditable">
+                                    @if (editingRowId() === rowData[idField]) {
+
+                                        <spr-custom-dropdown
+                                        [dropDownModel]="col.formattedOptions?.dropdown"
+                                        [(ngModel)]="editingRowData()[col.dataField]"
+                                        [class.is-invalid]="validationErrors()[col.dataField]">
+                                        </spr-custom-dropdown>
+
+                                    } @else {
+
+                                        <span>
+                                        <span [innerHTML]="getDropdownText(col, rowData[col.dataField]) | formatted: col.formattedOptions | highlight:filterString()"></span>
+                                        </span>
+
+                                    }
+
+
+
+
+
+
+                                </div>
+
                                                             
                                 
                             </td>

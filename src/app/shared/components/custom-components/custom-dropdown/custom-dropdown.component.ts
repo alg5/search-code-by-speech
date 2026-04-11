@@ -119,7 +119,7 @@ resetState() {
 
   writeValue(data: any) {
     this.value = data;
-
+    this.cdr.markForCheck();
   }
 
   registerOnChange(onChange: any) {

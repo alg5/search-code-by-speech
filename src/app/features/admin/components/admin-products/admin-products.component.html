@@ -1,38 +1,43 @@
 <div class="admin-categories">
   <h2>{{'admin.products'| translate}}</h2>
 
- 
+  <!-- @if(!loading ()){ -->
+  <div class="page-wrapper">
+    <!-- 🔍 FILTERS ROW -->
+    <div class="filters-row">
 
+      <div class="p-inputgroup search-box">
+        <!-- 🔍 иконка слева -->
+        <span class="p-inputgroup-addon">
+          <i class="pi pi-search"></i>
+        </span>
 
-  @if(!loading ()){
-  <!-- 🔍 FILTERS ROW -->
-<div class="filters-row">
+        <!-- input -->
+        <input pInputText
+              [ngModel]="searchText()"
+              (ngModelChange)="searchText.set($event)"
+              placeholder="Search..."
+              class="search-input"/>
 
-  <div class="p-inputgroup search-box">
+        <!-- ❌ кнопка очистки -->
+        <button *ngIf="searchText()"
+                pButton
+                icon="pi pi-times"
+                class="p-button-text"
+                (click)="searchText.set('')">
+        </button>
 
-    <!-- 🔍 иконка слева -->
-    <span class="p-inputgroup-addon">
-      <i class="pi pi-search"></i>
-    </span>
+      </div>
+      <spr-custom-dropdown [dropDownModel]="categoryModelFilter" 
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event)">
+      ></spr-custom-dropdown>
+      <spr-custom-dropdown [dropDownModel]="processingModelFilter" 
+        [ngModel]="selectedProcessing()"
+        (ngModelChange)="selectedProcessing.set($event)">
+      ></spr-custom-dropdown>
 
-    <!-- input -->
-    <input pInputText
-           [ngModel]="searchText()"
-           (ngModelChange)="searchText.set($event)"
-           placeholder="Search..."
-           class="search-input"/>
-
-    <!-- ❌ кнопка очистки -->
-    <button *ngIf="searchText()"
-            pButton
-            icon="pi pi-times"
-            class="p-button-text"
-            (click)="searchText.set('')">
-    </button>
-
-  </div>
-
-</div>
+    </div>
 
 
     @if (filteredProducts().length > 0){
@@ -40,11 +45,14 @@
     } @else {
       <p>{{'admin.products.notFound'| translate}}</p>
     } 
-      
-  }
-  @if(loading()){
-    <p>{{'message.loading'| translate}}</p>
-  }
+  </div>    
+  <!-- } -->
+ <!-- 🔥 LOADER OVERLAY -->
+    @if (loading()) {
+      <div class="grid-loader">
+        <div class="simple-loader"></div>
+      </div>
+    }
 
 
 

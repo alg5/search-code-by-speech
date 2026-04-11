@@ -8,6 +8,8 @@ import Aura from '@primeuix/themes/aura';
 
 
 import { routes } from './app.routes';
+import { MyBootstrapLikePreset } from './shared/models/constants';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,9 +19,18 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(HttpClientModule),
     provideAnimationsAsync(),
     providePrimeNG({
-        theme: {
-            preset: Aura
+      theme: {
+        preset: MyBootstrapLikePreset,
+        options: {
+            darkModeSelector: 'none', 
+            cssLayer: {
+                name: 'primeng', 
+                order: 'primeng, theme'
+            }
         }
-    })
+      },
+      // translation: HEBREW_LOCALE,
+      ripple: true
+    }),
   ]
 };

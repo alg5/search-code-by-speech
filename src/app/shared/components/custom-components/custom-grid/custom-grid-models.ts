@@ -2,6 +2,7 @@ import { FormArray } from "@angular/forms";
 import { IToolbarModel } from "../custom-toolbar/custom-toolbar-models";
 import { TemplateRef } from "@angular/core";
 import { ISelectOption } from "../../../models/generalModels";
+import { IDropDownModel } from "../custom-dropdown/custom-dropdown-models";
 
 export enum GridColumType{
     text = 1,
@@ -27,6 +28,7 @@ export enum GridColumType{
     afterOffset,
     textAndStatus,
     dropdown,
+    dropdownEditable,
     toggleSwitch,
     radioButton,
     checkbox,
@@ -139,6 +141,8 @@ export interface IFormattedOptions{
     Select? : ISelectOption[];
     MaskPerid?:boolean;
     PlusSignForPositive? : boolean;
+    dropdown?: IDropDownModel;
+    required? : boolean;
     
 }
 export interface ICustomGridEvent{

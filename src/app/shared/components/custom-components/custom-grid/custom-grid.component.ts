@@ -25,6 +25,8 @@ import { HighlightPipe } from '../../../pipes/highlight-pipe';
 import { FormattedPipe } from '../../../pipes/formatted.pipe';
 import { CommonService } from '../../../../core/services/common.service';
 import { GeneralContent } from '../../../models/enums';
+import { IDropDownModel } from '../custom-dropdown/custom-dropdown-models';
+import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
 
 @Component({
   selector: 'spr-custom-grid',
@@ -39,6 +41,7 @@ import { GeneralContent } from '../../../models/enums';
     HighlightPipe,
     // SelectDayFormattedPipe,
     CustomToolbarComponent, 
+    CustomDropdownComponent
    
 
     // HandleRequestComponent,
@@ -285,6 +288,7 @@ export class CustomGridComponent {
       || colType == GridColumType.deleteButton
       || colType == GridColumType.textEditable
       || colType == GridColumType.numericEditable
+      || colType == GridColumType.dropdownEditable
  
     // || colType == GridColumType.editableCellNumber
 
@@ -483,10 +487,32 @@ minDay: Date = (() => {
   d.setMonth(d.getMonth() - 1);
   return d;
 })();
+
+  getDropDownModel(column: IColumn, item: any, rowIndex: number): IDropDownModel {
+    return {
+      options: column.dropdownOptions ? column.dropdownOptions : [],
+      placeholder: this.placeholderDefault,
+      customClassCss:"width-td-small",
+      disabled: this.disableActions,
+      required: true,
+      // ...other params
+    };
+  }
     
 onDropdownChange(rowValue, rowData, col) {
     console.log("onDropdownChange", rowValue, rowData, col);
     const empNumberField = this.idField ? this.idField : "employeeNumber";
+}
+getDropdownText(col: IColumn, value: any): string {
+  let res = "";
+  const options = col.formattedOptions?.dropdown?.options;
+  if (!options) return res;
+
+  const found = options.find(o => o.Value === value);
+  if (found) {
+    res = !found.Value ? '' : found.Text;
+  }
+  return res;
 }
 
 getTooltipSerials(rowData){

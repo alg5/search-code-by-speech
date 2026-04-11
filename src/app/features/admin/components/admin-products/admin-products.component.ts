@@ -13,11 +13,14 @@ import { ConfirmationService } from 'primeng/api';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
 import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
-import { IProduct } from '../../../../shared/models/product.model';
+import { IProduct, IProductCategory, IProductProcessing } from '../../../../shared/models/product.model';
 import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
 import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
 import { IDropDownModel } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown-models';
 import { ProductsStateService } from '../../../../core/services/products-state.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { CustomDropdownComponent } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown.component';
+import { ISelectOption } from '../../../../shared/models/generalModels';
 
 @Component({
   selector: 'spr-admin-products',
@@ -32,6 +35,7 @@ import { ProductsStateService } from '../../../../core/services/products-state.s
     FloatLabelModule,
     MessageModule,
     CustomGridComponent,
+    CustomDropdownComponent,
     TranslatePipe
   ],
   providers: [ConfirmationService, TranslatePipe],  templateUrl: './admin-products.component.html',
@@ -44,6 +48,7 @@ export class AdminProductsComponent {
   private readonly toolbarService = inject(CustomToolbarService);
   private readonly customGridService = inject(CustomGridService);
   private readonly productsState = inject(ProductsStateService);
+  private readonly langService = inject(LanguageService);
   
   private readonly translate = inject(TranslatePipe);
 
@@ -56,8 +61,15 @@ export class AdminProductsComponent {
   selectedCategory = signal<string | null>(null);
   selectedProcessing = signal<string | null>(null);
 
-  dropDownModelCategory: IDropDownModel;
-  dropDownModelProcessing: IDropDownModel;
+  // 👇 значения для ngModel
+  selectedCategoryValue: string | null = null;
+  selectedProcessingValue: string | null = null;
+
+  categoryModelGrid: IDropDownModel;
+  categoryModelFilter: IDropDownModel;
+
+  processingModelGrid: IDropDownModel;
+  processingModelFilter: IDropDownModel;
 
    //#region custom-grid definition
     customGridModel:ICustomGridModel;
@@ -84,7 +96,7 @@ export class AdminProductsComponent {
 
        if(!this.customGridModel) return;
      
-
+      
       const filtered = this.products().filter(p =>
         (
           !text ||
@@ -116,8 +128,6 @@ export class AdminProductsComponent {
     
   }
   ngOnInit(): void {
-    this.fillColumns();
-    this.fillToolbar();
     this.loadInit();
   }
 
@@ -139,25 +149,55 @@ export class AdminProductsComponent {
     this.products.set(products);
     this.filteredProducts.set(products);
 
+    const lang = this.langService.getLang().code;
+
     // ===== category dropdown =====
-    this.dropDownModelCategory = {
-      options: categories.map(c => ({
+    const categoryOptionsBase: ISelectOption[] = categories.map(c => ({
         Value: c.code,
-        Text: c.name_ru,
+        Text: this.getLocalizedName(c),
         Selected: false
-      })),
-      placeholder: 'Category',
+    }))
+
+    // this.translate.transform('column.productCode')
+    this.categoryModelGrid = {
+      options: [
+        { Text: this.translate.transform('admin.categories.without'), Value: null, Selected: false },
+        ...categoryOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.categories'),
+      floatLabel: true
+    };
+    this.categoryModelFilter = {
+      options: [
+        { Text: this.translate.transform('admin.categories.all'), Value: null, Selected: false },
+        ...categoryOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.categories'),
       floatLabel: true
     };
 
+
     // ===== processing dropdown =====
-    this.dropDownModelProcessing = {
-      options: processing.map(p => ({
+
+    const processingOptionsBase: ISelectOption[] = processing.map(p => ({
         Value: p.code,
-        Text: p.name_ru,
+        Text: this.getLocalizedName(p),
         Selected: false
-      })),
-      placeholder: 'Processing',
+    }))
+    this.processingModelGrid = {
+      options: [
+        { Text: this.translate.transform('admin.processing.without'), Value: null, Selected: false },
+        ...processingOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.processing'),
+      floatLabel: true
+    };
+    this.processingModelFilter = {
+      options: [
+        { Text: this.translate.transform('admin.processing.all'), Value: null, Selected: false },
+        ...processingOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.processing'),
       floatLabel: true
     };
 
@@ -170,10 +210,24 @@ export class AdminProductsComponent {
     } finally {
       this.loading.set(false);
       // this.submited.set(false);
+      this.fillColumns();
+      this.fillToolbar();
 
       this.fillCustomGridModel(); 
     }
   }
+
+  private getLocalizedName(item: { name_en?: string | null; name_ru?: string | null; name_he?: string | null; code: string }) {
+    const lang = this.langService.getLang().code;
+    if (lang === 'en') {
+      return item.name_en || item.name_ru || item.name_he || item.code;
+    }
+    if (lang === 'he') {
+      return item.name_he || item.name_ru || item.name_en || item.code;
+    }
+    return item.name_ru || item.name_en || item.name_he || item.code;
+  }
+
    async loadProducts() {
     try {
        const data = await this.supabaseService.getAllProducts();
@@ -186,23 +240,23 @@ export class AdminProductsComponent {
     }
   }
 
+  onCategoryChange(value: string | null) {
+    this.selectedCategoryValue = value;
+    this.selectedCategory.set(value);
+  }
+
+  onProcessingChange(value: string | null) {
+    this.selectedProcessingValue = value;
+    this.selectedProcessing.set(value);
+  }
+
   // ===== EDIT INLINE =====
    
-    async saveEdit(row: IProduct) {
-      await this.supabaseService.updateProduct(row);
-      this.loadProducts();
-    }
-  //#region custom-grid actions
-//   export interface IProduct {
-//   id: number;
-//   scale_code: number;
-//   product_name: string; // key_en
-//   key_ru: string;
-//   key_he: string;
-//   category_code: string;
-//   processing_code: string;
-//   fuseScore?: number;
-// }
+  async saveEdit(row: IProduct) {
+    await this.supabaseService.updateProduct(row);
+    this.loadInit();
+  }
+
   fillColumns() {
     this.columns = [
       { 
@@ -217,8 +271,14 @@ export class AdminProductsComponent {
       { headerText: this.translate.transform('column.productName'), dataField: 'product_name', dataType: GridColumType.textEditable, required: true, isColFiltering: true },
       { headerText: this.translate.transform('column.nameRu'), dataField: 'key_ru', dataType: GridColumType.textEditable, isColFiltering: true },
       { headerText: this.translate.transform('column.nameHe'), dataField: 'key_he', dataType: GridColumType.textEditable, isColFiltering: true },
-      { headerText: this.translate.transform('column.categoryCode'), dataField: 'category_code', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.processingCode'), dataField: 'processing_code', dataType: GridColumType.textEditable },
+      { headerText: this.translate.transform('column.categoryCode'), dataField: 'category_code'
+        , dataType: GridColumType.dropdownEditable
+        ,formattedOptions: { dropdown: this.categoryModelGrid }
+      },
+      { headerText: this.translate.transform('column.processingCode'), dataField: 'processing_code'
+        , dataType: GridColumType.dropdownEditable
+        , formattedOptions: { dropdown: this.processingModelGrid }
+       },
       { headerText: '', dataField: '', dataType: GridColumType.editButton},
 
     ];

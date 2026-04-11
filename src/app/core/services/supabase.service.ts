@@ -98,7 +98,8 @@ private async loadProfileAfterSignIn(userId: string) {
   async getAllProducts() {
      const { data, error } = await this.supabase
       .from('products')
-      .select('*');
+      .select('*')
+      .order('id', { ascending: true });
 
     if (error) {
       console.error('Ошибка при получении данных:', error);
@@ -412,7 +413,8 @@ async updateUserRole(userId: string, role: 'user' | 'admin'): Promise<{ id: stri
   async getAllProfiles(): Promise<Array<{ id: string; full_name: string; role: string }>> {
     const { data, error } = await this.supabase
       .from('profiles')
-      .select('id, full_name, role');
+      .select('id, full_name, role')
+      .order('id', { ascending: true });
     if (error) throw error;
     return data ?? [];
   }
@@ -440,7 +442,7 @@ async getProductCategories(): Promise<IProductCategory[]> {
   const { data, error } = await this.supabase
     .from('product_categories')
     .select('*')
-    .order('priority', { ascending: true });
+    .order('id', { ascending: true });
   if (error) throw error;
   return data;
 }
@@ -488,7 +490,7 @@ async getProductProcessing(): Promise<IProductProcessing[]> {
   const { data, error } = await this.supabase
     .from('product_processing')
     .select('*')
-    .order('code', { ascending: true });
+    .order('id', { ascending: true });
   if (error) throw error;
   return data;
 }

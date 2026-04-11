@@ -1,4 +1,41 @@
 import { ILang, ITranslations } from "./translation.model";
+import { definePreset } from "@primeuix/themes";
+import lara from '@primeuix/themes/lara';
+
+
+export const MyBootstrapLikePreset = definePreset(lara, {
+    semantic: {
+        primary: {
+            50: '#eff6ff',
+            100: '#dbeafe',
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6', // item color
+            600: '#2563eb',
+            700: '#16254F', // item hover color
+            800: '#1e40af',
+            900: '#1e3a8a',
+            950: '#172554'
+        },
+        secondary: {
+            50: '#f5f5f5',
+            100: '#e0e0e0',
+            200: '#bdbdbd',
+            300: '#9e9e9e',
+            400: '#757575',
+            500: '#16254F', // secondary button color
+            600: '#424242',
+            700: '#16254F', // secondary hover color
+            800: '#212121',
+            900: '#111111',
+            950: '#0a0a0a'
+        }
+    }
+});
+
+
+
 
 export type LangCode = 'en' | 'ru' | 'he';
 
@@ -65,9 +102,14 @@ export const Translations: ITranslations = {
   'admin.categories.edit': { en: 'Edit Category', ru: 'Редактировать категорию', he: 'ערוך קטגוריה' },
   'admin.categories.delete': { en: 'Delete Category', ru: 'Удалить категорию', he: 'מחק קטגוריה' },
   'admin.categories.confirmDelete': { en: 'Are you sure you want to delete this category?', ru: 'Вы уверены, что хотите удалить эту категорию?', he: 'האם אתה בטוח שברצונך למחוק קטגוריה זו?' },
- 
+  'admin.categories.without': { en: 'Without category', ru: 'Без категории', he: 'ללא קטגוריה' },
+  'admin.categories.all': { en: 'All categories', ru: 'Все категории', he: 'כל הקטגוריות' },
+
   'admin.processing.total': { en: 'Total Processing Types', ru: 'Всего способов обработки', he: 'סה"כ סוגי עיבוד' },
   'admin.processing.add': { en: 'Add Processing Type', ru: 'Добавить способ обработки', he: 'הוסף סוג עיבוד' },
+  'admin.processing.without': { en: 'Without processing type', ru: 'Без способа обработки', he: 'ללא סוג עיבוד' },
+  'admin.processing.all': { en: 'All processing types', ru: 'Все способы обработки', he: 'כל סוגי העיבוד' },
+
 
   'admin.products.total': { en: 'Total Products', ru: 'Всего продуктов', he: 'סה"כ מוצרים' },
   'admin.products.add': { en: 'Add Product', ru: 'Добавить продукт', he: 'הוסף מוצר' },
