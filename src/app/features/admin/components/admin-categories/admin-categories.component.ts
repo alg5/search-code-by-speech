@@ -5,7 +5,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
@@ -16,6 +16,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { MessageModule } from 'primeng/message';
 import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'spr-admin-categories',
@@ -29,7 +30,8 @@ import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
     FloatLabelModule,
     MessageModule,
     CustomGridComponent,
-    TranslatePipe
+    TranslatePipe,
+    ToastModule
   ],
   providers: [ConfirmationService, TranslatePipe],
   templateUrl: './admin-categories.component.html',
@@ -42,6 +44,7 @@ export class AdminCategoriesComponent {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly toolbarService = inject(CustomToolbarService);
   private readonly customGridService = inject(CustomGridService);
+  private readonly messageService = inject(MessageService);
   private readonly translate = inject(TranslatePipe);
 
 // ===== state =====
@@ -62,8 +65,8 @@ export class AdminCategoriesComponent {
     code: ['', Validators.required],
     name_en: ['', Validators.required],
     name_ru: ['', Validators.required],
-    name_he: ['', Validators.required],
-    priority: [0]
+    name_he: [''],
+    priority: [null]
   });
 
   //#region custom-grid definition
@@ -121,41 +124,85 @@ export class AdminCategoriesComponent {
   }
 
   async saveNew() {
-    this.submited.set(true);
-    if (this.fg.invalid) {
-      this.fg.markAllAsTouched();
-      return;
-    }
+  this.submited.set(true);
 
-    await this.supabaseService.insertProductCategory(this.fg.value as IProductCategory);
+  if (this.fg.invalid) {
+    this.fg.markAllAsTouched();
+    return;
+  }
+
+  try {
+    await this.supabaseService.insertProductCategory(
+      this.fg.value as IProductCategory
+    );
 
     this.dialogVisible.set(false);
     this.loadCategories();
+
+     this.messageService.add({
+      severity: 'success',
+      summary: this.translate.transform('message.success'),
+      detail: this.translate.transform('message.success.categories.created')
+    });
+
+  } catch (error: any) {
+    console.error(error);
+
+    if (error?.code === '23505') {
+      // duplicate code
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.transform('message.error'),
+        detail: this.translate.transform('message.error.categories.duplicateCode'),
+        sticky: true
+      });
+
+    } else {
+      // любая другая ошибка
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.transform('message.error'),
+        detail: this.translate.transform('message.unexpectedError'),
+        sticky: true
+      });
+    }
   }
-// ===== EDIT INLINE =====
-  // startEdit(row: IProductCategory) {
-  //   this.editingId.set(row.id!);
-  //   this.editingRow.set({ ...row }); // копия
-  // }
+}
 
-  // updateField(field: string, value: any) {
-  //   const row = this.editingRow();
-  //   if (!row) return;
-
-  //   row[field] = field === 'priority' ? Number(value) : value;
-  //   this.editingRow.set({ ...row });
-  // }
-
-  async saveEdit(row: IProductCategory) {
+async saveEdit(row: IProductCategory) {
+  try {
     await this.supabaseService.updateProductCategory(row);
     this.loadCategories();
+
+    // опционально — успех
+    this.messageService.add({
+      severity: 'success',
+      summary: this.translate.transform('message.success'),
+      detail: this.translate.transform('message.success.categories.updated')
+    });
+
+  } catch (error: any) {
+    console.error(error);
+
+    if (error?.code === '23505') {
+      // duplicate code
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.transform('message.error'),
+        detail: this.translate.transform('message.error.categories.duplicateCode'),
+        sticky: true
+      });
+
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.transform('message.error'),
+        detail: this.translate.transform('message.unexpectedError'),
+        sticky: true
+      });
+    }
   }
-
-  // cancelEdit() {
-  //   this.editingId.set(null);
-  //   this.editingRow.set(null);
-  // }
-
+}
 
   // ===== DELETE =====
 confirmDelete(row) {
@@ -165,8 +212,35 @@ confirmDelete(row) {
     rejectLabel: this.translate.transform('message.no'),
     acceptButtonStyleClass: 'p-button-danger',
     accept: async () => {
-      await this.supabaseService.deleteProductCategory(row.id);
-      this.loadCategories();
+      try {
+        await this.supabaseService.deleteProductCategory(row.id);
+        this.loadCategories();
+        this.messageService.add({
+          severity: 'success',
+          // summary: this.translate.transform('message.success'),
+          detail: this.translate.transform('message.success.categories.deleted')
+        });
+
+
+      } catch (error: any) {
+        console.error(error);
+
+        if (error?.code === '23503') {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.transform('message.error'),
+            detail: this.translate.transform('message.error.categories.deleteHasProducts'),
+            sticky: true
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.transform('message.error'),
+            detail: this.translate.transform('message.unexpectedError'),
+            sticky: true
+          });
+        }
+      }
     }
   });
 }
@@ -174,11 +248,11 @@ confirmDelete(row) {
   //#region custom-grid actions
   fillColumns() {
     this.columns = [
-      { 
-        headerText: 'ID'
-        , dataField: 'id'
-        , dataType: GridColumType.numeric
-      },
+      // { 
+      //   headerText: 'ID'
+      //   , dataField: 'id'
+      //   , dataType: GridColumType.numeric
+      // },
       { headerText: this.translate.transform('column.code')
         , dataField: 'code'
         , dataType: GridColumType.textEditable

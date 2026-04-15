@@ -268,7 +268,7 @@ export class AdminProductsComponent {
         , dataField: 'scale_code'
         , dataType: GridColumType.numeric, isColFiltering: true
       },
-      { headerText: this.translate.transform('column.productName'), dataField: 'product_name', dataType: GridColumType.textEditable, required: true, isColFiltering: true },
+      { headerText: this.translate.transform('column.productName'), dataField: 'product_name', isColFiltering: true },
       { headerText: this.translate.transform('column.nameRu'), dataField: 'key_ru', dataType: GridColumType.textEditable, isColFiltering: true },
       { headerText: this.translate.transform('column.nameHe'), dataField: 'key_he', dataType: GridColumType.textEditable, isColFiltering: true },
       { headerText: this.translate.transform('column.categoryCode'), dataField: 'category_code'

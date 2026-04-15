@@ -153,11 +153,11 @@ confirmDelete(row) {
   //#region custom-grid actions
   fillColumns() {
     this.columns = [
-      { 
-        headerText: 'ID'
-        , dataField: 'id'
-        , dataType: GridColumType.numeric
-      },
+      // { 
+      //   headerText: 'ID'
+      //   , dataField: 'id'
+      //   , dataType: GridColumType.numeric
+      // },
       { headerText: this.translate.transform('column.code')
         , dataField: 'code'
         , dataType: GridColumType.textEditable
