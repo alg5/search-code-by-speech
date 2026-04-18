@@ -8,7 +8,10 @@
                 [columns]="cols" [value]="dataSource" 
                 styleClass="p-datatable-striped"
                 [scrollable]="true"
-                [paginator]="true" locale="he-IL" [rows]="pageSize" [(first)]="first"
+                [paginator]="false" 
+                locale="he-IL" 
+                [rows]="pageSize" 
+                [(first)]="first"
                 [scrollHeight]="innerScrollHeight"
                 [tableStyle]="{ 'width': '100%', 'min-width': 'isMobile? none : 50rem', height: 'auto'  }"
                 >

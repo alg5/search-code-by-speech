@@ -65,7 +65,7 @@ export class SearchInputComponent implements OnInit {
     this.speechService.init();
 
 
-console.log('[COMPONENT] speechService instance:', this.speechService);
+    console.log('[COMPONENT] speechService instance:', this.speechService);
     // ✅ Подписка на реальные результаты речи
     this.speechService.onResult.subscribe(text => {
       console.log('🎤 [VOICE] Распознано:', text);
@@ -132,64 +132,117 @@ console.log('[COMPONENT] speechService instance:', this.speechService);
     return score;
   }
 
+  // search(event: any) {
+  //   const query = (event?.query ?? '')?.toLowerCase().trim();
+  //   if (!query) {
+  //     this.results.set([]);
+  //     return;
+  //   }
+
+  //   // поиск по числовому коду
+  //   if (/^\d+$/.test(query)) {
+  //     const exact = this.products().filter(p =>
+  //       p.scale_code?.toString().startsWith(query)
+  //     );
+  //     this.results.set(exact.slice(0, 5));
+  //     return;
+  //   }
+
+  //   // поиск через Fuse.js
+  //   const fuseResults = this.fuse.search(query);
+  //   const productsFound: IProduct[] = fuseResults.map(r => ({
+  //     ...r.item,
+  //     fuseScore: r.score ?? 0
+  //   }));
+
+  //   // разделяем на три группы по приоритету
+  //   const group0: IProduct[] = []; // natural fresh
+  //   const group1: IProduct[] = []; // fresh обработанные/пустые
+  //   const group2: IProduct[] = []; // всё остальное
+
+  //   productsFound.forEach(p => {
+  //     const isFresh = p.category_code?.includes('fresh');
+  //     const isNatural = p.processing_code === 'natural';
+
+  //     if (isFresh && isNatural) {
+  //       group0.push(p);
+  //     } else if (isFresh) {
+  //       group1.push(p);
+  //     } else {
+  //       group2.push(p);
+  //     }
+  //   });
+
+  //   const sortByFuse = (arr: IProduct[]) =>
+  //     arr.sort((a, b) => (a.fuseScore ?? 0) - (b.fuseScore ?? 0));
+
+  //   const finalResults = [
+  //     ...sortByFuse(group0),
+  //     ...sortByFuse(group1),
+  //     ...sortByFuse(group2)
+  //   ];
+
+  //   // удаляем временное поле fuseScore перед показом
+  //   const finalResultsClean = finalResults.map(({ fuseScore, ...rest }) => rest);
+
+  //   // показываем топ-20
+  //   this.results.set(finalResultsClean.slice(0, 20));
+
+  //   console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
+  // }
   search(event: any) {
-    const query = (event?.query ?? '')?.toLowerCase().trim();
-    if (!query) {
-      this.results.set([]);
-      return;
-    }
+  const query = (event?.query ?? '')?.toLowerCase().trim();
 
-    // поиск по числовому коду
-    if (/^\d+$/.test(query)) {
-      const exact = this.products().filter(p =>
-        p.scale_code?.toString().startsWith(query)
-      );
-      this.results.set(exact.slice(0, 5));
-      return;
-    }
-
-    // поиск через Fuse.js
-    const fuseResults = this.fuse.search(query);
-    const productsFound: IProduct[] = fuseResults.map(r => ({
-      ...r.item,
-      fuseScore: r.score ?? 0
-    }));
-
-    // разделяем на три группы по приоритету
-    const group0: IProduct[] = []; // natural fresh
-    const group1: IProduct[] = []; // fresh обработанные/пустые
-    const group2: IProduct[] = []; // всё остальное
-
-    productsFound.forEach(p => {
-      const isFresh = p.category_code?.includes('fresh');
-      const isNatural = p.processing_code === 'natural';
-
-      if (isFresh && isNatural) {
-        group0.push(p);
-      } else if (isFresh) {
-        group1.push(p);
-      } else {
-        group2.push(p);
-      }
-    });
-
-    const sortByFuse = (arr: IProduct[]) =>
-      arr.sort((a, b) => (a.fuseScore ?? 0) - (b.fuseScore ?? 0));
-
-    const finalResults = [
-      ...sortByFuse(group0),
-      ...sortByFuse(group1),
-      ...sortByFuse(group2)
-    ];
-
-    // удаляем временное поле fuseScore перед показом
-    const finalResultsClean = finalResults.map(({ fuseScore, ...rest }) => rest);
-
-    // показываем топ-20
-    this.results.set(finalResultsClean.slice(0, 20));
-
-    console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
+  if (!query) {
+    this.results.set([]);
+    return;
   }
+
+  // 🔢 поиск по числовому коду
+  if (/^\d+$/.test(query)) {
+    const exact = this.products().filter(p =>
+      p.scale_code?.toString().startsWith(query)
+    );
+    this.results.set(exact.slice(0, 5));
+    return;
+  }
+
+  // 🔍 поиск через Fuse.js
+  const fuseResults = this.fuse.search(query);
+
+  const productsFound: IProduct[] = fuseResults.map(r => ({
+    ...r.item,
+    fuseScore: r.score ?? 0
+  }));
+
+  // 🔥 НОВАЯ сортировка (без групп, через приоритеты)
+  productsFound.sort((a, b) => {
+
+    // 1. сначала релевантность (меньше = лучше)
+    const scoreDiff = (a.fuseScore ?? 0) - (b.fuseScore ?? 0);
+    if (scoreDiff !== 0) return scoreDiff;
+
+    // 2. потом категория
+    const aCat = a.category?.priority ?? 0;
+    const bCat = b.category?.priority ?? 0;
+    if (bCat !== aCat) return bCat - aCat;
+
+    // 3. потом обработка
+    const aProc = a.processing?.priority ?? 0;
+    const bProc = b.processing?.priority ?? 0;
+    if (bProc !== aProc) return bProc - aProc;
+
+    return 0;
+  });
+
+  // 🧹 удаляем временное поле fuseScore
+  const finalResultsClean = productsFound.map(({ fuseScore, ...rest }) => rest);
+
+  // 🎯 топ-20
+  this.results.set(finalResultsClean.slice(0, 20));
+
+  console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
+}
 
   selectCode(event: any) {
     const product = event?.value;

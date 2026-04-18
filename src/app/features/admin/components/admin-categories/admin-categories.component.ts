@@ -17,6 +17,7 @@ import { MessageModule } from 'primeng/message';
 import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { ToastModule } from 'primeng/toast';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'spr-admin-categories',
@@ -39,12 +40,13 @@ import { ToastModule } from 'primeng/toast';
 })
 export class AdminCategoriesComponent {
   
-  private readonly supabaseService = inject(SupabaseService);
   private fb = inject(FormBuilder);
+  private readonly supabaseService = inject(SupabaseService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly toolbarService = inject(CustomToolbarService);
   private readonly customGridService = inject(CustomGridService);
   private readonly messageService = inject(MessageService);
+  private readonly languageService = inject(LanguageService);
   private readonly translate = inject(TranslatePipe);
 
 // ===== state =====
@@ -119,7 +121,7 @@ export class AdminCategoriesComponent {
 
   // ===== ADD =====
   openAdd() {
-    this.fg.reset({ priority: 0 });
+    this.fg.reset({ priority: null });
     this.dialogVisible.set(true);
   }
 
@@ -141,8 +143,7 @@ export class AdminCategoriesComponent {
 
      this.messageService.add({
       severity: 'success',
-      summary: this.translate.transform('message.success'),
-      detail: this.translate.transform('message.success.categories.created')
+      summary: this.translate.transform('message.success.categories.created'),
     });
 
   } catch (error: any) {
@@ -153,7 +154,11 @@ export class AdminCategoriesComponent {
       this.messageService.add({
         severity: 'error',
         summary: this.translate.transform('message.error'),
-        detail: this.translate.transform('message.error.categories.duplicateCode'),
+        detail: this.languageService.translate(
+          'message.error.categories.duplicateCode',
+          '',
+          { code: this.fg.get('code').value }
+        )  ,    
         sticky: true
       });
 
@@ -177,8 +182,7 @@ async saveEdit(row: IProductCategory) {
     // опционально — успех
     this.messageService.add({
       severity: 'success',
-      summary: this.translate.transform('message.success'),
-      detail: this.translate.transform('message.success.categories.updated')
+      summary: this.translate.transform('message.success.categories.updated'),
     });
 
   } catch (error: any) {
@@ -189,7 +193,11 @@ async saveEdit(row: IProductCategory) {
       this.messageService.add({
         severity: 'error',
         summary: this.translate.transform('message.error'),
-        detail: this.translate.transform('message.error.categories.duplicateCode'),
+        detail: this.languageService.translate(
+          'message.error.categories.duplicateCode',
+          '',
+          { code: row.code }
+        )  ,      
         sticky: true
       });
 
@@ -281,6 +289,9 @@ confirmDelete(row) {
       columns: this.columns,
       toolbarModel: this.customToolbar,
       idField: 'id',
+      pageSize: 1000,
+      withoutPaging: true,
+      innerScrollHeight: '46vh',      
       key: 'categories'
     }
   }

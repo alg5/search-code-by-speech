@@ -95,19 +95,36 @@ private async loadProfileAfterSignIn(userId: string) {
     this._authState.complete();
   }
   // --- МЕТОДЫ CRUD ДЛЯ ПРОДУКТОВ 
+  // async getAllProducts() {
+  //    const { data, error } = await this.supabase
+  //     .from('products')
+  //     .select('*')
+  //     .order('id', { ascending: true });
+
+  //   if (error) {
+  //     console.error('Ошибка при получении данных:', error);
+  //     return null;
+  //   }
+
+  //   return data ?? [];
+  // }
   async getAllProducts() {
-     const { data, error } = await this.supabase
-      .from('products')
-      .select('*')
-      .order('id', { ascending: true });
+  const { data, error } = await this.supabase
+    .from('products')
+    .select(`
+      *,
+      category:product_categories(priority),
+      processing:product_processing(priority)
+    `)
+    .order('id', { ascending: true });
 
-    if (error) {
-      console.error('Ошибка при получении данных:', error);
-      return null;
-    }
-
-    return data ?? [];
+  if (error) {
+    console.error('Ошибка при получении данных:', error);
+    return null;
   }
+
+  return data ?? [];
+}
   async addProduct(product: NewProduct): Promise<IProduct> {
   // `product` - это один объект. Мы оборачиваем его в массив [product].
   const { data, error } = await this.supabase

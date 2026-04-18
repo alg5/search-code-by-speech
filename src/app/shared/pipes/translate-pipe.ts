@@ -1,20 +1,29 @@
-import { Pipe, PipeTransform, computed, inject, signal } from '@angular/core';
+import { Pipe, PipeTransform, computed, inject } from '@angular/core';
 import { LanguageService } from '../../core/services/language.service';
 
 @Pipe({
   name: 'translate',
-  pure: false 
+  pure: false
 })
 export class TranslatePipe implements PipeTransform {
   private languageService = inject(LanguageService);
 
-  transform(key: string, fallback: string = ''): string {
-    // computed будет отслеживать сигнал currentLang
-    const translated = computed(() => 
-      this.languageService.translate(key, fallback)
-    );
+  transform(
+    key: string,
+    fallback: string = '',
+    params?: Record<string, any>
+  ): string {
 
-    // возвращаем текущее значение computed
+    const translated = computed(() => {
+      let value = this.languageService.translate(key, fallback);
+
+      if (!params) return value;
+
+      return value.replace(/{{(.*?)}}/g, (_, param) => {
+        return params[param.trim()] ?? '';
+      });
+    });
+
     return translated();
   }
 }

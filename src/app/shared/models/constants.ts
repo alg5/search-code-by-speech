@@ -73,11 +73,28 @@ export const Translations: ITranslations = {
   'message.no': { en: 'No', ru: 'Нет', he: 'לא' },
   'message.unexpectedError': { en: 'An unexpected error occurred. Please try again.', ru: 'Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.', he: 'אירעה שגיאה בלתי צפויה. אנא נסה שוב.' },
   'message.error.categories.deleteHasProducts': { en: 'Cannot delete category because it has associated products.', ru: 'Невозможно удалить категорию, потому что у нее есть связанные продукты.', he: 'לא ניתן למחוק קטגוריה כי יש לה מוצרים משויכים.' },
-  'message.error.categories.duplicateCode': { en: 'Category code must be unique.', ru: 'Код категории должен быть уникальным.', he: 'קוד קטגוריה חייב להיות ייחודי.' },
-  'message.error.processing.deleteHasProducts': { en: 'Cannot delete processing type because it has associated products.', ru: 'Невозможно удалить способ обработки, потому что у него есть связанные продукты.', he: 'לא ניתן למחוק סוג עיבוד כי יש לו מוצרים משויכים.' },
+    'message.error.categories.duplicateCode': {
+    ru: 'Категория "{{code}}" уже существует.',
+    en: 'Category "{{code}}" already exists.',
+    he: 'קטגוריה "{{code}}" כבר קיימת.'
+    },
+    'message.error.processing.duplicateCode': {
+    ru: 'Способ обработки "{{code}}" уже существует.',
+    en: 'Processing type "{{code}}" already exists.',
+    he: 'סוג עיבוד "{{code}}" כבר קיים  .'
+    },
+
+    'message.error.processing.deleteHasProducts': { en: 'Cannot delete processing type because it has associated products.', ru: 'Невозможно удалить способ обработки, потому что у него есть связанные продукты.', he: 'לא ניתן למחוק סוג עיבוד כי יש לו מוצרים משויכים.' },
+    'message.success.processing.created': { en: 'Processing type created successfully.', ru: 'Способ обработки успешно создан.', he: 'סוג העיבוד נוצר בהצלחה.' },
+    'message.success.processing.deleted': { en: 'Processing type deleted successfully.', ru: 'Способ обработки успешно удален.', he: 'סוג העיבוד נמחק בהצלחה.' },
+    'message.success.processing.updated': { en: 'Processing type updated successfully.', ru: 'Способ обработки успешно обновлен.', he: 'סוג העיבוד עודכן בהצלחה.' },
+
+
   'message.success.categories.created': { en: 'Category created successfully.', ru: 'Категория успешно создана.', he: 'הקטגוריה נוצרה בהצלחה.' },
   'message.success.categories.deleted': { en: 'Category deleted successfully.', ru: 'Категория успешно удалена.', he: 'הקטגוריה נמחקה בהצלחה.' },
   'message.success.categories.updated': { en: 'Category updated successfully.', ru: 'Категория успешно обновлена.', he: 'הקטגוריה עודכנה בהצלחה.' },
+
+
   'caption.name.en': { en: 'English Name (EN)', ru: 'Английское название (EN)', he:   ' (EN)שם (אנגלית)' },
   'caption.name.ru': { en: 'Russian Name (RU)', ru: 'Русское название (RU)', he:   ' (RU)שם (רוסית)' },
   'caption.name.he': { en: 'Hebrew Name (HE)', ru: 'Название на иврите (HE)', he:   ' (HE)שם (עברית)' },

@@ -1,11 +1,31 @@
+// export interface IProduct {
+//   id: number;
+//   scale_code: number;
+//   product_name: string; // key_en
+//   key_ru: string;
+//   key_he: string;
+//   category_code: string;
+//   processing_code: string;
+//   fuseScore?: number;
+// }
 export interface IProduct {
   id: number;
   scale_code: number;
-  product_name: string; // key_en
+  product_name: string;
+
   key_ru: string;
   key_he: string;
   category_code: string;
   processing_code: string;
+
+  category?: {
+    priority: number;
+  };
+
+  processing?: {
+    priority: number;
+  };
+
   fuseScore?: number;
 }
 export type NewProduct = Omit<IProduct, 'id'>; // Пример для автогенерируемого ID

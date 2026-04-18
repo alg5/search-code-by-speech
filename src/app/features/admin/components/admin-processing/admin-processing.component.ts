@@ -9,13 +9,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { CustomGridComponent } from '../../../../shared/components/custom-components/custom-grid/custom-grid.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
 import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
 import { IProductProcessing } from '../../../../shared/models/product.model';
 import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
 import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
+import { LanguageService } from '../../../../core/services/language.service';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'spr-admin-processing',
@@ -29,17 +31,20 @@ import { IToolbarModel } from '../../../../shared/components/custom-components/c
     FloatLabelModule,
     MessageModule,
     CustomGridComponent,
-    TranslatePipe
+    TranslatePipe,
+    ToastModule
   ],
   providers: [ConfirmationService, TranslatePipe],  templateUrl: './admin-processing.component.html',
   styleUrl: './admin-processing.component.scss',
 })
 export class AdminProcessingComponent {
-  private readonly supabaseService = inject(SupabaseService);
   private fb = inject(FormBuilder);
+  private readonly supabaseService = inject(SupabaseService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly toolbarService = inject(CustomToolbarService);
   private readonly customGridService = inject(CustomGridService);
+  private readonly messageService = inject(MessageService);
+  private readonly languageService = inject(LanguageService);
   private readonly translate = inject(TranslatePipe);
 
 // ===== state =====
@@ -60,7 +65,8 @@ export class AdminProcessingComponent {
     code: ['', Validators.required],
     name_en: ['', Validators.required],
     name_ru: ['', Validators.required],
-    name_he: ['', Validators.required],
+    name_he: [''],
+    priority: [null]
   });
 
   //#region custom-grid definition
@@ -117,23 +123,92 @@ export class AdminProcessingComponent {
     this.dialogVisible.set(true);
   }
 
-  async saveNew() {
+    async saveNew() {
     this.submited.set(true);
+  
     if (this.fg.invalid) {
       this.fg.markAllAsTouched();
       return;
     }
-
-    await this.supabaseService.insertProductProcessing(this.fg.value as IProductProcessing);
-
-    this.dialogVisible.set(false);
-    this.loadProcessing();
+  
+    try {
+      await this.supabaseService.insertProductProcessing(
+        this.fg.value as IProductProcessing
+      );
+  
+      this.dialogVisible.set(false);
+      this.loadProcessing();
+  
+       this.messageService.add({
+        severity: 'success',
+        summary: this.translate.transform('message.success.processing.created'),
+      });
+  
+    } catch (error: any) {
+      console.error(error);
+  
+      if (error?.code === '23505') {
+        // duplicate code
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.languageService.translate(
+            'message.error.processing.duplicateCode',
+            '',
+            { code: this.fg.get('code').value }
+          )  ,    
+          sticky: true
+        });
+  
+      } else {
+        // любая другая ошибка
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.translate.transform('message.unexpectedError'),
+          sticky: true
+        });
+      }
+    }
   }
 // ===== EDIT INLINE =====
  
   async saveEdit(row: IProductProcessing) {
-    await this.supabaseService.updateProductProcessing(row);
-    this.loadProcessing();
+    try {
+      await this.supabaseService.updateProductProcessing(row);
+      this.loadProcessing();
+  
+      // опционально — успех
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.transform('message.success.processing.updated'),
+      });
+  
+    } catch (error: any) {
+      console.error(error);
+  
+      if (error?.code === '23505') {
+        // duplicate code
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.languageService.translate(
+            'message.error.processing.duplicateCode',
+            '',
+            { code: row.code }
+          )  ,      
+          sticky: true
+        });
+  
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.translate.transform('message.unexpectedError'),
+          sticky: true
+        });
+      }
+    }
   }
 
   // ===== DELETE =====
@@ -144,8 +219,35 @@ confirmDelete(row) {
     rejectLabel: this.translate.transform('message.no'),
     acceptButtonStyleClass: 'p-button-danger',
     accept: async () => {
-      await this.supabaseService.deleteProductProcessing(row.id);
-      this.loadProcessing();
+      try {
+        await this.supabaseService.deleteProductProcessing(row.id);
+        this.loadProcessing();
+        this.messageService.add({
+          severity: 'success',
+          // summary: this.translate.transform('message.success'),
+          detail: this.translate.transform('message.success.processing.deleted')
+        });
+
+
+      } catch (error: any) {
+        console.error(error);
+
+        if (error?.code === '23503') {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.transform('message.error'),
+            detail: this.translate.transform('message.error.processing.deleteHasProducts'),
+            sticky: true
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.transform('message.error'),
+            detail: this.translate.transform('message.unexpectedError'),
+            sticky: true
+          });
+        }
+      }
     }
   });
 }
@@ -166,6 +268,7 @@ confirmDelete(row) {
       { headerText: this.translate.transform('column.nameEn'), dataField: 'name_en', dataType: GridColumType.textEditable, required: true },
       { headerText: this.translate.transform('column.nameRu'), dataField: 'name_ru', dataType: GridColumType.textEditable },
       { headerText: this.translate.transform('column.nameHe'), dataField: 'name_he', dataType: GridColumType.textEditable },
+      { headerText: this.translate.transform('column.priority'), dataField: 'priority', dataType: GridColumType.numericEditable },
       { headerText: '', dataField: '', dataType: GridColumType.deleteButton},
       { headerText: '', dataField: '', dataType: GridColumType.editButton},
 
@@ -185,6 +288,9 @@ confirmDelete(row) {
       columns: this.columns,
       toolbarModel: this.customToolbar,
       idField: 'id',
+      pageSize: 1000,
+      withoutPaging: true,
+      innerScrollHeight: '46vh',
       key: 'processing'
     }
   }

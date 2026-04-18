@@ -30,15 +30,47 @@
       <div class="inputs-block">
         <p-floatlabel>
           <input pInputText  
-          formControlName="code" />
+          formControlName="code"          
+          [class.ng-invalid]="fg.get('code')?.invalid && fg.get('code')?.touched"
+            [class.ng-dirty]="fg.get('code')?.touched"/>
           <label for="code">Code</label>
         </p-floatlabel>
         @if (submited() && fg.get('code')?.invalid ) {
-          <small class="p-error">Code {{'message.fieldRequired'| translate}}</small>
+          <small class="p-error">{{'message.fieldRequired'| translate}}</small>
         }
-        <input pInputText placeholder="{{'caption.name.en'| translate}}" formControlName="name_en" />
-        <input pInputText placeholder="{{'caption.name.ru'| translate}}" formControlName="name_ru" />
-        <input pInputText placeholder="{{'caption.name.he'| translate}}" formControlName="name_he" />
+        <p-floatlabel>
+          <input pInputText  
+          formControlName="name_en" 
+          [class.ng-invalid]="fg.get('name_en')?.invalid && fg.get('name_en')?.touched"
+            [class.ng-dirty]="fg.get('name_en')?.touched"/>
+          <label for="name_en">{{'caption.name.en'| translate}}</label>
+        </p-floatlabel>
+        @if (submited() && fg.get('name_en')?.invalid ) {
+          <small class="p-error">{{'message.fieldRequired'| translate}}</small>
+        }
+       <p-floatlabel>
+          <input pInputText  
+          formControlName="name_ru" 
+          [class.ng-invalid]="fg.get('name_ru')?.invalid && fg.get('name_ru')?.touched"
+            [class.ng-dirty]="fg.get('name_ru')?.touched"/>
+          <label for="name_ru">{{'caption.name.ru'| translate}}</label>
+        </p-floatlabel>
+        @if (submited() && fg.get('name_ru')?.invalid ) {
+          <small class="p-error">{{'message.fieldRequired'| translate}}</small>
+        }
+        <p-floatlabel>
+          <input pInputText  
+          formControlName="name_he" 
+          />
+          <label for="name_he">{{'caption.name.he'| translate}}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText  
+          formControlName="priority" 
+          />
+          <label for="priority">{{'caption.priority'| translate}}</label>
+        </p-floatlabel>    
       </div>
       <div class="actions-block">
         <button pButton label="{{'button.save'| translate}}" (click)="saveNew()"></button>
@@ -49,3 +81,4 @@
 
 </p-dialog>
 <p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>

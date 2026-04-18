@@ -21,6 +21,7 @@ import { ProductsStateService } from '../../../../core/services/products-state.s
 import { LanguageService } from '../../../../core/services/language.service';
 import { CustomDropdownComponent } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown.component';
 import { ISelectOption } from '../../../../shared/models/generalModels';
+import { Toast, ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'spr-admin-products',
@@ -36,7 +37,8 @@ import { ISelectOption } from '../../../../shared/models/generalModels';
     MessageModule,
     CustomGridComponent,
     CustomDropdownComponent,
-    TranslatePipe
+    TranslatePipe,
+    ToastModule
   ],
   providers: [ConfirmationService, TranslatePipe],  templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
