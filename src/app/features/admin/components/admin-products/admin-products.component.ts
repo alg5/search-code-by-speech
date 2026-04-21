@@ -255,7 +255,10 @@ export class AdminProductsComponent {
   // ===== EDIT INLINE =====
    
   async saveEdit(row: IProduct) {
-    await this.supabaseService.updateProduct(row);
+    const rowUpdating = { ...row }; // создаём копию, чтобы не мутировать оригинал до успешного сохранения 
+    delete rowUpdating.category; // удаляем связанные объекты, которые не нужны для обновления
+    delete rowUpdating.processing;
+    await this.supabaseService.updateProduct(rowUpdating);
     this.loadInit();
   }
 

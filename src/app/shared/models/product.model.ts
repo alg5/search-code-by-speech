@@ -44,4 +44,5 @@ export interface IProductProcessing {
   name_en: string;
   name_ru?: string | null;
   name_he?: string | null;
+  priority?: number | null;
 }

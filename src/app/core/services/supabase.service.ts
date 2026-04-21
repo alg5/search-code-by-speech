@@ -26,6 +26,8 @@ export class SupabaseService implements OnDestroy{
   // profile = signal<any | null>(null);
   isProfileLoading = signal(false);
   public isAdmin = signal(false);
+  public isConsultant = signal(false);
+  public isLoginComplete = signal(false);
   public profile = signal<{ role: string; full_name: string; preferences: any } | null>(null);
   hasRole = (roles: string[]) => computed(() => {
     const role = this.profile()?.role;
