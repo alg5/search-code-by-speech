@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -23,6 +23,7 @@ import { ToastModule } from 'primeng/toast';
   selector: 'spr-admin-processing',
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule, 
     DialogModule,
     ButtonModule,
@@ -49,8 +50,11 @@ export class AdminProcessingComponent {
 
 // ===== state =====
   processingTypes = signal<IProductProcessing[]>([]);
+  filteredProcessingTypes = signal<IProductProcessing[]>([]);
+  
   loading = signal(false);
   submited = signal(false);
+  searchText = signal('');
 
  // inline edit
   editingId = signal<number | null>(null);
@@ -94,7 +98,39 @@ export class AdminProcessingComponent {
       if (!event?.row) return;
       console.log('Save signal received in AdminProcessingComponent', event.row);
       this.saveEdit(event.row);
-    });    
+    }); 
+
+    effect(() => {
+      const text = this.searchText()?.toLowerCase() || '';
+       if(!this.customGridModel) return;
+
+      const filtered = this.processingTypes().filter(p =>
+        (
+          !text ||
+          p.code?.toLowerCase().includes(text) ||
+          p.name_en?.toLowerCase().includes(text) ||
+          p.name_ru?.toLowerCase().includes(text) ||
+          p.name_he?.toLowerCase().includes(text)
+        ) 
+      );
+
+      this.filteredProcessingTypes.set(filtered);
+
+      // immutable update: создаём новый gridModel, чтобы дочерний компонент увидел изменение
+      this.customGridModel = {
+        ...this.customGridModel,
+        toolbarModel: {
+          ...this.customGridModel.toolbarModel
+        },
+        dataSource: filtered,
+        filterStringInitial: text,
+        // totalRecords: filtered.length
+      };
+
+
+
+    });        
+
     
   }
 
@@ -108,6 +144,7 @@ export class AdminProcessingComponent {
     try {
        const data = await this.supabaseService.getProductProcessing();
       this.processingTypes.set(data);
+      this.filteredProcessingTypes.set(data);
       console.log('Processing loaded', data, this.processingTypes());
     } finally {
       this.loading.set(false);
@@ -284,13 +321,14 @@ confirmDelete(row) {
   }
   fillCustomGridModel() {
     this.customGridModel = {
-      dataSource: this.processingTypes(),
+      dataSource: this.filteredProcessingTypes(),
       columns: this.columns,
       toolbarModel: this.customToolbar,
       idField: 'id',
       pageSize: 1000,
       withoutPaging: true,
       innerScrollHeight: '46vh',
+      filterStringInitial: this.searchText(),
       key: 'processing'
     }
   }

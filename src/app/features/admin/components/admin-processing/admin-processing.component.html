@@ -1,6 +1,33 @@
 <div class="admin-categories">
   <h2>{{'admin.processing'| translate}}</h2>
 
+  <div class="filters-row">
+
+      <div class="p-inputgroup search-box">
+        <!-- 🔍 иконка слева -->
+        <span class="p-inputgroup-addon">
+          <i class="pi pi-search"></i>
+        </span>
+
+        <!-- input -->
+        <input pInputText
+              [ngModel]="searchText()"
+              (ngModelChange)="searchText.set($event)"
+              placeholder="Search..."
+              class="search-input"/>
+
+        <!-- ❌ кнопка очистки -->
+        <button *ngIf="searchText()"
+                pButton
+                icon="pi pi-times"
+                class="p-button-text"
+                (click)="searchText.set('')">
+        </button>
+
+      </div>
+
+    </div>
+
   @if(!loading ()){
     @if (processingTypes().length > 0){
       <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>

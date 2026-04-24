@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
 import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
@@ -23,6 +23,7 @@ import { LanguageService } from '../../../../core/services/language.service';
   selector: 'spr-admin-categories',
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule, 
     DialogModule,
     ButtonModule,
@@ -51,12 +52,17 @@ export class AdminCategoriesComponent {
 
 // ===== state =====
   categories = signal<IProductCategory[]>([]);
+  filteredCategories = signal<IProductCategory[]>([])
+  ;
   loading = signal(false);
   submited = signal(false);
+  searchText = signal('');
+
 
  // inline edit
   editingId = signal<number | null>(null);
   editingRow = signal<IProductCategory | null>(null);
+  
 
   // dialog (add)
   dialogVisible = signal(false);
@@ -96,7 +102,37 @@ export class AdminCategoriesComponent {
       if (!event?.row) return;
       console.log('Save signal received in AdminCategoriesComponent', event.row);
       this.saveEdit(event.row);
-    });    
+    }); 
+    effect(() => {
+      const text = this.searchText()?.toLowerCase() || '';
+       if(!this.customGridModel) return;
+
+      const filtered = this.categories().filter(p =>
+        (
+          !text ||
+          p.code?.toLowerCase().includes(text) ||
+          p.name_en?.toLowerCase().includes(text) ||
+          p.name_ru?.toLowerCase().includes(text) ||
+          p.name_he?.toLowerCase().includes(text)
+        ) 
+      );
+
+      this.filteredCategories.set(filtered);
+
+      // immutable update: создаём новый gridModel, чтобы дочерний компонент увидел изменение
+      this.customGridModel = {
+        ...this.customGridModel,
+        toolbarModel: {
+          ...this.customGridModel.toolbarModel
+        },
+        dataSource: filtered,
+        filterStringInitial: text,
+        // totalRecords: filtered.length
+      };
+
+
+
+    });        
     
   }
 
@@ -110,6 +146,7 @@ export class AdminCategoriesComponent {
     try {
        const data = await this.supabaseService.getProductCategories();
       this.categories.set(data);
+      this.filteredCategories.set(data);
       console.log('Categories loaded', data, this.categories());
     } finally {
       this.loading.set(false);
@@ -285,12 +322,13 @@ confirmDelete(row) {
   }
   fillCustomGridModel() {
     this.customGridModel = {
-      dataSource: this.categories(),
+      dataSource: this.filteredCategories(),
       columns: this.columns,
       toolbarModel: this.customToolbar,
       idField: 'id',
       pageSize: 1000,
       withoutPaging: true,
+      filterStringInitial: this.searchText(),
       innerScrollHeight: '46vh',      
       key: 'categories'
     }
