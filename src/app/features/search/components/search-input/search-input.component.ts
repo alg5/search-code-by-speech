@@ -100,11 +100,12 @@ export class SearchInputComponent implements OnInit {
           getFn: (obj) => String(obj.scale_code)
         }
       ],
-      threshold: 0.45,
+      threshold: 0.3,
       ignoreLocation: true,
       minMatchCharLength: 2
     });
   }
+    //  threshold: 0.45,
 
   normalize(text: string): string {
     return text
