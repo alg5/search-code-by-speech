@@ -88,24 +88,43 @@ export class SearchInputComponent implements OnInit {
     });
   }
 
-  initFuse() {
-    this.fuse = new Fuse(this.products(), {
-      keys: [
-        { name: 'product_name', weight: 0.4 },
-        { name: 'key_ru', weight: 0.3 },
-        { name: 'key_he', weight: 0.3 },
-        {
-          name: 'scale_code',
-          weight: 0.5,
-          getFn: (obj) => String(obj.scale_code)
-        }
-      ],
-      threshold: 0.3,
-      ignoreLocation: true,
-      minMatchCharLength: 2
-    });
-  }
+  // initFuse() {
+  //   this.fuse = new Fuse(this.products(), {
+  //     keys: [
+  //       { name: 'product_name', weight: 0.4 },
+  //       { name: 'key_ru', weight: 0.3 },
+  //       { name: 'key_he', weight: 0.3 },
+  //       {
+  //         name: 'scale_code',
+  //         weight: 0.5,
+  //         getFn: (obj) => String(obj.scale_code)
+  //       }
+  //     ],
+  //     threshold: 0.3,
+  //     ignoreLocation: true,
+  //     minMatchCharLength: 2
+  //   });
+  // }
+
+
+
     //  threshold: 0.45,
+
+initFuse() {
+  this.fuse = new Fuse(this.products(), {
+    includeScore: true,
+    keys: [
+      { name: 'key_ru', weight: 1.0 }, // Увеличиваем вес главного ключа до максимума
+      { name: 'product_name', weight: 0.5 },
+      { name: 'key_he', weight: 0.5 }
+    ],
+    threshold: 0.2,       // БЫЛО 0.3. Сделали строже, чтобы отсечь лишние хвосты букв
+    location: 0,          // Ищем с начала строки
+    distance: 30,         // Чем дальше лишние буквы от начала, тем хуже score
+    ignoreLocation: false, // ВАЖНО: теперь нам ВАЖНО, где находится совпадение
+    minMatchCharLength: 2
+  });
+}
 
   normalize(text: string): string {
     return text
@@ -114,6 +133,29 @@ export class SearchInputComponent implements OnInit {
       .replace(/,/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
+  }
+  hasExactWord(text: string, query: string): boolean {
+    const normalizedText = this.normalize(text);
+    const normalizedQuery = this.normalize(query);
+
+    const words = normalizedText.split(/[\s()]+/);
+
+    return words.some(word =>
+      word === normalizedQuery ||            // точное
+      word.startsWith(normalizedQuery) ||    // манг → манго
+      this.isOneCharDiff(word, normalizedQuery) // манга ~ манго
+    );
+  }
+  isOneCharDiff(a: string, b: string): boolean {
+    if (Math.abs(a.length - b.length) > 1) return false;
+
+    let diff = 0;
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+      if (a[i] !== b[i]) diff++;
+      if (diff > 1) return false;
+    }
+
+    return true;
   }
 
   scoreProduct(p: IProduct, query: string, words: string[]): number {
@@ -133,65 +175,127 @@ export class SearchInputComponent implements OnInit {
     return score;
   }
 
-  // search(event: any) {
-  //   const query = (event?.query ?? '')?.toLowerCase().trim();
-  //   if (!query) {
-  //     this.results.set([]);
-  //     return;
-  //   }
+ //original search method with new sorting logic
+//   search(event: any) {
+//   const query = (event?.query ?? '')?.toLowerCase().trim();
 
-  //   // поиск по числовому коду
-  //   if (/^\d+$/.test(query)) {
-  //     const exact = this.products().filter(p =>
-  //       p.scale_code?.toString().startsWith(query)
-  //     );
-  //     this.results.set(exact.slice(0, 5));
-  //     return;
-  //   }
+//   if (!query) {
+//     this.results.set([]);
+//     return;
+//   }
 
-  //   // поиск через Fuse.js
-  //   const fuseResults = this.fuse.search(query);
-  //   const productsFound: IProduct[] = fuseResults.map(r => ({
-  //     ...r.item,
-  //     fuseScore: r.score ?? 0
-  //   }));
+//   // 🔢 поиск по числовому коду
+//   if (/^\d+$/.test(query)) {
+//     const exact = this.products().filter(p =>
+//       p.scale_code?.toString().startsWith(query)
+//     );
+//     this.results.set(exact.slice(0, 5));
+//     return;
+//   }
 
-  //   // разделяем на три группы по приоритету
-  //   const group0: IProduct[] = []; // natural fresh
-  //   const group1: IProduct[] = []; // fresh обработанные/пустые
-  //   const group2: IProduct[] = []; // всё остальное
+//   // 🔍 поиск через Fuse.js
+//   const fuseResults = this.fuse.search(query);
 
-  //   productsFound.forEach(p => {
-  //     const isFresh = p.category_code?.includes('fresh');
-  //     const isNatural = p.processing_code === 'natural';
+//   const productsFound: IProduct[] = fuseResults.map(r => ({
+//     ...r.item,
+//     fuseScore: r.score ?? 0
+//   }));
 
-  //     if (isFresh && isNatural) {
-  //       group0.push(p);
-  //     } else if (isFresh) {
-  //       group1.push(p);
-  //     } else {
-  //       group2.push(p);
-  //     }
-  //   });
+//   // 🔥 НОВАЯ сортировка (без групп, через приоритеты)
+//   productsFound.sort((a, b) => {
 
-  //   const sortByFuse = (arr: IProduct[]) =>
-  //     arr.sort((a, b) => (a.fuseScore ?? 0) - (b.fuseScore ?? 0));
+//     // 1. сначала релевантность (меньше = лучше)
+//     const scoreDiff = (a.fuseScore ?? 0) - (b.fuseScore ?? 0);
+//     if (scoreDiff !== 0) return scoreDiff;
 
-  //   const finalResults = [
-  //     ...sortByFuse(group0),
-  //     ...sortByFuse(group1),
-  //     ...sortByFuse(group2)
-  //   ];
+//     // 2. потом категория
+//     const aCat = a.category?.priority ?? 0;
+//     const bCat = b.category?.priority ?? 0;
+//     if (bCat !== aCat) return bCat - aCat;
 
-  //   // удаляем временное поле fuseScore перед показом
-  //   const finalResultsClean = finalResults.map(({ fuseScore, ...rest }) => rest);
+//     // 3. потом обработка
+//     const aProc = a.processing?.priority ?? 0;
+//     const bProc = b.processing?.priority ?? 0;
+//     if (bProc !== aProc) return bProc - aProc;
 
-  //   // показываем топ-20
-  //   this.results.set(finalResultsClean.slice(0, 20));
+//     return 0;
+//   });
 
-  //   console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
-  // }
-  search(event: any) {
+//   // 🧹 удаляем временное поле fuseScore
+//   const finalResultsClean = productsFound.map(({ fuseScore, ...rest }) => rest);
+
+//   // 🎯 топ-20
+//   this.results.set(finalResultsClean.slice(0, 20));
+
+//   console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
+// }
+
+
+// новый search метод с комбинированным весом jn gemini
+
+// search(event: any) {
+//   const query = (event?.query ?? '')?.toLowerCase().trim();
+
+//   if (!query) {
+//     this.results.set([]);
+//     return;
+//   }
+
+//   // 🔢 1. Поиск по числовому коду (оставляем без изменений)
+//   if (/^\d+$/.test(query)) {
+//     const exact = this.products().filter(p =>
+//       p.scale_code?.toString().startsWith(query)
+//     );
+//     this.results.set(exact.slice(0, 5));
+//     return;
+//   }
+
+//   // 🔍 2. Поиск через Fuse.js
+//   const fuseResults = this.fuse.search(query);
+
+//   // 🛠 3. Расчет итогового веса (Комбинируем релевантность текста и приоритеты)
+//   const productsWithWeights = fuseResults.map(r => {
+//     const item = r.item;
+//     const fuseScore = r.score ?? 0;
+
+//     // Вычисляем базовый приоритет из твоей формулы
+//     const catPriority = item.category?.priority ?? 0;
+//     const procPriority = item.processing?.priority ?? 0;
+//     const basePriority = (catPriority * 10) + procPriority;
+
+//     /**
+//      * confidence (уверенность): инвертируем fuseScore.
+//      * Если score = 0 (идеал), confidence = 1.
+//      * Если score = 0.3 (край нашего threshold), confidence = 0.7.
+//      */
+//     const confidence = 1 - fuseScore;
+
+//     /**
+//      * finalWeight: Основной показатель для сортировки.
+//      * Приоритет категории теперь умножается на качество совпадения букв.
+//      */
+//     const finalWeight = basePriority * confidence;
+
+//     return {
+//       ...item,
+//       finalWeight
+//     };
+//   });
+
+//   // 🚀 4. Сортировка: от самого тяжелого веса к самому легкому
+//   productsWithWeights.sort((a, b) => b.finalWeight - a.finalWeight);
+
+//   // 🧹 5. Очистка временного поля и ограничение выборки
+//   const finalResults = productsWithWeights
+//     .map(({ finalWeight, ...rest }) => rest)
+//     .slice(0, 20);
+
+//   this.results.set(finalResults);
+
+//   console.log(`📊 Результаты для "${query}":`, finalResults);
+// }
+
+search(event: any) {
   const query = (event?.query ?? '')?.toLowerCase().trim();
 
   if (!query) {
@@ -199,7 +303,7 @@ export class SearchInputComponent implements OnInit {
     return;
   }
 
-  // 🔢 поиск по числовому коду
+  // 🔢 1. Поиск по числовому коду (Scale Code)
   if (/^\d+$/.test(query)) {
     const exact = this.products().filter(p =>
       p.scale_code?.toString().startsWith(query)
@@ -208,42 +312,57 @@ export class SearchInputComponent implements OnInit {
     return;
   }
 
-  // 🔍 поиск через Fuse.js
+  // 🔍 2. Поиск через Fuse.js
   const fuseResults = this.fuse.search(query);
 
-  const productsFound: IProduct[] = fuseResults.map(r => ({
-    ...r.item,
-    fuseScore: r.score ?? 0
-  }));
+  // 🛠 3. Расчет итогового веса с учетом лингвистики и приоритетов
+  const productsWithWeights = fuseResults.map(r => {
+    const item = r.item;
+    const fuseScore = r.score ?? 0;
 
-  // 🔥 НОВАЯ сортировка (без групп, через приоритеты)
-  productsFound.sort((a, b) => {
+    const catPriority = item.category?.priority ?? 0;
+    const procPriority = item.processing?.priority ?? 0;
 
-    // 1. сначала релевантность (меньше = лучше)
-    const scoreDiff = (a.fuseScore ?? 0) - (b.fuseScore ?? 0);
-    if (scoreDiff !== 0) return scoreDiff;
+    // Базовый приоритет (научная ценность из базы)
+    const basePriority = (catPriority * 2) + (procPriority * 0.5);
 
-    // 2. потом категория
-    const aCat = a.category?.priority ?? 0;
-    const bCat = b.category?.priority ?? 0;
-    if (bCat !== aCat) return bCat - aCat;
+    // Уверенность Fuse (возводим в куб для резкого разделения результатов)
+    const confidence = Math.pow(1 - fuseScore, 3);
 
-    // 3. потом обработка
-    const aProc = a.processing?.priority ?? 0;
-    const bProc = b.processing?.priority ?? 0;
-    if (bProc !== aProc) return bProc - aProc;
+    /**
+     * 📏 БОНУС ЗА СООТВЕТСТВИЕ ДЛИНЕ (Length Matching)
+     * Берем первое слово из названия (до запятой), чтобы сравнивать "Манго" с "Манга",
+     * а не "Манго, свежее, без косточки..." с "Манга".
+     */
+    const firstWord = (item.key_ru ?? '').split(',')[0].trim();
+    const lengthDiff = Math.abs(firstWord.length - query.length);
+    
+    // Коэффициент длины: если длины равны — 1.0, если разница в 3 буквы — 0.25
+    const lengthFactor = 1 / (1 + lengthDiff);
 
-    return 0;
+    // Итоговый вес: Приоритет * Точность букв * Соответствие длине
+    const finalWeight = basePriority * confidence * lengthFactor;
+
+    return {
+      ...item,
+      finalWeight
+    };
   });
 
-  // 🧹 удаляем временное поле fuseScore
-  const finalResultsClean = productsFound.map(({ fuseScore, ...rest }) => rest);
+  // 🚀 4. Сортировка: от самого высокого веса к самому низкому
+  productsWithWeights.sort((a, b) => b.finalWeight - a.finalWeight);
 
-  // 🎯 топ-20
-  this.results.set(finalResultsClean.slice(0, 20));
+  // 🧹 5. Очистка и ограничение выборки (20 записей)
+  const finalResultsClean = productsWithWeights
+    .map(({ finalWeight, ...rest }) => rest)
+    .slice(0, 20);
 
-  console.log('📊 search results for query:', query, finalResultsClean.slice(0, 20));
+  this.results.set(finalResultsClean);
+
+  console.log(`📊 Search for "${query}":`, finalResultsClean);
 }
+
+
 
   selectCode(event: any) {
     const product = event?.value;
