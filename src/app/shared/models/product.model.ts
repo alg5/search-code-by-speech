@@ -15,6 +15,7 @@ export interface IProduct {
 
   key_ru: string;
   key_he: string;
+  key_fr: string;
   category_code: string;
   processing_code: string;
 
@@ -36,6 +37,7 @@ export interface IProductCategory {
   name_en: string;
   name_ru?: string | null;
   name_he?: string | null;
+  name_fr?: string | null;
   priority?: number | null;
 }
 export interface IProductProcessing {
@@ -44,5 +46,6 @@ export interface IProductProcessing {
   name_en: string;
   name_ru?: string | null;
   name_he?: string | null;
+  name_fr?: string | null;
   priority?: number | null;
 }

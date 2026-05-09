@@ -70,6 +70,7 @@ export class AdminProcessingComponent {
     name_en: ['', Validators.required],
     name_ru: ['', Validators.required],
     name_he: [''],
+    name_fr: [''],
     priority: [null]
   });
 
@@ -110,7 +111,8 @@ export class AdminProcessingComponent {
           p.code?.toLowerCase().includes(text) ||
           p.name_en?.toLowerCase().includes(text) ||
           p.name_ru?.toLowerCase().includes(text) ||
-          p.name_he?.toLowerCase().includes(text)
+          p.name_he?.toLowerCase().includes(text) ||
+          p.name_fr?.toLowerCase().includes(text)
         ) 
       );
 
@@ -305,6 +307,7 @@ confirmDelete(row) {
       { headerText: this.translate.transform('column.nameEn'), dataField: 'name_en', dataType: GridColumType.textEditable, required: true },
       { headerText: this.translate.transform('column.nameRu'), dataField: 'name_ru', dataType: GridColumType.textEditable },
       { headerText: this.translate.transform('column.nameHe'), dataField: 'name_he', dataType: GridColumType.textEditable },
+      { headerText: this.translate.transform('column.nameFr'), dataField: 'name_fr', dataType: GridColumType.textEditable },
       { headerText: this.translate.transform('column.priority'), dataField: 'priority', dataType: GridColumType.numericEditable },
       { headerText: '', dataField: '', dataType: GridColumType.deleteButton},
       { headerText: '', dataField: '', dataType: GridColumType.editButton},

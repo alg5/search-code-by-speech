@@ -105,6 +105,7 @@ export class AdminProductsComponent {
           p.product_name?.toLowerCase().includes(text) ||
           p.key_ru?.toLowerCase().includes(text) ||
           p.key_he?.toLowerCase().includes(text) ||
+          p.key_fr?.toLowerCase().includes(text) ||
           p.scale_code?.toString().includes(text)
         ) &&
         (!cat || p.category_code === cat) &&
@@ -276,6 +277,7 @@ export class AdminProductsComponent {
       { headerText: this.translate.transform('column.productName'), dataField: 'product_name', isColFiltering: true },
       { headerText: this.translate.transform('column.nameRu'), dataField: 'key_ru', dataType: GridColumType.textEditable, isColFiltering: true },
       { headerText: this.translate.transform('column.nameHe'), dataField: 'key_he', dataType: GridColumType.textEditable, isColFiltering: true },
+      { headerText: this.translate.transform('column.nameFr'), dataField: 'key_fr', dataType: GridColumType.textEditable, isColFiltering: true },
       { headerText: this.translate.transform('column.categoryCode'), dataField: 'category_code'
         , dataType: GridColumType.dropdownEditable
         ,formattedOptions: { dropdown: this.categoryModelGrid }

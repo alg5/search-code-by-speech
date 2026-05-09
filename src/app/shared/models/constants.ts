@@ -37,12 +37,13 @@ export const MyBootstrapLikePreset = definePreset(lara, {
 
 
 
-export type LangCode = 'en' | 'ru' | 'he';
+export type LangCode = 'en' | 'ru' | 'he' | 'fr';
 
 export const LANGS: ILang[] = [
   { code: 'en', label: 'English', iconClass: 'fi fi-gb' },
   { code: 'ru', label: 'Русский', iconClass: 'fi fi-ru' },
-  { code: 'he', label: 'עברית', iconClass: 'fi fi-il' }
+  { code: 'he', label: 'עברית', iconClass: 'fi fi-il' },
+  { code: 'fr', label: 'Français', iconClass: 'fi fi-fr ' }
 ];
 
 export const Translations: ITranslations = {
@@ -98,6 +99,7 @@ export const Translations: ITranslations = {
   'caption.name.en': { en: 'English Name (EN)', ru: 'Английское название (EN)', he:   ' (EN)שם (אנגלית)' },
   'caption.name.ru': { en: 'Russian Name (RU)', ru: 'Русское название (RU)', he:   ' (RU)שם (רוסית)' },
   'caption.name.he': { en: 'Hebrew Name (HE)', ru: 'Название на иврите (HE)', he:   ' (HE)שם (עברית)' },
+  'caption.name.fr': { en: 'French Name (FR)', ru: 'Французское название (FR)', he:   ' (FR)שם (צרפתית)' },
   'caption.priority': { en: 'Priority', ru: 'Приоритет', he: 'עדיפות' },
 
   'column.id': { en: 'ID', ru: 'ID', he: 'ID' },
@@ -107,6 +109,7 @@ export const Translations: ITranslations = {
   'column.nameEn': { en: 'Name EN', ru: 'Название EN', he: 'שם אנגלית' },
   'column.nameRu': { en: 'Name RU', ru: 'Название RU', he: 'שם רוסית' },
   'column.nameHe': { en: 'Name HE', ru: 'Название HE', he: 'שם עברית' },
+  'column.nameFr': { en: 'Name FR', ru: 'Название FR', he: 'שם צרפתית' },
   'column.priority': { en: 'Priority', ru: 'Приоритет', he: 'עדיפות' },
   'column.actions': { en: 'Actions', ru: 'Действия', he: 'פעולות' },
   'column.categoryCode': { en: 'Category Code', ru: 'Код категории', he: 'קוד קטגוריה' },
