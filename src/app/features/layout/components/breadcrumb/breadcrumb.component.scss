@@ -1,0 +1,65 @@
+// breadcrumb.component.scss
+.breadcrumb-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+
+  .home-link {
+    display: flex;
+    align-items: center;
+    color: var(--text-color-secondary, #15803d);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--primary-color, #22c55e);
+    }
+
+    i {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+:host ::ng-deep .p-breadcrumb {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+
+  .p-breadcrumb-list {
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .p-menuitem-separator {
+    color: var(--surface-300, #bbf7d0);
+    margin: 0 0.25rem;
+  }
+
+  // Обычные пункты
+  .p-breadcrumb-item-link,
+  .p-breadcrumb-item-link a,
+  a {
+    color: var(--text-color-secondary, #15803d) !important;
+    text-decoration: none !important;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--primary-color, #22c55e) !important;
+    }
+  }
+
+  // Активный (последний) пункт
+  .p-menuitem-active .p-breadcrumb-item-link {
+    color: var(--text-color, #166534) !important;
+    pointer-events: none;
+    cursor: default;
+
+    &:hover {
+      color: var(--text-color, #166534) !important;
+    }
+  }
+}

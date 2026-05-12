@@ -209,7 +209,7 @@ tr.footer-row > td{
     width: 20%;
     align-items: center;
     padding-right: 1rem;
-    /* color: $color-blue; */
+    /* color: $color-green; */
     line-height: 1.81;
     font-size: 18px;
     /* font-family: $font-bezeq; */
@@ -245,7 +245,7 @@ tr.footer-row > td{
   justify-content: space-between;
   align-self: stretch;
   border-radius: 8px 8px 0 0;
-  background: $bgcolor !important;
+  background: $bg-green !important;
   .title{
     display: flex;
     gap: 8px;

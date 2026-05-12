@@ -13,6 +13,7 @@ export interface IProduct {
   scale_code: number;
   product_name: string;
 
+  key_en: string;
   key_ru: string;
   key_he: string;
   key_fr: string;

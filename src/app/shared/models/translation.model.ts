@@ -17,6 +17,7 @@ export interface TranslationValue {
   en: string;
   ru: string;
   he: string;
+  fr?: string;
 }
 
 export interface ITranslations {

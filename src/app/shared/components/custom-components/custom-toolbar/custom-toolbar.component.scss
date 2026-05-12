@@ -95,7 +95,7 @@
     }
   }
 .commom-buttons-block{
-    background-color:$bg-gray-odd ;
+    background-color:$bg-green-odd ;
     display:flex;
     @include media("max", "sm") {
       background-color: white!important

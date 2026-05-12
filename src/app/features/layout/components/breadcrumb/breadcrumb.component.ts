@@ -4,17 +4,22 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { BreadcrumbService } from './breadcrumb.service';
 import { Subscription } from 'rxjs';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 
 @Component({
   selector: 'spr-breadcrumb',
   standalone: true,
-  imports: [CommonModule, BreadcrumbModule],
+  imports: [CommonModule, BreadcrumbModule, RouterModule, TranslatePipe],
   templateUrl: './breadcrumb.component.html',
   styleUrl: './breadcrumb.component.scss',
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
   private readonly breadcrumbService = inject(BreadcrumbService);
   private subscription?: Subscription;
+
+    breadcrumbs$ = this.breadcrumbService.getBreadcrumbs();
+
 
   breadcrumbs: MenuItem[] = [];
 
@@ -24,14 +29,17 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit() {
-    // Инициализируем breadcrumbs сразу
-    this.breadcrumbs = this.breadcrumbService['buildBreadcrumbs']();
+    // // Инициализируем breadcrumbs сразу
+    // this.breadcrumbs = this.breadcrumbService['buildBreadcrumbs']();
 
-    // Подписываемся на изменения маршрута
+    // // Подписываемся на изменения маршрута
+    // this.subscription = this.breadcrumbService.getBreadcrumbs().subscribe(
+    //   breadcrumbs => this.breadcrumbs = breadcrumbs
+    // );
     this.subscription = this.breadcrumbService.getBreadcrumbs().subscribe(
       breadcrumbs => this.breadcrumbs = breadcrumbs
-    );
-  }
+    );  
+}
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();

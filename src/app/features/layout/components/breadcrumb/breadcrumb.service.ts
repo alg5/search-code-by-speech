@@ -1,61 +1,73 @@
 import { Injectable, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, startWith } from 'rxjs/operators';
 import { MenuItem } from 'primeng/api';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BreadcrumbService {
   private readonly router = inject(Router);
+  private readonly languageService = inject(LanguageService);
 
   getBreadcrumbs(): Observable<MenuItem[]> {
-    return this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
+    return combineLatest([
+      this.router.events.pipe(
+        filter(event => event instanceof NavigationEnd),
+        startWith(null)
+      ),
+      this.languageService.langChanges$.pipe(
+        startWith(this.languageService.currentLang())
+      )
+    ]).pipe(
       map(() => this.buildBreadcrumbs())
     );
   }
 
   private buildBreadcrumbs(): MenuItem[] {
-    const url = this.router.url;
-    const segments = url.split('/').filter(segment => segment !== '');
+    const root = this.router.routerState.snapshot.root;
+    const breadcrumbs: MenuItem[] = [];
+    let url = '';
 
-    const breadcrumbs: MenuItem[] = [
-      {
-        label: 'Главная',
-        icon: 'pi pi-home',
-        routerLink: '/'
+    const addBreadcrumb = (route: any) => {
+      if (route.routeConfig?.path && route.routeConfig.path.trim() !== '') {
+        const path = route.routeConfig.path;
+        url += `/${path}`;
+
+        // Разбиваем путь на сегменты и создаём breadcrumb для КАЖДОГО
+        const segments = path.split('/').filter((s: string) => s.trim() !== '');
+        
+        // Если это составной путь (например "admin/products"), 
+        // нужно создать breadcrumbs для каждого сегмента
+        if (segments.length > 1) {
+          // Удаляем последний добавленный, если он был составным
+          breadcrumbs.pop();
+          
+          let segmentUrl = '';
+          for (const segment of segments) {
+            segmentUrl += `/${segment}`;
+            breadcrumbs.push({
+              label: `breadcrumb.${segment}`,
+              routerLink: segmentUrl
+            });
+          }
+        } else {
+          breadcrumbs.push({
+            label: `breadcrumb.${path}`,
+            routerLink: url
+          });
+        }
       }
-    ];
 
-    let currentPath = '';
-    segments.forEach((segment, index) => {
-      currentPath += `/${segment}`;
-      const label = this.getLabelForSegment(segment);
-
-      breadcrumbs.push({
-        label,
-        routerLink: currentPath
-      });
-    });
-
-    return breadcrumbs;
-  }
-
-  private getLabelForSegment(segment: string): string {
-    const labels: { [key: string]: string } = {
-      'admin': 'Админ',
-      'user': 'Пользователь',
-      'dashboard': 'Панель',
-      'profile': 'Профиль',
-      'products': 'Продукты',
-      'categories': 'Категории',
-      'processing': 'Обработка',
-      'users': 'Пользователи',
-      'auth': 'Авторизация'
+      if (route.firstChild) {
+        addBreadcrumb(route.firstChild);
+      }
     };
 
-    return labels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+    addBreadcrumb(root);
+
+    return breadcrumbs;
   }
 }

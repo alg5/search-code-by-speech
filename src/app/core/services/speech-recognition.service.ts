@@ -44,6 +44,24 @@ export class SpeechRecognitionService {
       }
     }
   });
+  // ✅ Реактивное отслеживание языка
+  effect(() => {
+    const lang = this.langService.langCode(); // берём сигнал!
+    console.log('🌐 Language changed to:', lang);
+    
+    if (this.recognition) {
+      // Если слушаем — перезапускаем с новым языком
+      if (this.isListening()) {
+        console.log('🔄 Restarting recognition with new language...');
+        this.recognition.abort();
+        this.recognition.lang = lang;
+        this.recognition.start();
+      } else {
+        // Если не слушаем — просто меняем для следующего старта
+        this.recognition.lang = lang;
+      }
+    }
+  });
   }
 
 init() {
@@ -125,23 +143,46 @@ init() {
   /**
    * Старт распознавания
    */
-  start() {
-    if (!this.recognition) {
-      if (!this.init()) return;
-    }
+  // start() {
+  //   if (!this.recognition) {
+  //     if (!this.init()) return;
+  //   }
     
-    if (!this.isListening()) {
-      try {
-        this.recognition.start();
-        this.isListening.set(true);
-        this.onStatusChange.next(true);
-        console.log('▶️ Speech recognition started');
-      } catch (error) {
-        console.error('❌ Start error:', error);
-        this.onError.next('start_error');
-      }
+  //   if (!this.isListening()) {
+  //     try {
+  //       this.recognition.start();
+  //       this.isListening.set(true);
+  //       this.onStatusChange.next(true);
+  //       console.log('▶️ Speech recognition started');
+  //     } catch (error) {
+  //       console.error('❌ Start error:', error);
+  //       this.onError.next('start_error');
+  //     }
+  //   }
+  // }
+  start() {
+  // ✅ Сначала обновляем язык (если recognition уже существует)
+  if (this.recognition) {
+    this.recognition.lang = this.langService.langCode();
+  }
+  
+  // Если recognition нет — создаём через init() (там тоже установится язык)
+  if (!this.recognition) {
+    if (!this.init()) return;
+  }
+  
+  if (!this.isListening()) {
+    try {
+      this.recognition.start();
+      this.isListening.set(true);
+      this.onStatusChange.next(true);
+      console.log('▶️ Speech recognition started, lang:', this.recognition.lang);
+    } catch (error) {
+      console.error('❌ Start error:', error);
+      this.onError.next('start_error');
     }
   }
+}
 
   /**
    * Стоп распознавания

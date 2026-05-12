@@ -1,11 +1,27 @@
 .search-box {
   max-width: 400px;
 }
-.filters-row{
+// .filters-row{
+//   display: flex;
+//   gap: 1rem;
+//   flex-wrap: wrap;
+//   margin-bottom: 1rem;
+// }
+.filters-row {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+
+  > * {
+    flex-shrink: 0; /* предотвращает сжатие элементов */
+    min-width: 200px; /* минимальная ширина для читаемости */
+  }
+
+  spr-custom-dropdown {
+    flex: 1 1 200px; /* позволяет растягиваться, но не уже 200px */
+    display: block; /* гарантируем блочное отображение */
+  }
 }
 .page-wrapper {
   position: relative;

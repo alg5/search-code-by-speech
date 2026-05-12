@@ -39,7 +39,8 @@ export class SearchInputComponent implements OnInit {
   products = this.productsState.products;
 
   fuse!: Fuse<IProduct>;
-  lang = computed(() => this.languageService.getLang().code);
+  // ✅ Реактивный сигнал языка
+  lang = computed(() => this.languageService.langCode());
 
   selectedProduct: IProduct | null = null;
   isListening = false;
@@ -115,7 +116,7 @@ initFuse() {
     includeScore: true,
     keys: [
       { name: 'key_ru', weight: 1.0 }, // Увеличиваем вес главного ключа до максимума
-      { name: 'product_name', weight: 0.5 },
+      { name: 'key_en', weight: 0.5 },
       { name: 'key_he', weight: 0.5 },  
       { name: 'key_fr', weight: 0.5 }
     ],
@@ -258,22 +259,32 @@ search(event: any) {
 
   get fieldName(): string {
     const lang = this.lang();
-    return lang === 'en'
-      ? 'product_name'
-      : lang === 'ru'
-      ? 'key_ru'
-      : 'key_he';
+    return `key_${lang}`;
   }
 
-  displayName(p: IProduct) {
-    switch (this.lang()) {
-      case 'ru': return p.key_ru;
-      case 'he': return p.key_he;
-      default: return p.product_name;
-    }
+  // displayName(p: IProduct) {
+  //   switch (this.lang()) {
+  //     case 'ru': return p.key_ru;
+  //     case 'he': return p.key_he;
+  //     case 'fr': return p.key_fr;
+  //     default: return p.product_name;
+  //   }
+  // }
+  displayName(p: IProduct): string {
+    const code = this.lang();
+    // Строим ключ: key_ru, key_he, key_fr...
+    const key = `key_${code}` as keyof IProduct;
+    return (p[key] as string) || p.product_name;
   }
 
   submit() {
     this.searchSubmit.emit(this.term);
   }
+  copyCode(code: number) {
+  const formattedCode = code.toString().padStart(3, '0');
+  navigator.clipboard.writeText(formattedCode).then(() => {
+    // Можно показать toast или просто мигнуть кнопкой
+    console.log('Код скопирован:', formattedCode);
+  });
+}
 }

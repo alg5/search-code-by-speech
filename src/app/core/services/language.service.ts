@@ -1,11 +1,15 @@
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { ILang, ITranslations, TranslationValue } from '../../shared/models/translation.model';
 import { LANGS, Translations } from '../../shared/models/constants';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
 
   currentLang = signal<ILang>(LANGS[0]);
+  
+   // ✅ Добавляем Observable для совместимости
+  langChanges$ = toObservable(this.currentLang);
 
   private readonly STORAGE_KEY = 'spr_lang';
   private _translations: ITranslations = Translations;

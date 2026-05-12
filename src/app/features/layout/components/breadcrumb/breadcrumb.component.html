@@ -1,1 +1,16 @@
-<p-breadcrumb [model]="breadcrumbs" [home]="home"></p-breadcrumb>
+<!-- breadcrumb.component.html -->
+<div class="breadcrumb-container">
+  <!-- Домик отдельно -->
+  <a [routerLink]="home.routerLink" class="home-link">
+    <i [class]="home.icon"></i>
+  </a>
+
+  <!-- Breadcrumbs (без домика, без лишнего разделителя) -->
+  <p-breadcrumb [model]="breadcrumbs$ | async" [home]="null">
+    <ng-template let-item pTemplate="item">
+      <a [routerLink]="item.routerLink" class="breadcrumb-link">
+        {{ item.label | translate }}
+      </a>
+    </ng-template>
+  </p-breadcrumb>
+</div>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Основание весов -->
+  <rect x="12" y="32" width="40" height="24" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  
+  <!-- Стойка (короткая, как у реальных весов) -->
+  <rect x="30" y="20" width="4" height="14" fill="#16a34a"/>
+  
+  <!-- Чаша сверху — вогнута вниз, как у реальных весов -->
+  <path d="M16 20 Q32 28 48 20" fill="#bbf7d0" stroke="#16a34a" stroke-width="2"/>
+  <!-- Верхний край чаши (плоский) -->
+  <line x1="16" y1="20" x2="48" y2="20" stroke="#16a34a" stroke-width="2"/>
+  
+  <!-- Циферблат -->
+  <circle cx="32" cy="44" r="8" fill="white" stroke="#22c55e" stroke-width="1.5"/>
+  
+  <!-- Стрелка -->
+  <line x1="32" y1="44" x2="36" y2="40" stroke="#166534" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Отметки на циферблате -->
+  <line x1="32" y1="38" x2="32" y2="40" stroke="#16a34a" stroke-width="1"/>
+  <line x1="32" y1="48" x2="32" y2="50" stroke="#16a34a" stroke-width="1"/>
+  <line x1="26" y1="44" x2="28" y2="44" stroke="#16a34a" stroke-width="1"/>
+  <line x1="36" y1="44" x2="38" y2="44" stroke="#16a34a" stroke-width="1"/>
+</svg>

@@ -18,13 +18,19 @@
                 <ng-template pTemplate="header" let-columns>
                     <tr>
                         <ng-container *ngFor="let col of columns; let colIndex = index">
-                            <th *ngIf="col.notSorting" [ngClass]="'th-'+ columns[colIndex].dataField">
+                            <th *ngIf="col.notSorting" 
+                                [ngClass]="'th-'+ columns[colIndex].dataField"
+                                [ngStyle]="{ 'width': col.width, 'min-width': col.minWidth, 'max-width': col.maxWidth }"
+                            >
                                 <div class="th-display">
                                     <div>{{ col.headerText }}</div>
                                     <div *ngIf="col.columnInfo && col.columnInfo.length > 0" class="th-info"></div>
                                 </div>
                             </th>
-                            <th  *ngIf="!col.notSorting" [pSortableColumn]="col.dataField" [ngClass]="'th-'+ columns[colIndex].dataField" >
+                            <th  *ngIf="!col.notSorting" [pSortableColumn]="col.dataField" 
+                                    [ngClass]="'th-'+ columns[colIndex].dataField" 
+                                    [ngStyle]="{ 'width': col.width, 'min-width': col.minWidth, 'max-width': col.maxWidth }"
+                                >
                                 <div class="th-display">
                                     <div>{{ col.headerText }}</div>
                                     <div><p-sortIcon [field]="col.dataField"></p-sortIcon></div>
@@ -40,6 +46,7 @@
                         <ng-container *ngFor="let col of columns">
                             <td *ngIf="col.dataType != GridColumType.editableCellNumber " 
                                 [class.cell-numeric1]="col.dataType == GridColumType.numeric || col.dataType == GridColumType.numericClick  "
+                                [ngStyle]="{ 'width': col.width, 'min-width': col.minWidth, 'max-width': col.maxWidth }"
                             >
             
                             <div *ngIf="!col.isSpecialColumn" [class.cell-numeric]="col.dataType == GridColumType.numeric">

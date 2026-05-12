@@ -6,7 +6,7 @@
 
 .lang-select {
   background: #fff !important;   
-  color: $color-blue !important;      
+  color: $color-green !important;      
 
   ::ng-deep &.p-select {
     // border: 1px solid red !important; // для отладки
@@ -49,12 +49,12 @@
 
   .lang-label {
     font-size: 0.85rem;  // уменьшенный шрифт
-    color: $color-blue;
+    color: $color-green;
     font-weight: 500;
   }
 
   ::ng-deep .p-select-trigger-icon {
-    color: $color-blue;
+    color: $color-green;
     font-size: 0.85rem;
   }
 
@@ -64,11 +64,11 @@
       transition: background-color 0.2s ease;
 
       &:hover {
-        background-color: rgba($color-blue-active, 0.1);
+        background-color: rgba($color-green-active, 0.1);
       }
       
       &.p-highlight {
-        background-color: rgba($color-blue-active, 0.2);
+        background-color: rgba($color-green-active, 0.2);
       }
     }
   }

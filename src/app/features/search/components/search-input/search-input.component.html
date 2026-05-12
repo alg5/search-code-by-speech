@@ -68,7 +68,11 @@
 
   <!-- Выбранный результат -->
   <div *ngIf="selectedProduct as p" class="result">
-    <div class="code-big">{{ p.scale_code.toString().padStart(3, '0') }} — </div>
+    <div class="code-big">{{ p.scale_code.toString().padStart(3, '0') }}</div>
     <div class="name">{{ displayName(p) }}</div>
+    <button class="copy-btn" (click)="copyCode(p.scale_code)" title="Скопировать код">
+      <i class="pi pi-copy"></i>
+      <span>{{ 'search.copy' | translate }}</span>
+    </button>
   </div>
 </div>

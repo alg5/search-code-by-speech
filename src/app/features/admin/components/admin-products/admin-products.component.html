@@ -20,12 +20,14 @@
               class="search-input"/>
 
         <!-- ❌ кнопка очистки -->
-        <button *ngIf="searchText()"
-                pButton
-                icon="pi pi-times"
-                class="p-button-text"
-                (click)="searchText.set('')">
-        </button>
+
+        <span class="p-inputgroup-addon">
+          <p-button *ngIf="searchText()"
+                    icon="pi pi-times"
+                    variant="text"
+                    rounded
+                    (onClick)="searchText.set('')" />
+        </span>
 
       </div>
       <spr-custom-dropdown [dropDownModel]="categoryModelFilter" 
@@ -43,7 +45,9 @@
     @if (filteredProducts().length > 0){
       <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>
     } @else {
-      <p>{{'admin.products.notFound'| translate}}</p>
+        @if (!loading()){
+          <p>{{'admin.products.notFound'| translate}}</p>
+        }
     } 
   </div>    
   <!-- } -->

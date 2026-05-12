@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { LangSwitchComponent } from '../../../../shared/components/lang-switch/lang-switch.component';
@@ -20,18 +20,26 @@ import { SupabaseService } from '../../../../core/services/supabase.service';
 })
 export class HeaderComponent {
   private readonly router = inject(Router);
+   private readonly cdr = inject(ChangeDetectorRef)
   private readonly supabaseService = inject(SupabaseService);
 
   userName = 'header.guest';
-  visitTime!: Date;
+  // visitTime!: Date;
   isUserLoggedIn = false;
   isUserMenuOpen = false;
   isAdmin = this.supabaseService.isAdmin; // Сигнал для определения роли пользователя
   // isAdmin = this.supabaseService.hasRole(['admin', 'superadmin']);
   // isSuperAdmin = this.supabaseService.hasRole(['superadmin']);
 
+  constructor() {
+    effect(() => {
+      const admin = this.isAdmin();
+      this.cdr.markForCheck();
+    });
+  }
+
   ngOnInit(): void {
-    this.visitTime = new Date();
+    // this.visitTime = new Date();
     const userToken = localStorage.getItem(environment.supabaseTokenName);
     if (userToken) {
       const parsedToken = JSON.parse(userToken);

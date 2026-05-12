@@ -155,9 +155,13 @@ export class AdminProductsComponent {
     const lang = this.langService.getLang().code;
 
     // ===== category dropdown =====
-    const categoryOptionsBase: ISelectOption[] = categories.map(c => ({
+    const sortedCategories = this.sortByPriorityAndName(
+      categories, 
+      c => this.getLocalizedName(c)
+    );
+    const categoryOptionsBase: ISelectOption[] = sortedCategories.map(c => ({
         Value: c.code,
-        Text: this.getLocalizedName(c),
+        Text: `${c.priority} - ${this.getLocalizedName(c)}`,
         Selected: false
     }))
 
@@ -181,10 +185,14 @@ export class AdminProductsComponent {
 
 
     // ===== processing dropdown =====
+    const sortedProcessing = this.sortByPriorityAndName(
+      processing, 
+      p => this.getLocalizedName(p)
+    );
 
-    const processingOptionsBase: ISelectOption[] = processing.map(p => ({
+    const processingOptionsBase: ISelectOption[] = sortedProcessing.map(p => ({
         Value: p.code,
-        Text: this.getLocalizedName(p),
+        Text: `${p.priority} - ${this.getLocalizedName(p)}`,
         Selected: false
     }))
     this.processingModelGrid = {
@@ -220,16 +228,11 @@ export class AdminProductsComponent {
     }
   }
 
-  private getLocalizedName(item: { name_en?: string | null; name_ru?: string | null; name_he?: string | null; code: string }) {
-    const lang = this.langService.getLang().code;
-    if (lang === 'en') {
-      return item.name_en || item.name_ru || item.name_he || item.code;
+    private getLocalizedName(item: IProductCategory | IProductProcessing) {
+      const lang = this.langService.getLang().code;
+      const fieldName = `name_${lang}` as keyof (IProductCategory | IProductProcessing) ;
+      return item[fieldName] as string || item.code;
     }
-    if (lang === 'he') {
-      return item.name_he || item.name_ru || item.name_en || item.code;
-    }
-    return item.name_ru || item.name_en || item.name_he || item.code;
-  }
 
    async loadProducts() {
     try {
@@ -263,30 +266,60 @@ export class AdminProductsComponent {
     this.loadInit();
   }
 
+  //#region custom-grid actions
+
   fillColumns() {
     this.columns = [
       { 
         headerText: 'ID'
         , dataField: 'id'
         , dataType: GridColumType.numeric
+        , width: '60px'
+        , minWidth: '60px'
       },
       { headerText: this.translate.transform('column.productCode')
         , dataField: 'scale_code'
         , dataType: GridColumType.numeric, isColFiltering: true
+        , width: '80px'
+        , minWidth: '80px'
       },
-      { headerText: this.translate.transform('column.productName'), dataField: 'product_name', isColFiltering: true },
-      { headerText: this.translate.transform('column.nameRu'), dataField: 'key_ru', dataType: GridColumType.textEditable, isColFiltering: true },
-      { headerText: this.translate.transform('column.nameHe'), dataField: 'key_he', dataType: GridColumType.textEditable, isColFiltering: true },
-      { headerText: this.translate.transform('column.nameFr'), dataField: 'key_fr', dataType: GridColumType.textEditable, isColFiltering: true },
+      { headerText: this.translate.transform('column.productName'), dataField: 'product_name', isColFiltering: true,
+      width: '180px',
+      maxWidth: '180px',
+      rowClass: 'col-ellipsis' },
+      { headerText: this.translate.transform('column.nameEn'), dataField: 'key_en', dataType: GridColumType.textEditable, isColFiltering: true,
+      width: '160px',
+      maxWidth: '160px',
+      rowClass: 'col-ellipsis' },
+      { headerText: this.translate.transform('column.nameRu'), dataField: 'key_ru', dataType: GridColumType.textEditable, isColFiltering: true,
+      width: '160px',
+      maxWidth: '160px',
+      rowClass: 'col-ellipsis' },
+      { headerText: this.translate.transform('column.nameHe'), dataField: 'key_he', dataType: GridColumType.textEditable, isColFiltering: true,
+      width: '160px',
+      maxWidth: '160px',
+      rowClass: 'col-ellipsis' },
+      { headerText: this.translate.transform('column.nameFr'), dataField: 'key_fr', dataType: GridColumType.textEditable, isColFiltering: true,
+      width: '160px',
+      maxWidth: '160px',
+      rowClass: 'col-ellipsis' },
       { headerText: this.translate.transform('column.categoryCode'), dataField: 'category_code'
-        , dataType: GridColumType.dropdownEditable
+        , dataType: GridColumType.dropdownEditable,
+      width: '140px',
+      maxWidth: '140px',
+      rowClass: 'col-ellipsis'
         ,formattedOptions: { dropdown: this.categoryModelGrid }
       },
       { headerText: this.translate.transform('column.processingCode'), dataField: 'processing_code'
-        , dataType: GridColumType.dropdownEditable
+        , dataType: GridColumType.dropdownEditable,
+      width: '140px',
+      maxWidth: '140px',
+      rowClass: 'col-ellipsis'
         , formattedOptions: { dropdown: this.processingModelGrid }
        },
-      { headerText: '', dataField: '', dataType: GridColumType.editButton},
+      { headerText: '', dataField: '', dataType: GridColumType.editButton,
+      width: '50px',
+      minWidth: '50px'},
 
     ];
   }
@@ -314,5 +347,24 @@ export class AdminProductsComponent {
 
   //#endregion custom-grid actions
   
+private sortByPriorityAndName<T extends { priority?: number | null }>(
+  items: T[], 
+  getName: (item: T) => string
+): T[] {
+  return [...items].sort((a, b) => {
+    const priorityA = a.priority ?? 0;
+    const priorityB = b.priority ?? 0;
+    
+    if (priorityB !== priorityA) {
+      return priorityB - priorityA;
+    }
+    
+    const nameA = getName(a).toLowerCase();
+    const nameB = getName(b).toLowerCase();
+    
+    return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+  });
+}
+
 
 }

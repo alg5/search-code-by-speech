@@ -8,7 +8,7 @@ import Aura from '@primeuix/themes/aura';
 import { MessageService } from 'primeng/api';
 
 import { routes } from './app.routes';
-import { MyBootstrapLikePreset } from './shared/models/constants';
+import { MyBootstrapLikePreset, MyGreenPreset } from './shared/models/constants';
 
 
 export const appConfig: ApplicationConfig = {
@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: MyBootstrapLikePreset,
+        preset: MyGreenPreset,
         options: {
             darkModeSelector: 'none', 
             cssLayer: {

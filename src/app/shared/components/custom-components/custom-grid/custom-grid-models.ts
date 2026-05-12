@@ -93,6 +93,10 @@ export interface IColumn  {
     isSpecialColumn?: boolean;
     isCellLink?: boolean;
     isColFiltering?: boolean;
+
+    width?: string;
+    minWidth?: string;
+    maxWidth?: string;
 }
 export interface ICustomGridModel {
     dataSource : Array<any>;
@@ -143,6 +147,9 @@ export interface IFormattedOptions{
     PlusSignForPositive? : boolean;
     dropdown?: IDropDownModel;
     required? : boolean;
+    width?: string;
+    minWidth?: string;
+    maxWidth?: string;
     
 }
 export interface ICustomGridEvent{

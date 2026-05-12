@@ -33,7 +33,162 @@ export const MyBootstrapLikePreset = definePreset(lara, {
         }
     }
 });
-
+export const MyGreenPreset = definePreset(lara, {
+    semantic: {
+        primary: {
+            50: '#f0fdf4',
+            100: '#dcfce7',
+            200: '#bbf7d0',
+            300: '#86efac',
+            400: '#4ade80',
+            500: '#22c55e',  // основной зелёный
+            600: '#16a34a',
+            700: '#15803d',  // hover
+            800: '#166534',
+            900: '#14532d',
+            950: '#052e16'
+        },
+        secondary: {
+            50: '#f5f5f5',
+            100: '#e0e0e0',
+            200: '#bdbdbd',
+            300: '#9e9e9e',
+            400: '#757575',
+            500: '#15803d',  // secondary button
+            600: '#424242',
+            700: '#14532d',  // secondary hover
+            800: '#212121',
+            900: '#111111',
+            950: '#0a0a0a'
+        },
+        success: {
+            50: '#f0fdf4',
+            100: '#dcfce7',
+            200: '#bbf7d0',
+            300: '#86efac',
+            400: '#4ade80',
+            500: '#22c55e',
+            600: '#16a34a',
+            700: '#15803d',
+            800: '#166534',
+            900: '#14532d',
+            950: '#052e16'
+        },
+        info: {
+            50: '#eff6ff',
+            100: '#dbeafe',
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8',
+            800: '#1e40af',
+            900: '#1e3a8a',
+            950: '#172554'
+        },
+        warning: {
+            50: '#fffbeb',
+            100: '#fef3c7',
+            200: '#fde68a',
+            300: '#fcd34d',
+            400: '#fbbf24',
+            500: '#f59e0b',
+            600: '#d97706',
+            700: '#b45309',
+            800: '#92400e',
+            900: '#78350f',
+            950: '#451a03'
+        },
+        danger: {
+            50: '#fef2f2',
+            100: '#fee2e2',
+            200: '#fecaca',
+            300: '#fca5a5',
+            400: '#f87171',
+            500: '#ef4444',
+            600: '#dc2626',
+            700: '#b91c1c',
+            800: '#991b1b',
+            900: '#7f1d1d',
+            950: '#450a0a'
+        },
+        surface: {
+            0: '#ffffff',
+            50: '#f8faf8',   // почти белый с зелёным оттенком
+            100: '#f0fdf4',  // светло-зелёный
+            200: '#dcfce7',
+            300: '#bbf7d0',
+            400: '#86efac',
+            500: '#4ade80',
+            600: '#22c55e',
+            700: '#16a34a',
+            800: '#15803d',
+            900: '#166534',
+            950: '#052e16'
+        }
+    },
+    colorScheme: {
+        light: {
+            surface: {
+                ground: '#f0fdf4',       // фон страницы
+                section: '#ffffff',      // фон секций
+                card: '#ffffff',         // фон карточек
+                overlay: '#ffffff',      // фон модалок/дропдаунов
+                border: '#bbf7d0',       // границы
+                hover: '#dcfce7',        // hover фон
+                text: '#166534',         // основной текст
+                textSecondary: '#15803d', // вторичный текст
+                textMuted: '#16a34a'    // приглушённый текст
+            },
+            primary: {
+                color: '#22c55e',
+                contrastColor: '#ffffff',
+                hoverColor: '#16a34a',
+                activeColor: '#15803d'
+            },
+            secondary: {
+                color: '#15803d',
+                contrastColor: '#ffffff',
+                hoverColor: '#14532d',
+                activeColor: '#166534'
+            },
+            content: {
+                background: '#ffffff',
+                borderRadius: '8px'
+            }
+        },
+        dark: {
+            surface: {
+                ground: '#052e16',       // тёмный фон страницы
+                section: '#14532d',      // фон секций
+                card: '#166534',         // фон карточек
+                overlay: '#166534',      // фон модалок
+                border: '#15803d',       // границы
+                hover: '#14532d',        // hover
+                text: '#f0fdf4',         // текст
+                textSecondary: '#dcfce7',
+                textMuted: '#bbf7d0'
+            },
+            primary: {
+                color: '#4ade80',
+                contrastColor: '#052e16',
+                hoverColor: '#86efac',
+                activeColor: '#bbf7d0'
+            },
+            secondary: {
+                color: '#22c55e',
+                contrastColor: '#052e16',
+                hoverColor: '#4ade80',
+                activeColor: '#86efac'
+            },
+            content: {
+                background: '#14532d',
+                borderRadius: '8px'
+            }
+        }
+    }
+});
 
 
 
@@ -47,37 +202,43 @@ export const LANGS: ILang[] = [
 ];
 
 export const Translations: ITranslations = {
-  'header.greeting': { en: 'Hello', ru: 'Привет', he: 'שלום' },
+  'header.greeting': { en: 'Hello', ru: 'Привет', he: 'שלום', fr: 'Bonjour' },
   // 'header.visitTimeDescription': { en: 'Your visit time is', ru: 'Время вашего визита', he: 'זמן הביקור שלך הוא' },
-  'header.guest': { en: 'Guest', ru: 'Гость', he: 'אורח' },
-  'header.user.dashboard': { en: 'User Dashboard', ru: 'Личный кабинет', he: 'איזור אישי' }, 
-  'header.admin.dashboard': { en: 'Admin Dashboard', ru: 'Панель администратора', he: 'לוח ניהול' } ,
-
+  'header.guest': { en: 'Guest', ru: 'Гость', he: 'אורח', fr: 'Invité' },
+  'header.user.dashboard': { en: 'User Dashboard', ru: 'Личный кабинет', he: 'איזור אישי', fr: 'Tableau de bord de l\'utilisateur' }, 
+  'header.admin.dashboard': { en: 'Admin Dashboard', ru: 'Панель администратора', he: 'לוח ניהול', fr: 'Tableau de bord de l\'administrateur' } ,
+  'header.subtitle': {
+      "en": "Food codes for NK695-compatible smart scales",
+      "ru": "Коды продуктов для умных весов NK695 и совместимых моделей",
+      "he": "קודי מזון למשקלי NK695 ולדגמים תואמים",
+      "fr": "Codes alimentaires pour balances intelligentes NK695 et modèles compatibles"
+    },
  
-  'search.placeholder': { en: 'Search', ru: 'Поиск', he: 'חיפוש' },
-  'search.title': { en: 'Search code of product', ru: 'Поиск кода продукта', he: 'חיפוש קוד המוצר' },
-  'search.subtitle': { en: 'Turn on the microphone for voice search', ru: 'Включите микрофон для голосового поиска', he: 'הפעל את המיקרופון לחיפוש קולי' },
-  'search.subtitle2': { en: 'Speak now...', ru: 'Говорите...', he: 'תדבר עכשיו...' },
-  'search.noResults': { en: 'No results found', ru: 'Результаты не найдены', he: 'לא נמצאו תוצאות' },
-  'search.error': { en: 'An error occurred while searching. Please try again.', ru: 'Произошла ошибка при поиске. Пожалуйста, попробуйте снова.', he: 'אירעה שגיאה במהלך החיפוש. אנא נסה שוב.' },
-  'search.tooltip.microphone.on': { en: 'Turn on microphone', ru: 'Включить микрофон', he: 'הפל מיקרופון' },
-  'search.tooltip.microphone.off': { en: 'Turn off microphone', ru: 'Выключить микрофон', he: 'כבה מיקרופון' },
+  'search.placeholder': { en: 'Search', ru: 'Поиск', he: 'חיפוש', fr: 'Rechercher' },
+  'search.title': { en: 'Search code of product', ru: 'Поиск кода продукта', he: 'חיפוש קוד המוצר', fr: 'Rechercher le code du produit' },
+  'search.subtitle': { en: 'Turn on the microphone for voice search', ru: 'Включите микрофон для голосового поиска', he: 'הפעל את המיקרופון לחיפוש קולי', fr: 'Allumez le microphone pour la recherche vocale' },
+  'search.subtitle2': { en: 'Speak now...', ru: 'Говорите...', he: 'תדבר עכשיו...', fr: 'Parlez maintenant...' },
+  'search.noResults': { en: 'No results found', ru: 'Результаты не найдены', he: 'לא נמצאו תוצאות', fr: 'Aucun résultat trouvé' },
+  'search.error': { en: 'An error occurred while searching. Please try again.', ru: 'Произошла ошибка при поиске. Пожалуйста, попробуйте снова.', he: 'אירעה שגיאה במהלך החיפוש. אנא נסה שוב.', fr: 'Une erreur est survenue lors de la recherche. Veuillez réessayer.' },
+  'search.tooltip.microphone.on': { en: 'Turn on microphone', ru: 'Включить микрофон', he: 'הפל מיקרופון', fr: 'Allumer le microphone' },
+  'search.tooltip.microphone.off': { en: 'Turn off microphone', ru: 'Выключить микрофон', he: 'כבה מיקרופון', fr: 'Éteindre le microphone' },
+  'search.copy': { en: 'Copy code', ru: 'Скопировать код', he: 'העתק קוד', fr: 'Copier le code' },
+  'button.save': { en: 'Save', ru: 'Сохранить', he: 'שמור', fr: 'Enregistrer' },
+  'button.cancel': { en: 'Cancel', ru: 'Отмена', he: 'ביטול', fr: 'Annuler' },
 
-  'button.save': { en: 'Save', ru: 'Сохранить', he: 'שמור' },
-  'button.cancel': { en: 'Cancel', ru: 'Отмена', he: 'ביטול' },
-  
-  'message.loading': { en: 'Loading...', ru: 'Загрузка...', he: 'טוען...' },
-  'message.error': { en: 'Error', ru: 'Ошибка', he: 'שגיאה' },
-  'message.success': { en: 'Operation completed successfully.', ru: 'Операция успешно завершена.', he: 'הפעולה הושלמה בהצלחה.' },
-  'message.fieldRequired': { en: 'This field is required.', ru: 'Это поле обязательно.', he: 'שדה זה נדרש.' },
-  'message.yes': { en: 'Yes', ru: 'Да', he: 'כן' },
-  'message.no': { en: 'No', ru: 'Нет', he: 'לא' },
-  'message.unexpectedError': { en: 'An unexpected error occurred. Please try again.', ru: 'Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.', he: 'אירעה שגיאה בלתי צפויה. אנא נסה שוב.' },
-  'message.error.categories.deleteHasProducts': { en: 'Cannot delete category because it has associated products.', ru: 'Невозможно удалить категорию, потому что у нее есть связанные продукты.', he: 'לא ניתן למחוק קטגוריה כי יש לה מוצרים משויכים.' },
+  'message.loading': { en: 'Loading...', ru: 'Загрузка...', he: 'טוען...', fr: 'Chargement...' },
+  'message.error': { en: 'Error', ru: 'Ошибка', he: 'שגיאה', fr: 'Erreur' },
+  'message.success': { en: 'Operation completed successfully.', ru: 'Операция успешно завершена.', he: 'הפעולה הושלמה בהצלחה.', fr: 'Opération terminée avec succès.' },
+  'message.fieldRequired': { en: 'This field is required.', ru: 'Это поле обязательно.', he: 'שדה זה נדרש.', fr: 'Ce champ est requis.' },
+  'message.yes': { en: 'Yes', ru: 'Да', he: 'כן', fr: 'Oui' },
+  'message.no': { en: 'No', ru: 'Нет', he: 'לא', fr: 'Non' },
+  'message.unexpectedError': { en: 'An unexpected error occurred. Please try again.', ru: 'Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.', he: 'אירעה שגיאה בלתי צפויה. אנא נסה שוב.', fr: 'Une erreur inattendue est survenue. Veuillez réessayer.' },
+  'message.error.categories.deleteHasProducts': { en: 'Cannot delete category because it has associated products.', ru: 'Невозможно удалить категорию, потому что у нее есть связанные продукты.', he: 'לא ניתן למחוק קטגוריה כי יש לה מוצרים משויכים.', fr: 'Impossible de supprimer la catégorie car elle a des produits associés.' },
     'message.error.categories.duplicateCode': {
     ru: 'Категория "{{code}}" уже существует.',
     en: 'Category "{{code}}" already exists.',
-    he: 'קטגוריה "{{code}}" כבר קיימת.'
+    he: 'קטגוריה "{{code}}" כבר קיימת.',
+    fr: 'La catégorie "{{code}}" existe déjà.'
     },
     'message.error.processing.duplicateCode': {
     ru: 'Способ обработки "{{code}}" уже существует.',
@@ -121,7 +282,6 @@ export const Translations: ITranslations = {
   'admin.processing': { en: 'Processing Types', ru: 'Способы обработки', he: 'סוגי עיבוד' },
   'admin.users': { en: 'Users', ru: 'Пользователи', he: 'משתמשים' },
   'admin.dashboard': { en: 'Dashboard', ru: 'Главная панель', he: 'לוח מחוצנים' },
-  'admin.categories.notFound': { en: 'No categories found.', ru: 'Категории не найдены.', he: 'לא נמצאו קטגוריות.' },
   
   'admin.categories.total': { en: 'Total Categories', ru: 'Всего категорий ', he: 'סה"כ קטגוריות' },
   'admin.categories.add': { en: 'Add Category', ru: 'Добавить категорию', he: 'הוסף קטגוריה' },
@@ -149,10 +309,9 @@ export const Translations: ITranslations = {
 
   'admin.processing.confirmDelete': { en: 'Are you sure you want to delete this processing type?', ru: 'Вы уверены, что хотите удалить этот тип обработки?', he: 'האם אתה בטוח שברצונך למחוק סוג עיבוד זה?' },
   'admin.processing.notFound': { en: 'No processing types found.', ru: 'Способы обработки не найдены.', he: 'לא נמצאו סוגי עיבוד.' },
+  'admin.products.notFound': { en: 'No products found.', ru: 'Продукты не найдены.', he: 'לא נמצאו מוצרים.' },
+  'admin.categories.notFound': { en: 'No categories found.', ru: 'Категории не найдены.', he: 'לא נמצאו קטגוריות.' },
 
- 
-
-  
   // --- переводы для AuthComponent ---
   'auth.signUp': { en: 'Sign Up', ru: 'Регистрация', he: 'הרשמה' },
   'auth.signIn': { en: 'Sign In', ru: 'Войти', he: 'התחברות' },
@@ -185,6 +344,15 @@ export const Translations: ITranslations = {
   // 
 
   // --- переводы для Header ---
-  
+  'breadcrumb.admin': { en: 'Admin', ru: 'Админ', he: 'אדמין', fr: 'Admin' },
+  'breadcrumb.user': { en: 'User', ru: 'Пользователь', he: 'משתמש', fr: 'Utilisateur' },
+  'breadcrumb.dashboard': { en: 'Dashboard', ru: 'Панель управления', he: 'לוח מחוונים', fr: 'Tableau de bord' },
+  'breadcrumb.profile': { en: 'Profile', ru: 'Профиль', he: 'פרופיל', fr: 'Profil' },
+  'breadcrumb.products': { en: 'Products', ru: 'Продукты', he: 'מוצרים', fr: 'Produits' },
+  'breadcrumb.categories': { en: 'Categories', ru: 'Категории', he: 'קטגוריות', fr: 'Catégories' },
+  'breadcrumb.processing': { en: 'Processing Types', ru: 'Способы обработки', he: 'סוגי עיבוד', fr: 'Types de traitement' },
+  'breadcrumb.users': { en: 'Users', ru: 'Пользователи', he: 'משתמשים', fr: 'Utilisateurs' },
+  'breadcrumb.auth': { en: 'Auth', ru: 'Авторизация', he: 'אימות', fr: 'Auth' },
+  'breadcrumb.guest': { en: 'Guest', ru: 'Гость', he: 'אורח', fr: 'Invité' }
  
 };

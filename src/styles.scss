@@ -11,7 +11,7 @@
 
 body {
   background-color: #ffffff !important;
-  color: $color-blue !important;
+  color: $color-green !important;
   font-family: 
     system-ui,
     -apple-system,
@@ -30,10 +30,30 @@ body {
 }
 .autocomplete-results {
   background-color: #ffffff !important;
-  color: $color-blue !important;
+  color: $color-green !important;
 }
 .page-container {
   width: 100%;
   max-width: 1200px;   
   margin: 0 auto;
 }
+// styles.scss или custom-primeng.scss
+
+.col-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
+  // Для вложенных span/div в ячейках
+  > span, > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 100%;
+  }
+}
+//for test only
+// * {
+//   outline: 1px dashed rgba(255, 100, 100, 0.3);
+// }
