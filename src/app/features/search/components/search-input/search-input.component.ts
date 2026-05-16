@@ -1,4 +1,3 @@
-// search-input.component.ts
 import { Component, computed, effect, EventEmitter, inject, OnInit, Input, Output, signal, ViewChild, ElementRef } from '@angular/core';
 import { LanguageService } from '../../../../core/services/language.service';
 import { SpeechRecognitionService } from '../../../../core/services/speech-recognition.service';
@@ -39,46 +38,41 @@ export class SearchInputComponent implements OnInit {
   products = this.productsState.products;
 
   fuse!: Fuse<IProduct>;
-  // ✅ Реактивный сигнал языка
   lang = computed(() => this.languageService.langCode());
 
   selectedProduct: IProduct | null = null;
   isListening = false;
 
-  // ✅ НОВОЕ: переменная для видимости кнопки Mock
   isDev = environment.enableMockSpeech;
-  searchTextValue = ''; // обычная переменная для ngModel
-  isSearchActive = false; // для управления классами и стилями
+  searchTextValue = '';
+  isSearchActive = false;
   
+  // ✅ Недавние продукты (карточки)
+  recentProducts = signal<IProduct[]>([]);
+  private readonly RECENT_KEY = 'recent_products';
+  private readonly MAX_RECENT = 3;
+
   constructor() {
     effect(() => {
       const data = this.products();
-      console.log("SearchInputComponent:products", data);
-
+      const currentLang = this.lang();
+      
+      console.log(`[Fuse] Rebuilding for lang: ${currentLang}, products: ${data.length}`);
+      
       if (!data.length) return;
       this.initFuse();
     });
   }
 
   ngOnInit(): void {
-    console.log(' SearchInputComponent: ngOnInit');
-    // инициализация реального голосового поиска
     this.speechService.init();
+    this.loadRecentProducts();
 
-
-    console.log('[COMPONENT] speechService instance:', this.speechService);
-    // ✅ Подписка на реальные результаты речи
     this.speechService.onResult.subscribe(text => {
-      console.log('🎤 [VOICE] Распознано:', text);
-
-      // вставляем в сигнал и обычное поле для ngModel
       this.searchText.set(text);
       this.searchTextValue = text;
-
-      // вызываем твой умный поиск
       this.search({ query: text });
-
-      // 🔥 принудительно открыть dropdown
+      
       setTimeout(() => {
         this.autoComplete?.show();
       }, 10);
@@ -89,44 +83,82 @@ export class SearchInputComponent implements OnInit {
     });
   }
 
-  // initFuse() {
-  //   this.fuse = new Fuse(this.products(), {
-  //     keys: [
-  //       { name: 'product_name', weight: 0.4 },
-  //       { name: 'key_ru', weight: 0.3 },
-  //       { name: 'key_he', weight: 0.3 },
-  //       {
-  //         name: 'scale_code',
-  //         weight: 0.5,
-  //         getFn: (obj) => String(obj.scale_code)
-  //       }
-  //     ],
-  //     threshold: 0.3,
-  //     ignoreLocation: true,
-  //     minMatchCharLength: 2
-  //   });
-  // }
-
-
-
-    //  threshold: 0.45,
-
-initFuse() {
-  this.fuse = new Fuse(this.products(), {
-    includeScore: true,
-    keys: [
-      { name: 'key_ru', weight: 1.0 }, // Увеличиваем вес главного ключа до максимума
-      { name: 'key_en', weight: 0.5 },
-      { name: 'key_he', weight: 0.5 },  
-      { name: 'key_fr', weight: 0.5 }
-    ],
-    threshold: 0.2,       // БЫЛО 0.3. Сделали строже, чтобы отсечь лишние хвосты букв
-    location: 0,          // Ищем с начала строки
-    distance: 30,         // Чем дальше лишние буквы от начала, тем хуже score
-    ignoreLocation: false, // ВАЖНО: теперь нам ВАЖНО, где находится совпадение
-    minMatchCharLength: 2
-  });
+// ✅ Загрузка недавних продуктов из localStorage
+private loadRecentProducts(): void {
+  try {
+    const saved = localStorage.getItem(this.RECENT_KEY);
+    if (!saved) return;
+    
+    const codes = JSON.parse(saved) as number[];
+    
+    // Ждём загрузки продуктов из Supabase
+    const tryLoad = () => {
+      const products = this.products();
+      if (!products.length) {
+        setTimeout(tryLoad, 300); // пробуем снова через 300мс
+        return;
+      }
+      
+      const found = codes
+        .map(code => products.find(p => p.scale_code === code))
+        .filter((p): p is IProduct => !!p);
+      
+      this.recentProducts.set(found);
+    };
+    
+    tryLoad();
+  } catch (e) {
+    console.warn('Failed to load recent products', e);
+  }
 }
+
+  private saveRecentProducts(): void {
+    try {
+      const codes = this.recentProducts().map(p => p.scale_code);
+      localStorage.setItem(this.RECENT_KEY, JSON.stringify(codes));
+    } catch (e) {
+      console.warn('Failed to save recent products', e);
+    }
+  }
+
+  addToRecent(product: IProduct): void {
+    const current = this.recentProducts();
+    const filtered = current.filter(p => p.scale_code !== product.scale_code);
+    const updated = [product, ...filtered].slice(0, this.MAX_RECENT);
+    
+    this.recentProducts.set(updated);
+    this.saveRecentProducts();
+  }
+
+  selectFromRecent(product: IProduct): void {
+    this.selectedProduct = product;
+    this.searchText.set(this.displayName(product));
+    this.searchTextValue = this.displayName(product);
+    
+    if (this.isListening) {
+      this.speechService.stop();
+    }
+  }
+
+  initFuse() {
+    const currentLang = this.lang();
+    const allLangs = this.languageService.availableLangCodes();
+    
+    const keys = allLangs.map(lang => ({
+      name: `key_${lang}` as const,
+      weight: lang === currentLang ? 1.0 : 0.5
+    }));
+
+    this.fuse = new Fuse(this.products(), {
+      includeScore: true,
+      keys,
+      threshold: 0.2,
+      location: 0,
+      distance: 30,
+      ignoreLocation: false,
+      minMatchCharLength: 2
+    });
+  }
 
   normalize(text: string): string {
     return text
@@ -137,106 +169,111 @@ initFuse() {
       .trim();
   }
 
+  search(event: any) {
+    const query = (event?.query ?? '')?.toLowerCase().trim();
 
-search(event: any) {
-  const query = (event?.query ?? '')?.toLowerCase().trim();
+    if (!query) {
+      this.results.set([]);
+      return;
+    }
 
-  if (!query) {
-    this.results.set([]);
-    return;
+    if (/^\d+$/.test(query)) {
+      const exact = this.products().filter(p =>
+        p.scale_code?.toString().startsWith(query)
+      );
+      this.results.set(exact.slice(0, 5));
+      return;
+    }
+
+    const fuseResults = this.fuse.search(query);
+
+    const productsWithWeights = fuseResults.map(r => {
+      const item = r.item;
+      const fuseScore = r.score ?? 0;
+      const catPriority = item.category?.priority ?? 0;
+      const procPriority = item.processing?.priority ?? 0;
+      const basePriority = (catPriority * 2) + (procPriority * 0.5);
+      const confidence = Math.pow(1 - fuseScore, 3);
+      const firstWord = (item.key_ru ?? '').split(',')[0].trim();
+      const lengthDiff = Math.abs(firstWord.length - query.length);
+      const lengthFactor = 1 / (1 + lengthDiff);
+      const finalWeight = basePriority * confidence * lengthFactor;
+
+      return { ...item, finalWeight };
+    });
+
+    productsWithWeights.sort((a, b) => b.finalWeight - a.finalWeight);
+
+    const finalResultsClean = productsWithWeights
+      .map(({ finalWeight, ...rest }) => rest)
+      .slice(0, 20);
+
+    this.results.set(finalResultsClean);
   }
 
-  // 🔢 1. Поиск по числовому коду (Scale Code)
-  if (/^\d+$/.test(query)) {
-    const exact = this.products().filter(p =>
-      p.scale_code?.toString().startsWith(query)
-    );
-    this.results.set(exact.slice(0, 5));
-    return;
-  }
-
-  // 🔍 2. Поиск через Fuse.js
-  const fuseResults = this.fuse.search(query);
-
-  // 🛠 3. Расчет итогового веса с учетом лингвистики и приоритетов
-  const productsWithWeights = fuseResults.map(r => {
-    const item = r.item;
-    const fuseScore = r.score ?? 0;
-
-    const catPriority = item.category?.priority ?? 0;
-    const procPriority = item.processing?.priority ?? 0;
-
-    // Базовый приоритет (научная ценность из базы)
-    const basePriority = (catPriority * 2) + (procPriority * 0.5);
-
-    // Уверенность Fuse (возводим в куб для резкого разделения результатов)
-    const confidence = Math.pow(1 - fuseScore, 3);
-
-    /**
-     * 📏 БОНУС ЗА СООТВЕТСТВИЕ ДЛИНЕ (Length Matching)
-     * Берем первое слово из названия (до запятой), чтобы сравнивать "Манго" с "Манга",
-     * а не "Манго, свежее, без косточки..." с "Манга".
-     */
-    const firstWord = (item.key_ru ?? '').split(',')[0].trim();
-    const lengthDiff = Math.abs(firstWord.length - query.length);
+  // selectCode(event: any) {
+  //   const product = event?.value;
+  //   if (!product) return;
     
-    // Коэффициент длины: если длины равны — 1.0, если разница в 3 буквы — 0.25
-    const lengthFactor = 1 / (1 + lengthDiff);
-
-    // Итоговый вес: Приоритет * Точность букв * Соответствие длине
-    const finalWeight = basePriority * confidence * lengthFactor;
-
-    return {
-      ...item,
-      finalWeight
-    };
-  });
-
-  // 🚀 4. Сортировка: от самого высокого веса к самому низкому
-  productsWithWeights.sort((a, b) => b.finalWeight - a.finalWeight);
-
-  // 🧹 5. Очистка и ограничение выборки (20 записей)
-  const finalResultsClean = productsWithWeights
-    .map(({ finalWeight, ...rest }) => rest)
-    .slice(0, 20);
-
-  this.results.set(finalResultsClean);
-
-  console.log(`📊 Search for "${query}":`, finalResultsClean);
-}
-
-
-
-  selectCode(event: any) {
-    const product = event?.value;
-    this.searchText.set(this.displayName(product));
-    this.searchTextValue = this.displayName(product); // для ngModel
-    this.selectedProduct = product;
-    console.log('✅ Выбран продукт:', product);
+  //   this.searchText.set(this.displayName(product));
+  //   this.searchTextValue = this.displayName(product);
+  //   this.selectedProduct = product;
+    
+  //   this.addToRecent(product);
+    
+  //   if (this.isListening) {
+  //     this.speechService.stop();
+  //   }
+    
+  //   setTimeout(() => {
+  //     this.searchText.set('');
+  //     this.searchTextValue = '';
+  //     this.results.set([]);
+  //   }, 1500);
+  // }
+selectCode(event: any) {
+  const product = event?.value;
+  if (!product) return;
+  
+  this.searchText.set(this.displayName(product));
+  this.searchTextValue = this.displayName(product);
+  this.selectedProduct = product;
+  this.addToRecent(product);
+  
+  // ✅ Убираем фокус со ВСЕГО — клавиатура точно закроется
+  setTimeout(() => {
+    (document.activeElement as HTMLElement)?.blur();
+    window.scrollTo(0, 0); // дополнительно — скроллим к результату
+  }, 100);
+  
+  // Останавливаем микрофон
+  if (this.isListening) {
+    this.speechService.stop();
   }
+  
+  // Очищаем поле через 1.5 сек
+  setTimeout(() => {
+    this.searchText.set('');
+    this.searchTextValue = '';
+    this.results.set([]);
+  }, 1500);
+}
 
   startVoiceSearch() {
     this.speechService.toggle();
   }
 
   startMockSpeech() {
-    console.log('🚀 [MOCK] Старт!');
-
-    if (!this.fuse) {
-      console.error('❌ Fuse не готов!');
-      return;
-    }
+    if (!this.fuse) return;
 
     this.isListening = true;
     const products = ['яблоко', 'банан', 'молоко', 'курица', 'хлеб', 'помидор'];
     const randomProduct = products[Math.floor(Math.random() * products.length)];
 
     setTimeout(() => {
-      console.log('🎤 [MOCK] Распознано:', randomProduct);
-
       this.searchTextValue = randomProduct;
       this.searchText.set(randomProduct);
-
+      
       const event = { query: randomProduct };
       this.search(event);
 
@@ -244,47 +281,38 @@ search(event: any) {
         this.autoComplete?.show();
       }, 0);
 
-      console.log('📊 results():', this.results().length);
       this.isListening = false;
     }, 1500);
   }
 
- onSearchTextChange(text: string) {
-  this.searchTextValue = text;        // для ngModel
-  this.searchText.set(text);          // для реактивности
-  this.search({ query: text });       // твой умный поиск
-  console.log('🔹 onSearchTextChange triggered, text=', text);
-  console.log('🔹 onSearchTextChange, searchTextValue=', this.searchTextValue, 'results=', this.results().map(r => this.displayName(r)));
-}
-
-  get fieldName(): string {
-    const lang = this.lang();
-    return `key_${lang}`;
+  onSearchTextChange(text: string) {
+    this.searchTextValue = text;
+    this.searchText.set(text);
+    
+    if (text.length >= 2) {
+      this.search({ query: text });
+    } else if (!text) {
+      this.results.set([]);
+    }
   }
 
-  // displayName(p: IProduct) {
-  //   switch (this.lang()) {
-  //     case 'ru': return p.key_ru;
-  //     case 'he': return p.key_he;
-  //     case 'fr': return p.key_fr;
-  //     default: return p.product_name;
-  //   }
-  // }
+  get fieldName(): string {
+    return `key_${this.lang()}`;
+  }
+
   displayName(p: IProduct): string {
-    const code = this.lang();
-    // Строим ключ: key_ru, key_he, key_fr...
-    const key = `key_${code}` as keyof IProduct;
+    const key = `key_${this.lang()}` as keyof IProduct;
     return (p[key] as string) || p.product_name;
   }
 
   submit() {
     this.searchSubmit.emit(this.term);
   }
+
   copyCode(code: number) {
-  const formattedCode = code.toString().padStart(3, '0');
-  navigator.clipboard.writeText(formattedCode).then(() => {
-    // Можно показать toast или просто мигнуть кнопкой
-    console.log('Код скопирован:', formattedCode);
-  });
-}
+    const formattedCode = code.toString().padStart(3, '0');
+    navigator.clipboard.writeText(formattedCode).then(() => {
+      console.log('Код скопирован:', formattedCode);
+    });
+  }
 }

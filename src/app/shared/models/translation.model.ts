@@ -7,11 +7,6 @@ export interface ILang {
   iconClass?: string;    // for flag-icons
 }
 
-export interface ILang {
-  code: LangCode;
-  label: string;
-  iconClass?: string;
-}
 
 export interface TranslationValue {
   en: string;

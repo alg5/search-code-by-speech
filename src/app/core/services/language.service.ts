@@ -1,27 +1,56 @@
-import { computed, effect, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ILang, ITranslations, TranslationValue } from '../../shared/models/translation.model';
-import { LANGS, Translations } from '../../shared/models/constants';
+import { Translations } from '../../shared/models/constants';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
+  private readonly http = inject(HttpClient);
 
-  currentLang = signal<ILang>(LANGS[0]);
+  // ✅ Загруженные языки из assets/languages.json (замена хардкода LANGS)
+  languages = signal<ILang[]>([]);
   
-   // ✅ Добавляем Observable для совместимости
+  currentLang = signal<ILang | null>(null);
+  
+  // ✅ Доступные коды языков для Fuse и других компонентов
+  availableLangCodes = computed(() => this.languages().map(l => l.code));
+
+  // ✅ Добавляем Observable для совместимости
   langChanges$ = toObservable(this.currentLang);
 
   private readonly STORAGE_KEY = 'spr_lang';
   private _translations: ITranslations = Translations;
 
   constructor() {
-    const saved = localStorage.getItem(this.STORAGE_KEY);
-    if (saved) {
-      const lang = LANGS.find(l => l.code === saved);
-      if (lang) {
-        this.currentLang.set(lang);
+    this.loadLanguages();
+  }
+
+  private loadLanguages(): void {
+    this.http.get<ILang[]>('assets/config/languages.json').subscribe({
+      next: (data) => {
+        this.languages.set(data);
+        
+        // Восстанавливаем сохранённый язык или ставим первый из JSON
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        const savedLang = saved ? data.find(l => l.code === saved) : null;
+        
+        this.currentLang.set(savedLang ?? data[0] ?? null);
+      },
+      error: (err) => {
+        console.error('Failed to load languages:', err);
+        // Fallback — минимальный набор если JSON не загрузился
+        const fallback: ILang[] = [
+          { code: 'en', label: 'English', iconClass: 'fi fi-gb' },
+          { code: 'ru', label: 'Русский', iconClass: 'fi fi-ru' }
+        ];
+        this.languages.set(fallback);
+        
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        const savedLang = saved ? fallback.find(l => l.code === saved) : null;
+        this.currentLang.set(savedLang ?? fallback[0]);
       }
-    }
+    });
   }
 
   setLang(lang: ILang) {
@@ -29,18 +58,22 @@ export class LanguageService {
     localStorage.setItem(this.STORAGE_KEY, lang.code);
   }
 
-  getLang(): ILang {
+  getLang(): ILang | null {
     return this.currentLang();
   }
 
+  // ✅ Замена getAllLangs() — теперь из JSON
   getAllLangs(): ILang[] {
-    return LANGS;
+    return this.languages();
   }
 
-  langCode = computed(() => this.currentLang().code);
+  langCode = computed(() => this.currentLang()?.code ?? 'ru');
 
   langEffect = effect(() => {
-    console.log('Язык изменился на:', this.currentLang().label);
+    const lang = this.currentLang();
+    if (lang) {
+      console.log('Язык изменился на:', lang.label);
+    }
   });
 
   /**
@@ -51,7 +84,6 @@ export class LanguageService {
     fallback: string = '',
     variables?: Record<string, string | number>
   ): string {
-
     const lang = this.langCode();
     const value: TranslationValue | undefined = Translations[key];
 
@@ -61,7 +93,6 @@ export class LanguageService {
 
     let translatedText = (value[lang] ?? fallback) || key;
 
-    // ✅ FIX: support {{var}} format
     if (variables) {
       for (const varKey in variables) {
         if (Object.prototype.hasOwnProperty.call(variables, varKey)) {

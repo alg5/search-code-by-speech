@@ -55,7 +55,16 @@
                             </div> 
                             
 
-
+                            <div *ngIf="col.dataType == GridColumType.calculated"
+                                class="calculated-cell">
+                                {{ col.calculateValue ? col.calculateValue(rowData) : rowData[col.dataField] }}
+                            </div>
+                            <div *ngIf="col.dataType == GridColumType.imgPrimengIconClick"
+                                class="cell-link"
+                                (click)="onClickCell(col, rowData)">
+                                <span><i class="pi" [ngClass]="col.formattedOptions.primengIcon"></i></span> 
+                            </div>
+                            
                         
                             <div *ngIf="col.dataType == GridColumType.saveButton" class="save-button-wrapper" >
                                     @if (rowData.isDirty && !rowData.isSaved) {

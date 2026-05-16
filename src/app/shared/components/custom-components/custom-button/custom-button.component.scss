@@ -1,0 +1,16 @@
+:host {
+  display: inline-block;
+}
+
+button {
+  transition: all 0.2s ease;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .pi-spinner {
+    font-size: 1rem;
+  }
+}

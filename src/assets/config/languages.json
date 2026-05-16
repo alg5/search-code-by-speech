@@ -1,0 +1,6 @@
+[
+  { "code": "en", "label": "English", "iconClass": "fi fi-gb" },
+  { "code": "ru", "label": "Русский", "iconClass": "fi fi-ru" },
+  { "code": "he", "label": "עברית", "iconClass": "fi fi-il" },
+  { "code": "fr", "label": "Français", "iconClass": "fi fi-fr" }
+]

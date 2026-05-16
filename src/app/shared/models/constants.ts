@@ -223,6 +223,7 @@ export const Translations: ITranslations = {
   'search.tooltip.microphone.on': { en: 'Turn on microphone', ru: 'Включить микрофон', he: 'הפל מיקרופון', fr: 'Allumer le microphone' },
   'search.tooltip.microphone.off': { en: 'Turn off microphone', ru: 'Выключить микрофон', he: 'כבה מיקרופון', fr: 'Éteindre le microphone' },
   'search.copy': { en: 'Copy code', ru: 'Скопировать код', he: 'העתק קוד', fr: 'Copier le code' },
+  'search.recent.title': { en: 'Recent products', ru: 'Недавние продукты', he: 'מוצרים אחרונים', fr: 'Produits récents' },
   'button.save': { en: 'Save', ru: 'Сохранить', he: 'שמור', fr: 'Enregistrer' },
   'button.cancel': { en: 'Cancel', ru: 'Отмена', he: 'ביטול', fr: 'Annuler' },
 
@@ -255,13 +256,54 @@ export const Translations: ITranslations = {
   'message.success.categories.created': { en: 'Category created successfully.', ru: 'Категория успешно создана.', he: 'הקטגוריה נוצרה בהצלחה.' },
   'message.success.categories.deleted': { en: 'Category deleted successfully.', ru: 'Категория успешно удалена.', he: 'הקטגוריה נמחקה בהצלחה.' },
   'message.success.categories.updated': { en: 'Category updated successfully.', ru: 'Категория успешно обновлена.', he: 'הקטגוריה עודכנה בהצלחה.' },
-
+'message.success.products.updated': {
+  en: 'Product updated successfully',
+  ru: 'Продукт успешно обновлён',
+  he: 'המוצר עודכן בהצלחה',
+  fr: 'Produit mis à jour avec succès'
+},
 
   'caption.name.en': { en: 'English Name (EN)', ru: 'Английское название (EN)', he:   ' (EN)שם (אנגלית)' },
   'caption.name.ru': { en: 'Russian Name (RU)', ru: 'Русское название (RU)', he:   ' (RU)שם (רוסית)' },
   'caption.name.he': { en: 'Hebrew Name (HE)', ru: 'Название на иврите (HE)', he:   ' (HE)שם (עברית)' },
   'caption.name.fr': { en: 'French Name (FR)', ru: 'Французское название (FR)', he:   ' (FR)שם (צרפתית)' },
   'caption.priority': { en: 'Priority', ru: 'Приоритет', he: 'עדיפות' },
+  'caption.translations': { 
+  en: 'Translations', 
+  ru: 'Переводы', 
+  he: 'תרגומים', 
+  fr: 'Traductions' 
+},
+'caption.allLanguagesRequired': { 
+  en: '(all languages are required)', 
+  ru: '(все языки обязательны)', 
+  he: '(כל השפות נדרשות)', 
+  fr: '(toutes les langues sont requises)' 
+},
+'caption.classification': { 
+  en: 'Classification', 
+  ru: 'Классификация', 
+  he: 'סיווג', 
+  fr: 'Classification' 
+},
+'caption.basePriority': { 
+  en: 'Base Priority', 
+  ru: 'Базовый приоритет', 
+  he: 'עדיפות בסיסית', 
+  fr: 'Priorité de base' 
+},
+'caption.current': { 
+  en: 'Current', 
+  ru: 'Текущий', 
+  he: 'נוכחי', 
+  fr: 'Actuel' 
+},
+'caption.new': { 
+  en: 'New', 
+  ru: 'Новый', 
+  he: 'חדש', 
+  fr: 'Nouveau' 
+},
 
   'column.id': { en: 'ID', ru: 'ID', he: 'ID' },
   'column.code': { en: 'Code', ru: 'Код', he: 'קוד' },

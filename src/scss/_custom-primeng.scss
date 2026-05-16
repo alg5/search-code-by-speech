@@ -2,10 +2,80 @@
 
 // #region CustomGrid
 
+.p-datatable-table {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  table-layout: auto !important;
+     
+  // replace sort icon
+  & p-sorticon .pi-sort-alt:before {
+    content: "\2193";
+    width: 8.2px;
+    height: 9.6px;
+    flex-grow: 0;
+    color: $color-green;
+  }
+}
+
+.p-datatable-thead {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+} 
+
+.p-datatable-thead th {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: right;
+  color: $color-green;
+  padding: 12px 16px;
+  border: solid 1px $border-table-header;
+  background: linear-gradient(180deg, $bg-green-odd 0%, $bg-green-header-end 100%);
+  vertical-align: top;
+
+  .th-display {
+    display: flex; 
+    align-items: flex-start !important;
+    height: 100% !important;
+  }
+}
+
+.p-datatable-tbody tr {
+  background-color: white;
+}
+
+.p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+  background: $bg-green-odd;
+}
+
+.p-datatable-tbody td {
+  font-weight: normal;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-align: right !important;
+  padding: 12px 16px;
+  border: solid 1px $border-table-cell;
+  color: $color-green;
+}
+
+.p-datatable.p-datatable-striped .p-datatable-tbody > tr:hover {
+  background: $bg-green-highlight !important;
+}
+
+.p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-highlight {
+  background: $bg-green-soft !important;
+  color: $color-green !important;
+}
+
+.ui-sortable-column-icon.pi.pi-fw.pi-sort {
+  visibility: hidden;
+}
+
+// #endregion CustomGrid
+
+
 .p-datatable-table{
-  background-color: aqua !important;
-  font-family: SimplerPro_BEZEQ_HEBREW2;
-  font-size: 16px;
+  font-family: 'Segoe UI', system-ui, sans-serif; // или твой шрифт
+  font-size: 14px;
   table-layout: auto !important;
      
   // replace sort icon
@@ -22,17 +92,17 @@
   border-top-right-radius: 12px;
 } 
 
-.p-datatable-thead th{
-  font-weight: 700;
-  letter-spacing: 0.667px;
-  text-align: right;
-  color: $color-green;
-  padding: 16px 16px 16px 24px;
-  border: solid 1px $border-table-header;
-  background-color: $bg-table-header;
-  vertical-align: top;
 
-  .th-display {
+.p-datatable-thead th {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: right;
+  color: #2d5a3d; // тёмно-зелёный
+  padding: 12px 16px;
+  border: solid 1px #d4e8da; // светло-зелёная граница
+  background: linear-gradient(180deg, #e8f5e9 0%, #d4edda 100%);
+  vertical-align: top;
+   .th-display {
     display: flex; 
     align-items: flex-start !important;
     height: 100% !important;

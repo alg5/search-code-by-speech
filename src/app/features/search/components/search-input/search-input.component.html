@@ -1,24 +1,42 @@
 <div class="search-wrapper">
+  <!-- Горизонтальные чипсы недавних продуктов -->
+  @if(recentProducts().length > 0) {
+    <div class="recent-bar">
+      @for(product of recentProducts(); track product.scale_code) {
+        <div class="recent-chip" (click)="selectFromRecent(product)">
+          <span class="chip-code">{{ product.scale_code.toString().padStart(3, '0') }}</span>
+          <span class="chip-name">{{ displayName(product) }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Заголовок -->
   <div class="search-title">
     {{ 'search.title' | translate }}
   </div>
+
+  <!-- Подсказка голосового поиска -->
   <div class="voice-input-container">
     @if(!isListening) {
-      <div class="subtitle">🎤 {{ 'search.subtitle' | translate }}</div>
-    }
-    @else {
-      <div class="subtitle active">🗣️ {{ 'search.subtitle2' | translate }}</div>
+      <div class="subtitle">
+        {{ 'search.subtitle' | translate }}
+      </div>
+    } @else {
+      <div class="subtitle active">
+        <span class="recording-dot"></span>
+        {{ 'search.subtitle2' | translate }}
+      </div>
     }
   </div>
 
+  <!-- Поле поиска -->
   <div class="search-row">
     <div class="p-inputgroup glossy-search">
-      <!-- Лупа слева -->
       <span class="p-inputgroup-addon search-icon">
         <i class="pi pi-search"></i>
       </span>
 
-      <!-- Autocomplete -->
       <p-autoComplete #autoComplete
         [(ngModel)]="searchTextValue"
         (ngModelChange)="onSearchTextChange($event)"
@@ -31,14 +49,22 @@
         class="search-autocomplete">
 
         <ng-template let-item pTemplate="item">
-          <div class="item">
-            <span class="code">{{ item.scale_code.toString().padStart(3, '0') }} — </span>
-            <span>{{ displayName(item) }}</span>
+          <div class="search-item">
+            <span class="code">{{ item.scale_code.toString().padStart(3, '0') }}</span>
+            <span class="divider">—</span>
+            <span class="name">{{ displayName(item) }}</span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="empty">
+          <div class="empty-state">
+            <i class="pi pi-search-minus"></i>
+            <span>{{ 'search.noResults' | translate }}</span>
           </div>
         </ng-template>
       </p-autoComplete>
 
-      <!-- Микрофон справа -->
+      <!-- Микрофон ASCII -->
       <button type="button"
         class="mic-btn"
         (click)="startVoiceSearch()"
@@ -47,32 +73,34 @@
         [attr.title]="isListening 
           ? ('search.tooltip.microphone.off' | translate) 
           : ('search.tooltip.microphone.on' | translate)
-        "
-        >
+        ">
         {{ isListening ? '🎙️' : '🎤' }}
       </button>
     </div>
   </div>
 
-  <!-- Mock кнопка для DEV -->
-  <div *ngIf="isDev" class="dev-controls">
-    <button class="mock-btn"
-            (click)="startMockSpeech()"
-            [class.active]="isListening"
-            title="🎭 [DEV] Mock распознавание">
-      <i class="pi pi-play"></i>
-      <span>Mock Speech</span>
-    </button>
-    <span class="dev-badge">DEV</span>
-  </div>
+  <!-- Mock DEV -->
+  @if(isDev) {
+    <div class="dev-controls">
+      <button class="mock-btn" (click)="startMockSpeech()" [class.active]="isListening">
+        <i class="pi pi-play"></i>
+        <span>Mock Speech</span>
+      </button>
+      <span class="dev-badge">DEV</span>
+    </div>
+  }
 
-  <!-- Выбранный результат -->
-  <div *ngIf="selectedProduct as p" class="result">
-    <div class="code-big">{{ p.scale_code.toString().padStart(3, '0') }}</div>
-    <div class="name">{{ displayName(p) }}</div>
-    <button class="copy-btn" (click)="copyCode(p.scale_code)" title="Скопировать код">
-      <i class="pi pi-copy"></i>
-      <span>{{ 'search.copy' | translate }}</span>
-    </button>
-  </div>
+  <!-- Результат -->
+  @if (selectedProduct) {
+    <div class="result">
+      <div class="result-content">
+        <div class="code-big">{{ selectedProduct.scale_code.toString().padStart(3, '0') }}</div>
+        <div class="name">{{ displayName(selectedProduct) }}</div>
+        <button class="copy-btn" (click)="copyCode(selectedProduct.scale_code)">
+          <i class="pi pi-copy"></i>
+          <span>{{ 'search.copy' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  }
 </div>

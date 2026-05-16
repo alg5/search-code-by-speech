@@ -67,7 +67,7 @@ Breadcrumb
 .admin-block{
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 2rem;
    @include media("max", "sm") {
     display: none;
    }
@@ -238,4 +238,7 @@ Breadcrumb
   text-align: left;
   min-width: 200px;             // Минимальная ширина, чтобы не слишком сжиматься
   max-width: 600px;             // Максимальная ширина, чтобы не уходить слишком далеко от правой части
+  @include media("max", "sm") {
+    display: none;
+  }
 }

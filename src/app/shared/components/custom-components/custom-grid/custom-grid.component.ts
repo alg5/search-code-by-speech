@@ -170,7 +170,7 @@ export class CustomGridComponent {
     // if (col){
     //   this.addSelectDayProperty(col, this.dataSource);
     // }
-    console.log("custom-grid: initTable: dataSource", this.dataSource);
+    // console.log("custom-grid: initTable: dataSource", this.dataSource);
     this.gridKey = this.gridModel.key!;
     this.optionalRow = this.gridModel.optionalRow!;
     this.optionalRowTemplate = this.gridModel.optionalRowTemplate;
@@ -289,6 +289,8 @@ export class CustomGridComponent {
       || colType == GridColumType.textEditable
       || colType == GridColumType.numericEditable
       || colType == GridColumType.dropdownEditable
+      || colType == GridColumType.calculated
+      || colType == GridColumType.imgPrimengIconClick
  
     // || colType == GridColumType.editableCellNumber
 
@@ -327,6 +329,7 @@ export class CustomGridComponent {
 
       case GridColumType.cellClick:
       case GridColumType.numericClick:
+      case GridColumType.imgPrimengIconClick:
         const gridEvent: ICustomGridEvent = { key: this.gridKey, row: row, col: col, value: item[col.dataField] };
         this.customGridService.gridCellClickedSignal.set(gridEvent)
 

@@ -1,13 +1,27 @@
+
 // export interface IProduct {
 //   id: number;
 //   scale_code: number;
-//   product_name: string; // key_en
+//   product_name: string;
+
+//   key_en: string;
 //   key_ru: string;
 //   key_he: string;
+//   key_fr: string;
 //   category_code: string;
 //   processing_code: string;
+
+//   category?: {
+//     priority: number;
+//   };
+
+//   processing?: {
+//     priority: number;
+//   };
+
 //   fuseScore?: number;
 // }
+
 export interface IProduct {
   id: number;
   scale_code: number;
@@ -21,11 +35,11 @@ export interface IProduct {
   processing_code: string;
 
   category?: {
-    priority: number;
+    priority?: number;  // optional to match IProductCategory
   };
 
   processing?: {
-    priority: number;
+    priority?: number;  // optional to match IProductProcessing
   };
 
   fuseScore?: number;

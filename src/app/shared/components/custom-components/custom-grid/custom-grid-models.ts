@@ -52,10 +52,12 @@ export enum GridColumType{
     imgClick,
     imgMatIconClick,
     imgFaIconClick,
+    imgPrimengIconClick,
     openTablebutton,
     booleanToText,
     footerText,
     footerSum,
+    calculated
   }
 export interface IColumn  {
     headerText: string;
@@ -97,6 +99,10 @@ export interface IColumn  {
     width?: string;
     minWidth?: string;
     maxWidth?: string;
+
+    calculateValue?: (rowData: any) => any;  // ✅ Функция вычисления
+
+    
 }
 export interface ICustomGridModel {
     dataSource : Array<any>;
@@ -150,6 +156,7 @@ export interface IFormattedOptions{
     width?: string;
     minWidth?: string;
     maxWidth?: string;
+    primengIcon? : string;
     
 }
 export interface ICustomGridEvent{

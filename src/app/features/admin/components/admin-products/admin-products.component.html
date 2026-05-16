@@ -1,64 +1,181 @@
 <div class="admin-categories">
-  <h2>{{'admin.products'| translate}}</h2>
+  <h2>{{'admin.products' | translate}}</h2>
 
-  <!-- @if(!loading ()){ -->
-  <div class="page-wrapper">
-    <!-- 🔍 FILTERS ROW -->
-    <div class="filters-row">
-
-      <div class="p-inputgroup search-box">
-        <!-- 🔍 иконка слева -->
-        <span class="p-inputgroup-addon">
-          <i class="pi pi-search"></i>
-        </span>
-
-        <!-- input -->
-        <input pInputText
-              [ngModel]="searchText()"
-              (ngModelChange)="searchText.set($event)"
-              placeholder="Search..."
-              class="search-input"/>
-
-        <!-- ❌ кнопка очистки -->
-
-        <span class="p-inputgroup-addon">
-          <p-button *ngIf="searchText()"
-                    icon="pi pi-times"
-                    variant="text"
-                    rounded
-                    (onClick)="searchText.set('')" />
-        </span>
-
+  @if (!loading()) {
+    <div class="page-wrapper">
+      <div class="filters-row">
+        <div class="p-inputgroup search-box">
+          <span class="p-inputgroup-addon">
+            <i class="pi pi-search"></i>
+          </span>
+          <input pInputText
+            [ngModel]="searchText()"
+            (ngModelChange)="searchText.set($event)"
+            placeholder="Search..."
+            class="search-input"/>
+          <span class="p-inputgroup-addon">
+            <p-button *ngIf="searchText()"
+              icon="pi pi-times"
+              variant="text"
+              rounded
+              (onClick)="searchText.set('')"/>
+          </span>
+        </div>
+        <spr-custom-dropdown [dropDownModel]="categoryModelFilter"
+          [ngModel]="selectedCategory()"
+          (ngModelChange)="selectedCategory.set($event)">
+        </spr-custom-dropdown>
+        <spr-custom-dropdown [dropDownModel]="processingModelFilter"
+          [ngModel]="selectedProcessing()"
+          (ngModelChange)="selectedProcessing.set($event)">
+        </spr-custom-dropdown>
       </div>
-      <spr-custom-dropdown [dropDownModel]="categoryModelFilter" 
-        [ngModel]="selectedCategory()"
-        (ngModelChange)="selectedCategory.set($event)">
-      ></spr-custom-dropdown>
-      <spr-custom-dropdown [dropDownModel]="processingModelFilter" 
-        [ngModel]="selectedProcessing()"
-        (ngModelChange)="selectedProcessing.set($event)">
-      ></spr-custom-dropdown>
 
+      @if (filteredProducts().length > 0) {
+        <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>
+      } @else {
+        @if (!loading()) {
+          <p>{{'admin.products.notFound' | translate}}</p>
+        }
+      }
+    </div>
+  }
+
+  @if (loading()) {
+    <spr-food-loader></spr-food-loader>
+  }
+</div>
+
+<p-toast></p-toast>
+
+@if (editingProduct()) {
+  <p-drawer
+    [(visible)]="sidebarVisible"
+    position="left"
+    [style]="{width: '910px'}"
+    [transitionOptions]="'400ms cubic-bezier(0.25, 0.8, 0.25, 1)'">
+    <ng-template pTemplate="header">
+      <h3 class="drawer-title">
+        <span class="product-code">{{ editingProduct()?.scale_code }}</span>
+        <span class="divider">—</span>
+        <span class="product-name">{{ editingProduct()?.product_name }}</span>
+      </h3>
+    </ng-template>
+
+    <div class="edit-form" [formGroup]="fg">
+      <h4>
+        {{'caption.translations' | translate}}
+        <span class="hint">{{'caption.allLanguagesRequired' | translate}}</span>
+      </h4>
+      <div class="translations-section">
+        <p-floatlabel>
+          <input pInputText
+            formControlName="key_en"
+            [class.ng-invalid]="fg.get('key_en')?.invalid && fg.get('key_en')?.touched"
+            [class.ng-dirty]="fg.get('key_en')?.touched"/>
+          <label for="key_en">
+            <span>{{'caption.name.en' | translate}}</span>
+            <span class="required">*</span>
+          </label>
+        </p-floatlabel>
+        @if (submited() && fg.get('key_en')?.invalid) {
+          <small class="p-error">{{'message.fieldRequired' | translate}}</small>
+        }
+
+        <p-floatlabel>
+          <input pInputText
+            formControlName="key_ru"
+            [class.ng-invalid]="fg.get('key_ru')?.invalid && fg.get('key_ru')?.touched"
+            [class.ng-dirty]="fg.get('key_ru')?.touched"/>
+          <label for="key_ru">
+            <span>{{'caption.name.ru' | translate}}</span>
+            <span class="required">*</span>
+          </label>
+        </p-floatlabel>
+        @if (submited() && fg.get('key_ru')?.invalid) {
+          <small class="p-error">{{'message.fieldRequired' | translate}}</small>
+        }
+
+        <p-floatlabel>
+          <input pInputText
+            formControlName="key_he"
+            [class.ng-invalid]="fg.get('key_he')?.invalid && fg.get('key_he')?.touched"
+            [class.ng-dirty]="fg.get('key_he')?.touched"/>
+          <label for="key_he">
+            <span>{{'caption.name.he' | translate}}</span>
+            <span class="required">*</span>
+          </label>
+        </p-floatlabel>
+        @if (submited() && fg.get('key_he')?.invalid) {
+          <small class="p-error">{{'message.fieldRequired' | translate}}</small>
+        }
+
+        <p-floatlabel>
+          <input pInputText
+            formControlName="key_fr"
+            [class.ng-invalid]="fg.get('key_fr')?.invalid && fg.get('key_fr')?.touched"
+            [class.ng-dirty]="fg.get('key_fr')?.touched"/>
+          <label for="key_fr">
+            <span>{{'caption.name.fr' | translate}}</span>
+            <span class="required">*</span>
+          </label>
+        </p-floatlabel>
+        @if (submited() && fg.get('key_fr')?.invalid) {
+          <small class="p-error">{{'message.fieldRequired' | translate}}</small>
+        }
+      </div>
+
+      <h4>{{'caption.classification' | translate}}</h4>
+      <div class="references-section">
+        <div class="field">
+          <label>{{'admin.categories' | translate}}</label>
+          <spr-custom-dropdown
+            [dropDownModel]="categoryModelGrid"
+            formControlName="category_code">
+          </spr-custom-dropdown>
+        </div>
+        <div class="field">
+          <label>{{'admin.processing' | translate}}</label>
+          <spr-custom-dropdown
+            [dropDownModel]="processingModelGrid"
+            formControlName="processing_code">
+          </spr-custom-dropdown>
+        </div>
+      </div>
+
+      <div class="priority-block">
+        <div class="priority-header">{{'caption.basePriority' | translate}}</div>
+        @if (isClassificationChanged()) {
+          <div class="priority-row two-columns">
+            <div class="priority-item">
+              <div class="priority-label">{{'caption.current' | translate}}</div>
+              <div class="priority-value original">{{ originalPriority() | number:'1.1-1' }}</div>
+            </div>
+            <div class="priority-item">
+              <div class="priority-label">{{'caption.new' | translate}}</div>
+              <div class="priority-value new">{{ calculatedPriority() | number:'1.1-1' }}</div>
+            </div>
+          </div>
+        } @else {
+          <div class="priority-row single">
+            <div class="priority-item">
+              <div class="priority-label">{{'caption.current' | translate}}</div>
+              <div class="priority-value original">{{ originalPriority() | number:'1.1-1' }}</div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
 
-
-    @if (filteredProducts().length > 0){
-      <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>
-    } @else {
-        @if (!loading()){
-          <p>{{'admin.products.notFound'| translate}}</p>
-        }
-    } 
-  </div>    
-  <!-- } -->
- <!-- 🔥 LOADER OVERLAY -->
-    @if (loading()) {
-      <div class="grid-loader">
-        <div class="simple-loader"></div>
-      </div>
-    }
-
-
-
-</div>
-<p-toast></p-toast>
+    <div class="actions-block">
+      <spr-custom-button
+        [buttonModel]="saveButtonModel()"
+        (onClick)="onClickSaveEdit()">
+      </spr-custom-button>
+      <spr-custom-button
+        [buttonModel]="cancelButtonModel"
+        (onClick)="onClickCancelEdit()">
+      </spr-custom-button>
+    </div>
+  </p-drawer>
+}

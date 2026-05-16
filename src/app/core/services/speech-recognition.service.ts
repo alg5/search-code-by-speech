@@ -1,6 +1,5 @@
 // speech-recognition.service.ts
 import { Injectable, effect, inject, signal } from '@angular/core';
-// import { LanguageService } from '../../../../core/services/language.service';
 import { Subject } from 'rxjs';
 import { 
   SpeechRecognitionEvent, 
@@ -17,190 +16,162 @@ import { LanguageService } from './language.service';
 export class SpeechRecognitionService {
   private langService = inject(LanguageService);
   
-  private recognition!: any; // webkitSpeechRecognition | SpeechRecognition
+  private recognition!: any;
   isListening = signal(false);
   
-  // события для компонента
   onResult = new Subject<string>();
   onError = new Subject<string>();
   onStatusChange = new Subject<boolean>();
 
-  /**
-   * Инициализация Web Speech API
-   */
-
-  сonstructor() {
-     effect(() => {
-    const lang = this.langService.getLang().code;
-    if (this.recognition) {
-      console.log('🌐 Recognition language set to:', lang);
-      // если уже слушаем, перезапускаем
-      if (this.isListening()) {
-        this.recognition.abort();
-        this.recognition.lang = lang;
-        this.recognition.start();
-      } else {
-        this.recognition.lang = lang;
+  constructor() {
+    // Реактивное отслеживание языка — перезапуск при смене
+    effect(() => {
+      const lang = this.langService.langCode();
+      console.log('🌐 Language changed to:', lang);
+      
+      if (this.recognition && lang) {
+        // ✅ Защита: если уже слушаем, сначала останавливаем, потом меняем язык и запускаем
+        if (this.isListening()) {
+          console.log('🔄 Restarting recognition with new language...');
+          
+          // Убираем обработчик onend чтобы не автозапустился со старым языком
+          const oldOnEnd = this.recognition.onend;
+          this.recognition.onend = null;
+          
+          this.recognition.abort(); // abort, не stop — чтобы не вызвать onend
+          
+          setTimeout(() => {
+            this.recognition.lang = lang;
+            this.recognition.onend = oldOnEnd; // восстанавливаем обработчик
+            this.recognition.start();
+          }, 100);
+        } else {
+          this.recognition.lang = lang;
+        }
       }
-    }
-  });
-  // ✅ Реактивное отслеживание языка
-  effect(() => {
-    const lang = this.langService.langCode(); // берём сигнал!
-    console.log('🌐 Language changed to:', lang);
-    
-    if (this.recognition) {
-      // Если слушаем — перезапускаем с новым языком
-      if (this.isListening()) {
-        console.log('🔄 Restarting recognition with new language...');
-        this.recognition.abort();
-        this.recognition.lang = lang;
-        this.recognition.start();
-      } else {
-        // Если не слушаем — просто меняем для следующего старта
-        this.recognition.lang = lang;
-      }
-    }
-  });
+    });
   }
 
-init() {
-  console.log('[SERVICE] Instance:', this);
-  const SpeechRecognition = (window as any).SpeechRecognition ||
-                           (window as any).webkitSpeechRecognition;
+  init() {
+    console.log('[SERVICE] Instance:', this);
+    const SpeechRecognition = (window as any).SpeechRecognition ||
+                             (window as any).webkitSpeechRecognition;
 
-  if (!SpeechRecognition) {
-    this.onError.next('Speech Recognition API not supported');
-    console.error('Speech Recognition API not supported');
-    return false;
+    if (!SpeechRecognition) {
+      this.onError.next('Speech Recognition API not supported');
+      console.error('Speech Recognition API not supported');
+      return false;
+    }
+
+    this.recognition = new SpeechRecognition();
+
+    this.recognition.continuous = true;
+    this.recognition.interimResults = true;
+
+    const lang = this.langService.langCode();
+    this.recognition.lang = lang || 'ru-RU';
+
+    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i] as SpeechRecognitionResult;
+        if (result.isFinal) {
+          final += result[0].transcript + ' ';
+        } else {
+          console.log('🔹 Interim result:', result[0].transcript);
+        }
+      }
+
+      const text = final.trim();
+      if (text) {
+        console.log('✅ Final speech result:', `"${text}"`, 'lang=', this.recognition.lang);
+        this.onResult.next(text);
+      }
+    };
+
+    this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error('❌ Speech error:', event.error);
+      this.onError.next(event.error);
+
+      if (event.error === 'no-speech' && this.isListening()) {
+        console.log('⏳ No-speech detected, restarting...');
+        setTimeout(() => {
+          if (this.isListening()) {
+            this.recognition?.start();
+          }
+        }, 100);
+      } else if (event.error !== 'aborted') {
+        // ✅ Не сбрасываем isListening при abort (это мы сами вызываем при смене языка)
+        this.isListening.set(false);
+        this.onStatusChange.next(false);
+      }
+    };
+
+    this.recognition.onend = () => {
+      // ✅ Защита: запускаем только если isListening === true (и это не abort)
+      if (this.isListening()) {
+        console.log('🔄 Auto-restarting recognition...');
+        setTimeout(() => {
+          if (this.isListening()) {
+            try {
+              this.recognition?.start();
+            } catch (e) {
+              console.warn('Auto-restart failed:', e);
+            }
+          }
+        }, 100);
+      }
+    };
+
+    console.log('✅ Speech Recognition initialized, lang:', this.recognition.lang);
+    return true;
   }
 
-  this.recognition = new SpeechRecognition();
-
-  // 🔑 Настройки
-  this.recognition.continuous = true;
-  this.recognition.interimResults = true; // включаем, чтобы видеть диагностические результаты
-  this.recognition.lang = this.langService.getLang().code;
-
-  // обработка результатов
-  this.recognition.onresult = (event: SpeechRecognitionEvent) => {
-    let final = '';
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      const result = event.results[i] as SpeechRecognitionResult;
-      if (result.isFinal) {
-        final += result[0].transcript + ' ';
-      } else {
-        console.log('🔹 Interim result:', result[0].transcript);
-      }
-    }
-
-    const text = final.trim();
-    if (text) {
-      console.log('✅ Final speech result:', `"${text}"`, 'lang=', this.recognition.lang);
-      this.onResult.next(text);
-    }
-  };
-
-  // обработка ошибок
-  this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-    console.error('❌ Speech error:', event.error);
-    this.onError.next(event.error);
-
-    if (event.error === 'no-speech' && this.isListening()) {
-      console.log('⏳ No-speech detected, restarting...');
-      setTimeout(() => this.recognition?.start(), 100);
-    } else {
-      this.isListening.set(false);
-    }
-  };
-
-  // автостарт при continuous
-  this.recognition.onend = () => {
-    if (this.isListening()) {
-      setTimeout(() => this.recognition?.start(), 100);
-    }
-  };
-
-  // лог при смене языка
-  // effect(() => {
-  //   const lang = this.langService.getLang().code;
-  //   if (this.recognition) {
-  //     console.log('🌐 Recognition language set to:', lang);
-  //     // если уже слушаем, перезапускаем
-  //     if (this.isListening()) {
-  //       this.recognition.abort();
-  //       this.recognition.lang = lang;
-  //       this.recognition.start();
-  //     } else {
-  //       this.recognition.lang = lang;
-  //     }
-  //   }
-  // });
-
-  console.log('✅ Speech Recognition initialized');
-  return true;
-}
-  /**
-   * Старт распознавания
-   */
-  // start() {
-  //   if (!this.recognition) {
-  //     if (!this.init()) return;
-  //   }
-    
-  //   if (!this.isListening()) {
-  //     try {
-  //       this.recognition.start();
-  //       this.isListening.set(true);
-  //       this.onStatusChange.next(true);
-  //       console.log('▶️ Speech recognition started');
-  //     } catch (error) {
-  //       console.error('❌ Start error:', error);
-  //       this.onError.next('start_error');
-  //     }
-  //   }
-  // }
   start() {
-  // ✅ Сначала обновляем язык (если recognition уже существует)
-  if (this.recognition) {
-    this.recognition.lang = this.langService.langCode();
-  }
-  
-  // Если recognition нет — создаём через init() (там тоже установится язык)
-  if (!this.recognition) {
-    if (!this.init()) return;
-  }
-  
-  if (!this.isListening()) {
-    try {
-      this.recognition.start();
-      this.isListening.set(true);
-      this.onStatusChange.next(true);
-      console.log('▶️ Speech recognition started, lang:', this.recognition.lang);
-    } catch (error) {
-      console.error('❌ Start error:', error);
-      this.onError.next('start_error');
+    // Обновляем язык если recognition уже есть
+    if (this.recognition) {
+      const lang = this.langService.langCode();
+      if (lang) {
+        this.recognition.lang = lang;
+      }
+    }
+    
+    // Если recognition нет — создаём через init()
+    if (!this.recognition) {
+      if (!this.init()) return;
+    }
+    
+    // ✅ Защита: не запускаем если уже слушаем
+    if (!this.isListening()) {
+      try {
+        this.recognition.start();
+        this.isListening.set(true);
+        this.onStatusChange.next(true);
+        console.log('▶️ Speech recognition started, lang:', this.recognition.lang);
+      } catch (error) {
+        console.error('❌ Start error:', error);
+        this.onError.next('start_error');
+      }
+    } else {
+      console.log('⚠️ Recognition already running, skipping start()');
     }
   }
-}
 
-  /**
-   * Стоп распознавания
-   */
   stop() {
     if (this.isListening()) {
       this.isListening.set(false);
       if (this.recognition) {
-        this.recognition.stop();
+        try {
+          this.recognition.stop();
+        } catch (e) {
+          console.warn('Stop error:', e);
+        }
       }
       this.onStatusChange.next(false);
       console.log('⏹️ Speech recognition stopped');
     }
   }
 
-  /**
-   * Toggle вкл/выкл
-   */
   toggle() {
     if (this.isListening()) {
       this.stop();
