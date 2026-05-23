@@ -15,7 +15,7 @@
     @if (kCategory?.invalid && kCategory?.touched) {
       <div class="field-error">
         @if (kCategory?.errors?.['required']) {
-          <span>{{ 'validation.required' | translate }}</span>
+          <span>{{ 'search.validation.required' | translate }}</span>
         }
         @if (kCategory?.errors?.['pattern']) {
           <span>{{ 'validation.number.invalid' | translate }}</span>

@@ -93,8 +93,8 @@
 
 spr-admin-search-settings {
   position: absolute !important;
-  top: 15%;
-  right: 2rem;
+  top: 11%;
+  right: 2.5rem;
   z-index: 999;
 
   @include media("max", "sm") {
