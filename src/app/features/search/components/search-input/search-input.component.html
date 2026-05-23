@@ -1,106 +1,158 @@
-<div class="search-wrapper">
-  <!-- Горизонтальные чипсы недавних продуктов -->
-  @if(recentProducts().length > 0) {
-    <div class="recent-bar">
-      @for(product of recentProducts(); track product.scale_code) {
-        <div class="recent-chip" (click)="selectFromRecent(product)">
-          <span class="chip-code">{{ product.scale_code.toString().padStart(3, '0') }}</span>
-          <span class="chip-name">{{ displayName(product) }}</span>
+<div class="search-content">
+  <div class="search-wrapper">
+
+    <!-- Recent products chips -->
+    @if(recentProducts().length > 0) {
+      <div class="recent-bar">
+        @for(product of recentProducts(); track product.scale_code) {
+          <div class="recent-chip" (click)="selectFromRecent(product)">
+            <span class="chip-code">{{ product.scale_code.toString().padStart(3, '0') }}</span>
+            <span class="chip-name">{{ displayName(product) }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Settings trigger -->
+    @if(isAdmin()) {
+      <div class="settings-trigger" (click)="toggleSettings()">
+        @if(settingsOpen()) {
+          <i class="pi pi-times"></i>
+        } @else {
+          <i class="pi pi-cog"></i>
+        }
+      </div>
+
+      <!-- Settings panel component -->
+      @if(settingsOpen()) {
+        <spr-admin-search-settings
+          (weightsSaved)="onWeightsSaved()"
+          (close)="settingsOpen.set(false)">
+        </spr-admin-search-settings>
+      }
+    }
+
+    <!-- Title -->
+    <div class="search-title">
+      {{ 'search.title' | translate }}
+    </div>
+
+    <!-- Voice search hint -->
+    <div class="voice-input-container">
+      @if(!isListening()) {
+        <div class="subtitle">
+          @if(hasMicrophone()) {
+            {{ 'search.subtitle' | translate }}
+          } @else {
+            {{ 'search.microphone.notFound' | translate }}
+          }
+        </div>
+      } @else {
+        <div class="subtitle active">
+          <span class="recording-dot"></span>
+          {{ 'search.subtitle2' | translate }}
         </div>
       }
     </div>
-  }
 
-  <!-- Заголовок -->
-  <div class="search-title">
-    {{ 'search.title' | translate }}
-  </div>
+    <!-- Search field -->
+    <div class="search-row">
+      <div class="p-inputgroup glossy-search">
+        <span class="p-inputgroup-addon search-icon">
+          @if(isLoading()) {
+            <i class="pi pi-spinner pi-spin"></i>
+          } @else {
+            <i class="pi pi-search"></i>
+          }
+        </span>
 
-  <!-- Подсказка голосового поиска -->
-  <div class="voice-input-container">
-    @if(!isListening) {
-      <div class="subtitle">
-        {{ 'search.subtitle' | translate }}
-      </div>
-    } @else {
-      <div class="subtitle active">
-        <span class="recording-dot"></span>
-        {{ 'search.subtitle2' | translate }}
-      </div>
-    }
-  </div>
+        <p-autoComplete #autoComplete
+          [(ngModel)]="searchTextValue"
+          (ngModelChange)="onSearchTextChange($event)"
+          [suggestions]="results()"
+          (completeMethod)="search($event)"
+          (onSelect)="selectCode($event)"
+          [placeholder]="'search.placeholder' | translate"
+          [forceSelection]="false"
+          field="fieldName"
+          class="search-autocomplete">
 
-  <!-- Поле поиска -->
-  <div class="search-row">
-    <div class="p-inputgroup glossy-search">
-      <span class="p-inputgroup-addon search-icon">
-        <i class="pi pi-search"></i>
-      </span>
+          <ng-template let-item pTemplate="item">
+            <div class="search-item">
+              <span class="code">{{ item.scale_code.toString().padStart(3, '0') }}</span>
+              <span class="divider">—</span>
+              <span class="name">{{ displayName(item) }}</span>
+              @if(isAdmin()) {
+                @if(getProductDetails(item)) {
+                  <span class="info-icon" [pTooltip]="getProductDetails(item)" tooltipPosition="top">
+                    <i class="pi pi-info-circle"></i>
+                  </span>
+                }
+              }
+            </div>
+          </ng-template>
 
-      <p-autoComplete #autoComplete
-        [(ngModel)]="searchTextValue"
-        (ngModelChange)="onSearchTextChange($event)"
-        [suggestions]="results()"
-        (completeMethod)="search($event)"
-        (onSelect)="selectCode($event)"
-        [placeholder]="'search.placeholder' | translate"
-        [forceSelection]="false"
-        field="fieldName"
-        class="search-autocomplete">
+          <ng-template pTemplate="empty">
+            @if(!isLoading()) {
+              <div class="empty-state">
+                <i class="pi pi-search-minus"></i>
+                <span>{{ 'search.noResults' | translate }}</span>
+              </div>
+            }
+          </ng-template>
+        </p-autoComplete>
 
-        <ng-template let-item pTemplate="item">
-          <div class="search-item">
-            <span class="code">{{ item.scale_code.toString().padStart(3, '0') }}</span>
-            <span class="divider">—</span>
-            <span class="name">{{ displayName(item) }}</span>
-          </div>
-        </ng-template>
+        <!-- Microphone button -->
+        <button type="button"
+          class="mic-btn"
+          (click)="!hasMicrophone() || startVoiceSearch()"
+          [class.on]="isListening()"
+          [class.off]="!isListening() || !hasMicrophone()"
+          [style.pointer-events]="hasMicrophone() ? 'auto' : 'none'"
+          [style.cursor]="hasMicrophone() ? 'pointer' : 'not-allowed'"
+          [attr.title]="!hasMicrophone()
+            ? ('search.microphone.notFound' | translate)
+            : (isListening()
+              ? ('search.tooltip.microphone.off' | translate)
+              : ('search.tooltip.microphone.on' | translate))">
 
-        <ng-template pTemplate="empty">
-          <div class="empty-state">
-            <i class="pi pi-search-minus"></i>
-            <span>{{ 'search.noResults' | translate }}</span>
-          </div>
-        </ng-template>
-      </p-autoComplete>
-
-      <!-- Микрофон ASCII -->
-      <button type="button"
-        class="mic-btn"
-        (click)="startVoiceSearch()"
-        [class.on]="isListening"
-        [class.off]="!isListening"
-        [attr.title]="isListening 
-          ? ('search.tooltip.microphone.off' | translate) 
-          : ('search.tooltip.microphone.on' | translate)
-        ">
-        {{ isListening ? '🎙️' : '🎤' }}
-      </button>
-    </div>
-  </div>
-
-  <!-- Mock DEV -->
-  @if(isDev) {
-    <div class="dev-controls">
-      <button class="mock-btn" (click)="startMockSpeech()" [class.active]="isListening">
-        <i class="pi pi-play"></i>
-        <span>Mock Speech</span>
-      </button>
-      <span class="dev-badge">DEV</span>
-    </div>
-  }
-
-  <!-- Результат -->
-  @if (selectedProduct) {
-    <div class="result">
-      <div class="result-content">
-        <div class="code-big">{{ selectedProduct.scale_code.toString().padStart(3, '0') }}</div>
-        <div class="name">{{ displayName(selectedProduct) }}</div>
-        <button class="copy-btn" (click)="copyCode(selectedProduct.scale_code)">
-          <i class="pi pi-copy"></i>
-          <span>{{ 'search.copy' | translate }}</span>
+          @if(!hasMicrophone()) {
+            <img src="assets/images/mic-off.svg" class="mic-icon" alt="">
+          } @else {
+            <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          }
         </button>
       </div>
     </div>
-  }
+
+    <!-- Toast for errors -->
+    <p-toast></p-toast>
+
+    <!-- Result -->
+    @if(selectedProduct(); as product) {
+      <div class="result">
+        <div class="result-content">
+          <div class="code-big">{{ product.scale_code.toString().padStart(3, '0') }}</div>
+          <div class="name">
+            {{ displayName(product) }}
+            <!-- @if(isAdmin()) {
+              <span class="info-icon" [pTooltip]="getProductDetails(product)" tooltipPosition="top">
+                <i class="pi pi-info-circle"></i>
+              </span>
+            } -->
+          </div>
+          <button class="copy-btn" (click)="copyCode(product.scale_code)">
+            <i class="pi pi-copy"></i>
+            <span>{{ 'search.copy' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
 </div>

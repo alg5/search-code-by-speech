@@ -39,36 +39,20 @@ export default class Helper {
 
   
     //#endregion ExportToExcel
-    // src/app/shared/helpers/priority.helper.ts
-
+ 
 
 /**
  * Рассчитывает базовый приоритет продукта
  * Используется в поиске и в админке
  */
-static calculatePriority(product: IProduct): number {
-  const catPriority = product.category?.priority ?? 0;
-  const procPriority = product.processing?.priority ?? 0;
-  return (catPriority * 2) + (procPriority * 0.5);
+
+static calculatePriority(product: IProduct, kCategory: number, kProcessing: number): number {
+  const catPriority = product.category_priority ?? 0;
+  const procPriority = product.processing_priority ?? 0;
+  const result = (catPriority * kCategory) + (procPriority * kProcessing);
+  return Math.round(result * 100) / 100;
 }
 
-/**
- * Рассчитывает финальный вес с учётом Fuse score (для поиска)
- */
-static calculateFinalWeight(
-  product: IProduct, 
-  fuseScore: number = 0, 
-  queryLength: number = 0
-): number {
-  const basePriority = Helper.calculatePriority(product);
-  const confidence = Math.pow(1 - fuseScore, 3);
-  
-  const firstWord = (product.key_ru ?? '').split(',')[0].trim();
-  const lengthDiff = Math.abs(firstWord.length - queryLength);
-  const lengthFactor = 1 / (1 + lengthDiff);
-  
-  return basePriority * confidence * lengthFactor;
-}
   
   
 

@@ -78,13 +78,13 @@ export class AdminProductsComponent {
   originalPriority = computed(() => {
     const product = this.originalProduct();
     if (!product) return 0;
-    return Helper.calculatePriority(product);
+    return Helper.calculatePriority(product, this.kCategory(), this.kProcessing());
   });
 
   calculatedPriority = computed(() => {
     const product = this.editingProduct();
     if (!product) return 0;
-    return Helper.calculatePriority(product);
+    return Helper.calculatePriority(product, this.kCategory(), this.kProcessing());
   });
 
   // Detect if category or processing changed
@@ -163,130 +163,159 @@ export class AdminProductsComponent {
     });
 
     effect(() => {
-      const text = this.searchText()?.toLowerCase() || '';
-      const cat = this.selectedCategory();
-      const proc = this.selectedProcessing();
+      const pageEvent = this.customGridService.pagingSignal();
+      if (!pageEvent || pageEvent.key !== 'products') return;
+      
+      this.currentPage.set(pageEvent.page);
+      this.loadProducts(); 
+    });
 
-      if (!this.customGridModel) return;
+    
 
-      const filtered = this.products().filter(p =>
-        (
-          !text ||
-          p.product_name?.toLowerCase().includes(text) ||
-          p.key_ru?.toLowerCase().includes(text) ||
-          p.key_he?.toLowerCase().includes(text) ||
-          p.key_fr?.toLowerCase().includes(text) ||
-          p.scale_code?.toString().includes(text)
-        ) &&
-        (!cat || p.category_code === cat) &&
-        (!proc || p.processing_code === proc)
-      );
-
-      this.filteredProducts.set(filtered);
-
-      // Immutable update: create new gridModel so child component detects change
-      this.customGridModel = {
-        ...this.customGridModel,
-        toolbarModel: {
-          ...this.customGridModel.toolbarModel
-        },
-        dataSource: filtered,
-        filterStringInitial: text,
-      };
+  effect(() => {
+    const text = this.searchText();
+    const cat = this.selectedCategory();
+    const proc = this.selectedProcessing();
+    
+    // Reset to page 1 when filters change
+    untracked(() => {
+        this.currentPage.set(1);
+        this.loadInit();
+      });
     });
   }
+    
 
   ngOnInit(): void {
     this.loadInit();
   }
 
-  async loadInit() {
-    try {
-      this.loading.set(true);
+totalRecords = signal(0);
+currentPage = signal(1);
+pageSize = 15;
 
-      const [products, categories, processing] = await Promise.all([
-        this.supabaseService.getAllProducts(),
-        this.supabaseService.getProductCategories(),
-        this.supabaseService.getProductProcessing()
-      ]);
+// Coefficients for priority calculation
+kCategory = signal(0);
+kProcessing = signal(0);
 
-      // Store reference data in signals for priority calculation
-      this.categories.set(categories);
-      this.processingList.set(processing);
+async loadInit() {
+  try {
+    this.loading.set(true);
 
-      // Products
-      this.products.set(products);
-      this.filteredProducts.set(products);
+    const [{ products, totalCount }, categories, processing, kCat, kProc] = await Promise.all([
+      this.supabaseService.getAdminProductsPage(
+        this.searchText(),
+        this.currentPage() - 1,
+        this.pageSize,
+        this.selectedCategory(),
+        this.selectedProcessing()
+      ),
+      this.supabaseService.getProductCategories(),
+      this.supabaseService.getProductProcessing(),
+      this.supabaseService.getConfigValue('search.k_category'),
+      this.supabaseService.getConfigValue('search.k_processing')
+    ]);
 
-      const lang = this.langService.getLang().code;
+    // Set current coefficients from config (0 if not set)
+    this.kCategory.set(parseFloat(kCat) || 0);
+    this.kProcessing.set(parseFloat(kProc) || 0);
 
-      // Category dropdown
-      const sortedCategories = this.sortByPriorityAndName(
-        categories,
-        c => this.getLocalizedName(c)
-      );
-      const categoryOptionsBase: ISelectOption[] = sortedCategories.map(c => ({
-        Value: c.code,
-        Text: `${c.priority} - ${this.getLocalizedName(c)}`,
-        Selected: false
-      }));
+    this.categories.set(categories);
+    this.processingList.set(processing);
+    this.products.set(products);
+    this.filteredProducts.set(products);
+    this.totalRecords.set(totalCount);
 
-      this.categoryModelGrid = {
-        options: [
-          { Text: this.translate.transform('admin.categories.without'), Value: null, Selected: false },
-          ...categoryOptionsBase
-        ],
-        placeholder: this.translate.transform('admin.categories'),
-        floatLabel: true
-      };
-      this.categoryModelFilter = {
-        options: [
-          { Text: this.translate.transform('admin.categories.all'), Value: null, Selected: false },
-          ...categoryOptionsBase
-        ],
-        placeholder: this.translate.transform('admin.categories'),
-        floatLabel: true
-      };
+    const lang = this.langService.getLang().code;
 
-      // Processing dropdown
-      const sortedProcessing = this.sortByPriorityAndName(
-        processing,
-        p => this.getLocalizedName(p)
-      );
+    // Category dropdown
+    const sortedCategories = this.sortByPriorityAndName(
+      categories,
+      c => this.getLocalizedName(c)
+    );
+    const categoryOptionsBase: ISelectOption[] = sortedCategories.map(c => ({
+      Value: c.code,
+      Text: `${c.priority} - ${this.getLocalizedName(c)}`,
+      Selected: false
+    }));
 
-      const processingOptionsBase: ISelectOption[] = sortedProcessing.map(p => ({
-        Value: p.code,
-        Text: `${p.priority} - ${this.getLocalizedName(p)}`,
-        Selected: false
-      }));
+    this.categoryModelGrid = {
+      options: [
+        { Text: this.translate.transform('admin.categories.without'), Value: null, Selected: false },
+        ...categoryOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.categories'),
+      floatLabel: true
+    };
+    this.categoryModelFilter = {
+      options: [
+        { Text: this.translate.transform('admin.categories.all'), Value: null, Selected: false },
+        ...categoryOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.categories'),
+      floatLabel: true
+    };
 
-      this.processingModelGrid = {
-        options: [
-          { Text: this.translate.transform('admin.processing.without'), Value: null, Selected: false },
-          ...processingOptionsBase
-        ],
-        placeholder: this.translate.transform('admin.processing'),
-        floatLabel: true
-      };
-      this.processingModelFilter = {
-        options: [
-          { Text: this.translate.transform('admin.processing.all'), Value: null, Selected: false },
-          ...processingOptionsBase
-        ],
-        placeholder: this.translate.transform('admin.processing'),
-        floatLabel: true
-      };
+    // Processing dropdown
+    const sortedProcessing = this.sortByPriorityAndName(
+      processing,
+      p => this.getLocalizedName(p)
+    );
 
-      console.log('Init loaded', { products, categories, processing });
+    const processingOptionsBase: ISelectOption[] = sortedProcessing.map(p => ({
+      Value: p.code,
+      Text: `${p.priority} - ${this.getLocalizedName(p)}`,
+      Selected: false
+    }));
 
-    } finally {
-      this.loading.set(false);
-      this.createForm();
-      this.fillColumns();
-      this.fillToolbar();
-      this.fillCustomGridModel();
-    }
+    this.processingModelGrid = {
+      options: [
+        { Text: this.translate.transform('admin.processing.without'), Value: null, Selected: false },
+        ...processingOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.processing'),
+      floatLabel: true
+    };
+    this.processingModelFilter = {
+      options: [
+        { Text: this.translate.transform('admin.processing.all'), Value: null, Selected: false },
+        ...processingOptionsBase
+      ],
+      placeholder: this.translate.transform('admin.processing'),
+      floatLabel: true
+    };
+
+  } finally {
+    this.loading.set(false);
+    this.createForm();
+    this.fillColumns();
+    this.fillToolbar();
+    this.fillCustomGridModel();
   }
+}
+
+// Called on pagination or search - only reloads products
+async loadProducts() {
+  try {
+    this.loading.set(true);
+
+    const { products, totalCount } = await this.supabaseService.getAdminProductsPage(
+      this.searchText(),
+      this.currentPage() - 1,
+      this.pageSize,
+      this.selectedCategory(),
+      this.selectedProcessing()
+    );
+
+    this.products.set(products);
+    this.filteredProducts.set(products);
+    this.totalRecords.set(totalCount);
+
+  } finally {
+    this.loading.set(false);
+    this.fillCustomGridModel();
+  }
+}
 
   createForm() {
     this.fg = this.fb.group({
@@ -306,7 +335,7 @@ export class AdminProductsComponent {
       }));
     });
 
-    // Subscribe to category changes
+    // Subscribe to selected changes
     this.fg.get('category_code')?.valueChanges.subscribe(code => {
       const current = this.editingProduct();
       if (!current) return;
@@ -315,11 +344,11 @@ export class AdminProductsComponent {
       this.editingProduct.set({
         ...current,
         category_code: code,
-        category
+        category,
+        category_priority: category?.priority ?? 0  // Add flat field
       });
     });
 
-    // Subscribe to processing changes
     this.fg.get('processing_code')?.valueChanges.subscribe(code => {
       const current = this.editingProduct();
       if (!current) return;
@@ -328,7 +357,8 @@ export class AdminProductsComponent {
       this.editingProduct.set({
         ...current,
         processing_code: code,
-        processing
+        processing,
+        processing_priority: processing?.priority ?? 0  // Add flat field
       });
     });
   }
@@ -367,27 +397,25 @@ export class AdminProductsComponent {
     return item[fieldName] as string || item.code;
   }
 
-  async loadProducts() {
-    try {
-      const data = await this.supabaseService.getAllProducts();
-      this.products.set(data);
-      console.log('Products loaded', data, this.products());
-    } finally {
-      this.loading.set(false);
-      this.submited.set(false);
-      this.fillCustomGridModel();
-    }
-  }
+onSearchChange(text: string) {
+  this.searchText.set(text);
+  this.currentPage.set(1);
+  this.loadProducts();
+}
 
-  onCategoryChange(value: string | null) {
-    this.selectedCategoryValue = value;
-    this.selectedCategory.set(value);
-  }
+onCategoryChange(value: string | null) {
+  this.selectedCategoryValue = value;
+  this.selectedCategory.set(value);
+  this.currentPage.set(1);
+  this.loadProducts();
+}
 
-  onProcessingChange(value: string | null) {
-    this.selectedProcessingValue = value;
-    this.selectedProcessing.set(value);
-  }
+onProcessingChange(value: string | null) {
+  this.selectedProcessingValue = value;
+  this.selectedProcessing.set(value);
+  this.currentPage.set(1);
+  this.loadProducts();
+}
 
   private checkFormDirty(): boolean {
     const original = this.originalProduct();
@@ -485,8 +513,8 @@ export class AdminProductsComponent {
         headerText: this.translate.transform('column.productName'),
         dataField: 'product_name',
         isColFiltering: true,
-        width: '180px',
-        maxWidth: '180px',
+        width: '160px',
+        maxWidth: '160px',
         rowClass: 'col-ellipsis'
       },
       {
@@ -494,8 +522,8 @@ export class AdminProductsComponent {
         dataField: 'key_en',
         dataType: GridColumType.textEditable,
         isColFiltering: true,
-        width: '160px',
-        maxWidth: '160px',
+        width: '140px',
+        maxWidth: '140px',
         rowClass: 'col-ellipsis'
       },
       {
@@ -503,8 +531,8 @@ export class AdminProductsComponent {
         dataField: 'key_ru',
         dataType: GridColumType.textEditable,
         isColFiltering: true,
-        width: '160px',
-        maxWidth: '160px',
+        width: '140px',
+        maxWidth: '140px',
         rowClass: 'col-ellipsis'
       },
       {
@@ -512,8 +540,8 @@ export class AdminProductsComponent {
         dataField: 'key_he',
         dataType: GridColumType.textEditable,
         isColFiltering: true,
-        width: '160px',
-        maxWidth: '160px',
+        width: '140px',
+        maxWidth: '140px',
         rowClass: 'col-ellipsis'
       },
       {
@@ -521,8 +549,8 @@ export class AdminProductsComponent {
         dataField: 'key_fr',
         dataType: GridColumType.textEditable,
         isColFiltering: true,
-        width: '160px',
-        maxWidth: '160px',
+        width: '140px',
+        maxWidth: '140px',
         rowClass: 'col-ellipsis'
       },
       {
@@ -544,6 +572,15 @@ export class AdminProductsComponent {
         formattedOptions: { dropdown: this.processingModelGrid }
       },
       {
+        headerText: this.translate.transform('column.priority'),
+        dataField: 'priority',
+        dataType: GridColumType.calculated,
+        width: '80px',
+        minWidth: '60px',
+        tooltip: this.translate.transform('tooltip.priority'),
+        calculateValue: (rowData: IProduct) => Helper.calculatePriority(rowData, this.kCategory(), this.kProcessing())
+      },
+      {
         headerText: '',
         dataField: 'pi-pencil',
         dataType: GridColumType.imgPrimengIconClick,
@@ -552,7 +589,7 @@ export class AdminProductsComponent {
         formattedOptions: { primengIcon: 'pi-pencil' }
       },
     ];
-  }
+  }  
 
   fillToolbar() {
     this.customToolbar = {
@@ -562,12 +599,25 @@ export class AdminProductsComponent {
   }
 
   fillCustomGridModel() {
+    // this.customGridModel = {
+    //   dataSource: [...this.filteredProducts()],
+    //   columns: [...this.columns],
+    //   toolbarModel: { ...this.customToolbar },
+    //   pageSize: 15,
+    //   // withoutPaging: true,
+    //   innerScrollHeight: '46vh',
+    //   filterStringInitial: this.searchText(),
+    //   idField: 'id',
+    //   key: 'products'
+    // };
     this.customGridModel = {
       dataSource: [...this.filteredProducts()],
       columns: [...this.columns],
       toolbarModel: { ...this.customToolbar },
-      pageSize: 1000,
-      withoutPaging: true,
+      pageSize: this.pageSize,
+      pageIndex: this.currentPage() - 1, // PrimeNG 0-based
+      pagingAPI: true,
+      totalRecords: this.totalRecords(),
       innerScrollHeight: '46vh',
       filterStringInitial: this.searchText(),
       idField: 'id',
@@ -594,5 +644,9 @@ export class AdminProductsComponent {
 
       return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
     });
+  }
+  onPageChange(event: any) {
+    this.currentPage.set(event.page + 1); // PrimeNG uses 0-based
+    this.loadInit();
   }
 }

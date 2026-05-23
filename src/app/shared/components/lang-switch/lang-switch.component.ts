@@ -25,7 +25,7 @@ export class LangSwitchComponent {
   langs: ILang[] = LANGS;
 
   // computed текущего языка из сервиса
-  currentLangCode = computed(() => this.langService.currentLang().code);
+  currentLangCode = computed(() => this.langService.currentLang()?.code ?? 'en');
 
   // getter / setter для привязки к p-select
   get langValue(): string {

@@ -1,15 +1,32 @@
-import { Component, computed, effect, EventEmitter, inject, OnInit, Input, Output, signal, ViewChild, ElementRef } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import {
+  Component,
+  computed,
+  effect,
+  EventEmitter,
+  inject,
+  OnInit,
+  Input,
+  Output,
+  signal,
+  ViewChild,
+  ElementRef
+} from '@angular/core';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { LanguageService } from '../../../../core/services/language.service';
 import { SpeechRecognitionService } from '../../../../core/services/speech-recognition.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 import { SupabaseService } from '../../../../core/services/supabase.service';
-import { ProductsStateService } from '../../../../core/services/products-state.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
-import Fuse from 'fuse.js';
-import { IProduct } from '../../../../shared/models/product.model';
+import { IProduct, IRecentProduct } from '../../../../shared/models/product.model';
 import { environment } from '../../../../../environments/environment';
+import { TooltipModule } from 'primeng/tooltip';
+import { SmartSearchService } from '../../../../core/services/smart-search.service';
+import { AdminSearchSettingsComponent } from '../admin-search-settings/admin-search-settings.component';
 
 @Component({
   selector: 'spr-search-input',
@@ -17,16 +34,23 @@ import { environment } from '../../../../../environments/environment';
     CommonModule,
     FormsModule,
     AutoCompleteModule,
-    TranslatePipe
+    ToastModule,
+    TooltipModule,
+    TranslatePipe,
+    AdminSearchSettingsComponent
   ],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
+  providers: [TranslatePipe],
 })
 export class SearchInputComponent implements OnInit {
+  private searchTextChanged$ = new Subject<string>();
   private readonly languageService = inject(LanguageService);
   private readonly supabaseService = inject(SupabaseService);
-  private readonly productsState = inject(ProductsStateService);
   private readonly speechService = inject(SpeechRecognitionService);
+  private readonly messageService = inject(MessageService);
+  private readonly smartSearchService = inject(SmartSearchService);
+  private readonly translate = inject(TranslatePipe);
 
   @Input() term = '';
   @Output() searchSubmit = new EventEmitter<string>();
@@ -35,284 +59,269 @@ export class SearchInputComponent implements OnInit {
 
   searchText = signal('');
   results = signal<IProduct[]>([]);
-  products = this.productsState.products;
+  settingsOpen = signal(false);
+  isListening = signal(false);
+  isLoading = signal(false);
 
-  fuse!: Fuse<IProduct>;
+  // micError and hasMicrophone are kept separate for future expansion:
+  // - micError: microphone not found
+  // - hasMicrophone: microphone hardware availability
+  // TODO: add case for "browser does not support speech recognition"
+  micError = signal(false);
+  hasMicrophone = signal(false);
+
+  isAdmin = this.supabaseService.isAdmin;
   lang = computed(() => this.languageService.langCode());
 
-  selectedProduct: IProduct | null = null;
-  isListening = false;
+  selectedProduct = signal<IProduct | IRecentProduct | null>(null);
 
-  isDev = environment.enableMockSpeech;
   searchTextValue = '';
-  isSearchActive = false;
-  
-  // ✅ Недавние продукты (карточки)
-  recentProducts = signal<IProduct[]>([]);
+
+  recentProducts = signal<IRecentProduct[]>([]);
   private readonly RECENT_KEY = 'recent_products';
   private readonly MAX_RECENT = 3;
 
   constructor() {
-    effect(() => {
-      const data = this.products();
-      const currentLang = this.lang();
-      
-      console.log(`[Fuse] Rebuilding for lang: ${currentLang}, products: ${data.length}`);
-      
-      if (!data.length) return;
-      this.initFuse();
-    });
+    // effect(() => {
+    //   const data = this.products();
+    //   const currentLang = this.lang();
+    //   console.log(`[Fuse] Rebuilding for lang: ${currentLang}, products: ${data.length}`);
+    //   if (!data.length) return;
+    //   this.initFuse();
+    // });
   }
 
   ngOnInit(): void {
     this.speechService.init();
     this.loadRecentProducts();
 
-    this.speechService.onResult.subscribe(text => {
+    // Check microphone availability on component load
+    this.speechService.checkMicrophone().then((hasMic) => {
+      this.micError.set(!hasMic);
+      this.hasMicrophone.set(hasMic);
+    });
+
+    // Debounce for search input
+    this.searchTextChanged$
+      .pipe(debounceTime(300))
+      .subscribe((text) => {
+        console.log('debounced search:', text);
+        this.search({ query: text });
+      });
+
+    this.speechService.onResult.subscribe((text) => {
       this.searchText.set(text);
       this.searchTextValue = text;
-      this.search({ query: text });
-      
+      this.searchTextChanged$.next(text);
       setTimeout(() => {
         this.autoComplete?.show();
       }, 10);
     });
 
-    this.speechService.onStatusChange.subscribe(status => {
-      this.isListening = status;
+    this.speechService.onStatusChange.subscribe((status) => {
+      this.isListening.set(status);
+    });
+
+    // Subscribe to other speech errors (not microphone-related)
+    this.speechService.onError.subscribe((err) => {
+      if (err && err.toLowerCase().includes('microphone')) {
+        // micError is already set above
+        return;
+      }
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err,
+        life: 5000,
+      });
     });
   }
 
-// ✅ Загрузка недавних продуктов из localStorage
-private loadRecentProducts(): void {
-  try {
-    const saved = localStorage.getItem(this.RECENT_KEY);
-    if (!saved) return;
-    
-    const codes = JSON.parse(saved) as number[];
-    
-    // Ждём загрузки продуктов из Supabase
-    const tryLoad = () => {
-      const products = this.products();
-      if (!products.length) {
-        setTimeout(tryLoad, 300); // пробуем снова через 300мс
-        return;
-      }
-      
-      const found = codes
-        .map(code => products.find(p => p.scale_code === code))
-        .filter((p): p is IProduct => !!p);
-      
-      this.recentProducts.set(found);
-    };
-    
-    tryLoad();
-  } catch (e) {
-    console.warn('Failed to load recent products', e);
-  }
-}
+  // Load recent products from localStorage
+  private loadRecentProducts(): void {
+    try {
+      const recentKeyLang = `${this.RECENT_KEY}_${this.lang()}`;
+      const saved = localStorage.getItem(recentKeyLang);
+      if (!saved) return;
 
+      const items = JSON.parse(saved) as IRecentProduct[];
+
+      // Validate structure - must have both fields
+      const valid = items.filter(
+        (item): item is IRecentProduct =>
+          typeof item.scale_code === 'number' &&
+          typeof item.display_name === 'string'
+      );
+
+      this.recentProducts.set(valid);
+    } catch (e) {
+      console.warn('Failed to load recent products', e);
+      this.recentProducts.set([]);
+    }
+  }
+
+  // Save recent products to localStorage
   private saveRecentProducts(): void {
     try {
-      const codes = this.recentProducts().map(p => p.scale_code);
-      localStorage.setItem(this.RECENT_KEY, JSON.stringify(codes));
+      const items = this.recentProducts().map((p) => ({
+        scale_code: p.scale_code,
+        display_name: p.display_name,
+      }));
+      const recentKeyLang = `${this.RECENT_KEY}_${this.lang()}`;
+      localStorage.setItem(recentKeyLang, JSON.stringify(items));
     } catch (e) {
       console.warn('Failed to save recent products', e);
     }
   }
 
-  addToRecent(product: IProduct): void {
+  // Add product to recent list (keeps MAX_RECENT items)
+  addToRecent(product: IRecentProduct): void {
     const current = this.recentProducts();
-    const filtered = current.filter(p => p.scale_code !== product.scale_code);
+    const filtered = current.filter((p) => p.scale_code !== product.scale_code);
     const updated = [product, ...filtered].slice(0, this.MAX_RECENT);
-    
+
     this.recentProducts.set(updated);
     this.saveRecentProducts();
   }
 
-  selectFromRecent(product: IProduct): void {
-    this.selectedProduct = product;
-    this.searchText.set(this.displayName(product));
-    this.searchTextValue = this.displayName(product);
-    
-    if (this.isListening) {
+  // Select product from recent chips
+  selectFromRecent(product: IRecentProduct): void {
+    this.selectedProduct.set(product);
+    this.searchText.set(product.display_name);
+    this.searchTextValue = product.display_name;
+
+    if (this.isListening()) {
       this.speechService.stop();
     }
   }
 
-  initFuse() {
+  // Search products via server
+  async search(event: any) {
+    const query = event?.query ?? '';
     const currentLang = this.lang();
-    const allLangs = this.languageService.availableLangCodes();
-    
-    const keys = allLangs.map(lang => ({
-      name: `key_${lang}` as const,
-      weight: lang === currentLang ? 1.0 : 0.5
-    }));
 
-    this.fuse = new Fuse(this.products(), {
-      includeScore: true,
-      keys,
-      threshold: 0.2,
-      location: 0,
-      distance: 30,
-      ignoreLocation: false,
-      minMatchCharLength: 2
+    this.isLoading.set(true);
+    try {
+      const results = await this.supabaseService.getProductsBySearch(query, currentLang);
+      this.results.set(results);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  // Select product from autocomplete dropdown
+  selectCode(event: any) {
+    const product = event?.value as IProduct;
+    if (!product) return;
+
+    this.searchText.set(this.displayName(product));
+    this.searchTextValue = this.displayName(product);
+    this.selectedProduct.set(product);
+
+    // Save minimal data to recent
+    this.addToRecent({
+      scale_code: product.scale_code,
+      display_name: this.displayName(product),
     });
-  }
 
-  normalize(text: string): string {
-    return text
-      ?.toLowerCase()
-      .replace(/ё/g, 'е')
-      .replace(/,/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+    // Remove focus to close keyboard
+    setTimeout(() => {
+      (document.activeElement as HTMLElement)?.blur();
+      window.scrollTo(0, 0);
+    }, 100);
 
-  search(event: any) {
-    const query = (event?.query ?? '')?.toLowerCase().trim();
+    // Stop microphone
+    if (this.isListening()) {
+      this.speechService.stop();
+    }
 
-    if (!query) {
+    // Clear field after delay
+    setTimeout(() => {
+      this.searchText.set('');
+      this.searchTextValue = '';
       this.results.set([]);
-      return;
-    }
-
-    if (/^\d+$/.test(query)) {
-      const exact = this.products().filter(p =>
-        p.scale_code?.toString().startsWith(query)
-      );
-      this.results.set(exact.slice(0, 5));
-      return;
-    }
-
-    const fuseResults = this.fuse.search(query);
-
-    const productsWithWeights = fuseResults.map(r => {
-      const item = r.item;
-      const fuseScore = r.score ?? 0;
-      const catPriority = item.category?.priority ?? 0;
-      const procPriority = item.processing?.priority ?? 0;
-      const basePriority = (catPriority * 2) + (procPriority * 0.5);
-      const confidence = Math.pow(1 - fuseScore, 3);
-      const firstWord = (item.key_ru ?? '').split(',')[0].trim();
-      const lengthDiff = Math.abs(firstWord.length - query.length);
-      const lengthFactor = 1 / (1 + lengthDiff);
-      const finalWeight = basePriority * confidence * lengthFactor;
-
-      return { ...item, finalWeight };
-    });
-
-    productsWithWeights.sort((a, b) => b.finalWeight - a.finalWeight);
-
-    const finalResultsClean = productsWithWeights
-      .map(({ finalWeight, ...rest }) => rest)
-      .slice(0, 20);
-
-    this.results.set(finalResultsClean);
+    }, 1500);
   }
 
-  // selectCode(event: any) {
-  //   const product = event?.value;
-  //   if (!product) return;
-    
-  //   this.searchText.set(this.displayName(product));
-  //   this.searchTextValue = this.displayName(product);
-  //   this.selectedProduct = product;
-    
-  //   this.addToRecent(product);
-    
-  //   if (this.isListening) {
-  //     this.speechService.stop();
-  //   }
-    
-  //   setTimeout(() => {
-  //     this.searchText.set('');
-  //     this.searchTextValue = '';
-  //     this.results.set([]);
-  //   }, 1500);
-  // }
-selectCode(event: any) {
-  const product = event?.value;
-  if (!product) return;
-  
-  this.searchText.set(this.displayName(product));
-  this.searchTextValue = this.displayName(product);
-  this.selectedProduct = product;
-  this.addToRecent(product);
-  
-  // ✅ Убираем фокус со ВСЕГО — клавиатура точно закроется
-  setTimeout(() => {
-    (document.activeElement as HTMLElement)?.blur();
-    window.scrollTo(0, 0); // дополнительно — скроллим к результату
-  }, 100);
-  
-  // Останавливаем микрофон
-  if (this.isListening) {
-    this.speechService.stop();
-  }
-  
-  // Очищаем поле через 1.5 сек
-  setTimeout(() => {
-    this.searchText.set('');
-    this.searchTextValue = '';
-    this.results.set([]);
-  }, 1500);
-}
-
+  // Toggle voice search
   startVoiceSearch() {
     this.speechService.toggle();
   }
 
-  startMockSpeech() {
-    if (!this.fuse) return;
-
-    this.isListening = true;
-    const products = ['яблоко', 'банан', 'молоко', 'курица', 'хлеб', 'помидор'];
-    const randomProduct = products[Math.floor(Math.random() * products.length)];
-
-    setTimeout(() => {
-      this.searchTextValue = randomProduct;
-      this.searchText.set(randomProduct);
-      
-      const event = { query: randomProduct };
-      this.search(event);
-
-      setTimeout(() => {
-        this.autoComplete?.show();
-      }, 0);
-
-      this.isListening = false;
-    }, 1500);
-  }
-
+  // Handle search text input changes
   onSearchTextChange(text: string) {
     this.searchTextValue = text;
     this.searchText.set(text);
-    
+    console.log('onSearchTextChange:', text);
+
     if (text.length >= 2) {
-      this.search({ query: text });
+      this.searchTextChanged$.next(text);
     } else if (!text) {
       this.results.set([]);
     }
   }
 
+  // Get field name based on current language
   get fieldName(): string {
     return `key_${this.lang()}`;
   }
 
-  displayName(p: IProduct): string {
+  // Get display name for product (supports both IProduct and IRecentProduct)
+  displayName(p: IProduct | IRecentProduct): string {
+    if ('display_name' in p && p.display_name) {
+      return p.display_name;
+    }
     const key = `key_${this.lang()}` as keyof IProduct;
-    return (p[key] as string) || p.product_name;
+    return (p as IProduct)[key] as string;
   }
 
+  // Get product details for admin tooltip
+  getProductDetails(p: IProduct | IRecentProduct): string {
+    if (!this.isAdmin()) return '';
+    const product = p as IProduct;
+
+    const base = product.base_priority ?? '';
+    const score = product.final_score ?? '';
+
+    const baseLabel = this.translate.transform('search.tooltip.basePriority');
+    const scoreLabel = this.translate.transform('search.tooltip.fuzzyScore');
+
+    const scoreFormatted = score !== '' ? Number(score).toFixed(2) : '';
+
+    const details = [
+      base !== '' ? `${baseLabel}: ${base}` : '',
+      scoreFormatted !== '' ? `${scoreLabel}: ${scoreFormatted}` : '',
+    ]
+      .filter(Boolean)
+      .join(', ');
+
+    return details;
+  }
+
+  // Submit search term
   submit() {
     this.searchSubmit.emit(this.term);
   }
 
+  // Copy scale code to clipboard
   copyCode(code: number) {
     const formattedCode = code.toString().padStart(3, '0');
     navigator.clipboard.writeText(formattedCode).then(() => {
-      console.log('Код скопирован:', formattedCode);
+      console.log('Code copied:', formattedCode);
     });
+  }
+
+  // Toggle settings panel
+  toggleSettings() {
+    this.settingsOpen.update((v) => !v);
+  }
+
+  // Handle weights saved event from settings
+  onWeightsSaved(): void {
+    const currentQuery = this.searchTextValue;
+    if (currentQuery && currentQuery.length >= 2) {
+      this.search({ query: currentQuery });
+    }
+    this.settingsOpen.set(false);
   }
 }

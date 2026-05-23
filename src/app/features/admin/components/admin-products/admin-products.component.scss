@@ -15,19 +15,22 @@ body {
 .filters-row {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
   margin-bottom: 1rem;
+  align-items: flex-start;
 
-  > * {
+  .search-box {
+    width: 400px;
     flex-shrink: 0;
-    min-width: 200px;
   }
 
   spr-custom-dropdown {
-    flex: 1 1 200px;
+    width: 220px;
+    flex-shrink: 0;
     display: block;
   }
 }
+
+
 
 .page-wrapper {
   position: relative;

@@ -1,6 +1,6 @@
-@use 'variables' as *;
+@use "variables" as *;
 
-// ===== ЧИПСЫ =====
+// ===== RECENT CHIPS =====
 .recent-bar {
   display: flex;
   gap: 0.5rem;
@@ -13,31 +13,31 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: #f0fdf4;
-  border: 1px solid #dcfce7;
+  background: $bg-green-odd;
+  border: 1px solid $bg-green-soft;
   border-radius: 20px;
   padding: 0.3rem 0.8rem;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s ease;
-  
+
   &:hover {
-    background: #dcfce7;
-    border-color: #86efac;
+    background: $bg-green-soft;
+    border-color: $color-green-active;
     transform: translateY(-1px);
   }
-  
+
   &:active {
     transform: translateY(0);
   }
-  
+
   .chip-code {
     font-weight: 700;
-    color: #22c55e;
+    color: $color-green-active;
   }
-  
+
   .chip-name {
-    color: #166534;
+    color: $color-green;
     max-width: 140px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -45,21 +45,64 @@
   }
 }
 
-// ===== ПОИСК =====
-.search-wrapper {
-  padding: 2rem 1rem;
-  max-width: 600px;
-  margin: 0 auto;
+// ===== SEARCH CONTENT =====
+.search-content {
+  width: 98vw;
   position: relative;
-  
+  box-sizing: border-box;
+
   @include media("max", "sm") {
     padding: 1rem 0.5rem;
-    max-width: 100%; // Убираем ограничение на мобайле
+  }
+}
+
+.search-wrapper {
+  padding: 2rem 1rem;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+
+  @include media("max", "sm") {
+    padding: 1rem 0.5rem;
+    max-width: 100%;
     width: 100%;
     box-sizing: border-box;
   }
 }
 
+// ===== SETTINGS =====
+.settings-trigger {
+  position: absolute;
+  top: 0.5rem;
+  right: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 1.5rem;
+  color: $title-color;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-green-active;
+  }
+
+  @include media("max", "sm") {
+    top: 0.5rem;
+    right: 1rem;
+  }
+}
+
+spr-admin-search-settings {
+  position: absolute !important;
+  top: 15%;
+  right: 2rem;
+  z-index: 999;
+
+  @include media("max", "sm") {
+    right: 1rem;
+  }
+}
+
+// ===== TITLE & VOICE =====
 .search-title {
   text-align: center;
   font-size: 1.75rem;
@@ -67,7 +110,7 @@
   color: $color-green;
   margin-bottom: 0.75rem;
   letter-spacing: -0.5px;
-  
+
   @include media("max", "sm") {
     font-size: 1.4rem;
   }
@@ -82,25 +125,20 @@
 
 .subtitle {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: $title-color;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
 
-  i {
-    color: #9ca3af;
-    font-size: 0.9rem;
-  }
-
   &.active {
     color: $color-green-active;
     font-weight: 500;
-    
+
     .recording-dot {
       width: 8px;
       height: 8px;
-      background: #ef4444;
+      background: $color-error;
       border-radius: 50%;
       animation: pulse-dot 1.5s infinite;
     }
@@ -112,12 +150,16 @@
   50% { opacity: 0.5; transform: scale(1.2); }
 }
 
-// ===== ПОЛЕ ПОИСКА =====
+// ===== SEARCH FIELD =====
 .search-row {
   display: flex;
   justify-content: center;
   gap: 8px;
   position: relative;
+
+  @include media("max", "sm") {
+    width: 98vw !important;
+  }
 }
 
 :host ::ng-deep {
@@ -129,21 +171,22 @@
     background: #fff;
     border-radius: 50px;
     padding: 4px;
-    box-shadow: 0 4px 20px rgba(22, 101, 52, 0.08);
+    box-shadow: 0 4px 20px rgba($color-green, 0.08);
     border: 2px solid transparent;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
     @include media("max", "sm") {
-       max-width: 100%; // На мобайле во всю ширину
+      max-width: 100%;
     }
 
     &:hover {
-      box-shadow: 0 8px 30px rgba(22, 101, 52, 0.12);
-      border-color: rgba(34, 197, 94, 0.3);
+      box-shadow: 0 8px 30px rgba($color-green, 0.12);
+      border-color: rgba($color-green-active, 0.3);
     }
 
     &:focus-within {
       border-color: $color-green-active;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1), 0 8px 30px rgba(22, 101, 52, 0.15);
+      box-shadow: 0 0 0 4px rgba($color-green-active, 0.1), 0 8px 30px rgba($color-green, 0.15);
     }
   }
 
@@ -151,77 +194,92 @@
     background: transparent !important;
     border: none !important;
     padding: 12px 8px 12px 16px !important;
-    
+
     .pi-search {
-      color: #9ca3af;
+      color: $title-color;
       font-size: 1.1rem;
       transition: color 0.2s ease;
     }
+
+    .pi-spinner {
+      color: $color-green-active;
+      font-size: 1.1rem;
+    }
   }
 
-  .glossy-search:focus-within .search-icon .pi-search {
-    color: $color-green-active;
+  .glossy-search:focus-within {
+    .search-icon {
+      .pi-search,
+      .pi-spinner {
+        color: $color-green-active;
+      }
+    }
   }
-
   .p-autocomplete {
     flex: 1 1 auto !important;
     min-width: 0 !important;
-    
+
+    input {
+      border: none !important;
+    }
+
+    .p-inputtext:enabled:focus {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    // Your working styles for panel alignment
+    .p-autocomplete-overlay {
+      left: -3rem !important;
+    }
+
     .p-autocomplete-panel {
       border-radius: 16px !important;
-      box-shadow: 0 8px 30px rgba(22, 101, 52, 0.12) !important;
-      border: 1px solid #dcfce7 !important;
+      box-shadow: 0 8px 30px rgba($color-green, 0.12) !important;
+      border: 1px solid $bg-green-soft !important;
       margin-top: 8px !important;
       overflow: hidden;
+
       @include media("max", "sm") {
-        width: 100vw !important; // Dropdown на всю ширину viewport
-        left: -0.5rem !important; // Компенсируем padding
-        border-radius: 0 0 16px 16px !important; // Убрали верхний радиус
+        width: 100vw !important;
+        left: -0.5rem !important;
+        border-radius: 0 0 16px 16px !important;
       }
     }
-    
+
+    .p-autocomplete-list-container {
+      max-width: 32rem !important;
+
+      @include media("max", "sm") {
+        width: 100vw !important;
+      }
+    }
+
     .p-autocomplete-list {
       padding: 0.5rem !important;
     }
-    
+
     .p-autocomplete-option {
       color: $color-green !important;
       padding: 0.75rem 1rem !important;
       border-radius: 10px !important;
-      transition: all 0.15s ease;
-      font-size: 0.95rem;
-      
+      transition: all 0.15s ease !important;
+      cursor: pointer !important;
+
       &:hover {
-        background: #f0fdf4 !important;
+        background: rgba($color-green-active, 0.08) !important;
+        transform: translateX(4px) !important;
       }
-      
-      &.p-highlight {
-        background: #dcfce7 !important;
-        color: $color-green !important;
-      }
-    }
-    
-    .p-autocomplete-input {
-      color: $color-green !important;
-      border: none !important;
-      background: transparent !important;
-      outline: none !important;
-      padding: 12px 8px !important;
-      height: auto !important;
-      font-size: 16px;
-      box-shadow: none !important;
-      width: 100%;
-      
-      &::placeholder {
-        color: #9ca3af;
-      }
-      
-      &:focus {
-        box-shadow: none !important;
+
+      &.p-autocomplete-option-selected {
+        background: rgba($color-green-active, 0.15) !important;
+        border-left: 3px solid $color-green !important;
+        padding-left: calc(1rem - 3px) !important;
       }
     }
   }
 
+  // ===== MICROPHONE =====
   .mic-btn {
     flex-shrink: 0;
     font-size: 1.1rem;
@@ -232,55 +290,76 @@
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    color: #9ca3af;
-    
-    &:hover:not(.active) {
-      color: $color-green-active;
-      transform: scale(1.1);
+
+    .mic-icon {
+      width: 1.2rem;
+      height: 1.2rem;
+      transition: all 0.2s ease;
     }
-    
-    i {
-      font-size: 1.2rem;
+
+    &.off {
+      color: $title-color;
+
+      .mic-icon {
+        opacity: 0.7;
+      }
+
+      &:hover {
+        color: $color-green-active;
+
+        .mic-icon {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    &.on {
+      color: $color-error;
+
+      .mic-icon {
+        opacity: 1;
+        animation: micPulse 1.2s infinite;
+      }
+    }
+
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+
+      .mic-icon {
+        filter: grayscale(100%);
+      }
     }
   }
-}
-
-.mic-btn.off {
-  opacity: 0.6;
-}
-
-.mic-btn.on {
-  color: #ef4444 !important;
-  animation: micPulse 1.2s infinite;
 }
 
 @keyframes micPulse {
-  0% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-  100% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
-// ===== РЕЗУЛЬТАТ =====
+// ===== RESULT =====
 .result {
-  margin-top: 2.5rem;
   text-align: center;
   padding: 2.5rem 2rem;
-  background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%);
-  color: white;
+  background: linear-gradient(135deg, $color-green 0%, $color-green-active 50%, $color-menu-active 100%);
+  color: #fff;
   border-radius: 24px;
-  box-shadow: 0 12px 40px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 12px 40px rgba($color-green, 0.25);
   position: relative;
   overflow: hidden;
-  
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  margin: 2.5rem auto;
+
+  @include media("max", "sm") {
+    margin: 1.5rem auto;
+    padding: 1.5rem 1rem;
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -293,56 +372,51 @@
   }
 }
 
-.result-content {
-  position: relative;
-  z-index: 1;
-}
-
-.code-big {
-  font-size: 5rem;
-  font-weight: 800;
-  line-height: 1;
-  margin-bottom: 0.75rem;
-  letter-spacing: -2px;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.name {
-  font-size: 1.15rem;
-  font-weight: 500;
-  opacity: 0.95;
-  line-height: 1.4;
-  margin-bottom: 1.5rem;
-}
-
-.copy-btn {
-  padding: 0.75rem 2rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50px;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
+// ===== SEARCH ITEM (autocomplete row) =====
+.search-item {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  backdrop-filter: blur(4px);
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.35);
-    border-color: rgba(255, 255, 255, 0.7);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  i {
+  width: 100%;
+  min-height: 1.5rem;
+
+  .code {
+    font-weight: 700;
+    color: $color-green;
+    font-family: "Courier New", monospace;
+    min-width: 2.5rem;
     font-size: 0.9rem;
+  }
+
+  .divider {
+    color: $border-color-gray;
+    margin: 0 0.25rem;
+  }
+
+  .name {
+    flex: 1;
+    color: $color-green;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.95rem;
+  }
+
+  .info-icon {
+    color: $color-green-active;
+    cursor: help;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-green;
+    }
+
+    i {
+      font-size: 0.9rem;
+    }
   }
 }
 
@@ -351,71 +425,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 2rem;
-  color: #9ca3af;
-  
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  color: $title-color;
+
   i {
-    font-size: 1.5rem;
-    color: #bbf7d0;
+    font-size: 2.5rem;
+    opacity: 0.5;
+    color: $bg-green-soft;
   }
-  
+
   span {
     font-size: 0.9rem;
+    font-weight: 500;
   }
-}
-
-// ===== DEV CONTROLS =====
-.dev-controls {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.dev-badge {
-  display: inline-block;
-  background: rgba(255, 165, 0, 0.2);
-  color: #ea580c;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.mock-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
-  border: 1px dashed #ea580c;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-
-  &:hover:not(.active) {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-  }
-
-  &.active {
-    background: #ef4444;
-    animation: devPulse 1.2s infinite;
-  }
-
-  i {
-    font-size: 1rem;
-  }
-}
-
-@keyframes devPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
 }

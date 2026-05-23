@@ -10,6 +10,7 @@ import {
 } from '../../shared/models/speechRecognition.models';
 import { LanguageService } from './language.service';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +23,25 @@ export class SpeechRecognitionService {
   onResult = new Subject<string>();
   onError = new Subject<string>();
   onStatusChange = new Subject<boolean>();
+
+  /** Проверка наличия микрофона */
+  async checkMicrophone(): Promise<boolean> {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      this.onError.next('Медиа-устройства не поддерживаются');
+      return false;
+    }
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasMic = devices.some((d: MediaDeviceInfo) => d.kind === 'audioinput');
+      if (!hasMic) {
+        this.onError.next('Микрофон не найден. Пожалуйста, подключите микрофон.');
+      }
+      return hasMic;
+    } catch (e) {
+      this.onError.next('Ошибка при проверке микрофона');
+      return false;
+    }
+  }
 
   constructor() {
     // Реактивное отслеживание языка — перезапуск при смене
@@ -69,7 +89,7 @@ export class SpeechRecognitionService {
     this.recognition.interimResults = true;
 
     const lang = this.langService.langCode();
-    this.recognition.lang = lang || 'ru-RU';
+    this.recognition.lang = lang || 'en';
 
     this.recognition.onresult = (event: SpeechRecognitionEvent) => {
       let final = '';
@@ -128,33 +148,38 @@ export class SpeechRecognitionService {
   }
 
   start() {
-    // Обновляем язык если recognition уже есть
-    if (this.recognition) {
-      const lang = this.langService.langCode();
-      if (lang) {
-        this.recognition.lang = lang;
+    // Проверяем наличие микрофона перед запуском
+    this.checkMicrophone().then((hasMic) => {
+      if (!hasMic) return;
+
+      // Обновляем язык если recognition уже есть
+      if (this.recognition) {
+        const lang = this.langService.langCode();
+        if (lang) {
+          this.recognition.lang = lang;
+        }
       }
-    }
-    
-    // Если recognition нет — создаём через init()
-    if (!this.recognition) {
-      if (!this.init()) return;
-    }
-    
-    // ✅ Защита: не запускаем если уже слушаем
-    if (!this.isListening()) {
-      try {
-        this.recognition.start();
-        this.isListening.set(true);
-        this.onStatusChange.next(true);
-        console.log('▶️ Speech recognition started, lang:', this.recognition.lang);
-      } catch (error) {
-        console.error('❌ Start error:', error);
-        this.onError.next('start_error');
+
+      // Если recognition нет — создаём через init()
+      if (!this.recognition) {
+        if (!this.init()) return;
       }
-    } else {
-      console.log('⚠️ Recognition already running, skipping start()');
-    }
+
+      // ✅ Защита: не запускаем если уже слушаем
+      if (!this.isListening()) {
+        try {
+          this.recognition.start();
+          this.isListening.set(true);
+          this.onStatusChange.next(true);
+          console.log('▶️ Speech recognition started, lang:', this.recognition.lang);
+        } catch (error) {
+          console.error('❌ Start error:', error);
+          this.onError.next('start_error');
+        }
+      } else {
+        console.log('⚠️ Recognition already running, skipping start()');
+      }
+    });
   }
 
   stop() {

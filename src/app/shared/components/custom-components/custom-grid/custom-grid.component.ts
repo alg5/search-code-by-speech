@@ -27,6 +27,8 @@ import { CommonService } from '../../../../core/services/common.service';
 import { GeneralContent } from '../../../models/enums';
 import { IDropDownModel } from '../custom-dropdown/custom-dropdown-models';
 import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../pipes/translate-pipe';
 
 @Component({
   selector: 'spr-custom-grid',
@@ -41,7 +43,8 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
     HighlightPipe,
     // SelectDayFormattedPipe,
     CustomToolbarComponent, 
-    CustomDropdownComponent
+    CustomDropdownComponent,
+    TranslatePipe
    
 
     // HandleRequestComponent,
@@ -54,8 +57,7 @@ export class CustomGridComponent {
   private commonService = inject(CommonService);
   private customGridService = inject(CustomGridService);
   private readonly destroyRef = inject(DestroyRef);
-  // private readonly modalService = inject(ModalService);
-  // private readonly commentsManagerService = inject(CommentsManagerService);
+  private languageService = inject(LanguageService);
   private cdr = inject(ChangeDetectorRef);
 
   @Input()
@@ -117,6 +119,7 @@ export class CustomGridComponent {
   readonly pageSizeOptionsMinimum = 5;
   pageSize!: number;
   pageIndex!: number;
+
   recordFirst = 0;
   pageSizeDefault = 10;
   first = 0;
@@ -200,12 +203,22 @@ export class CustomGridComponent {
       this.year = this.gridModel.year;
     }
     //TODO
-    if (!this.withoutPaging){
+    // if (!this.withoutPaging){
+    //   this.pageSize = this.gridModel.pageSize ? this.gridModel.pageSize : this.pageSizeDefault;
+    //   this.pageIndex = this.gridModel.pageIndex ? this.gridModel.pageIndex : 0;
+    //   this.first = this.pageIndex * this.pageSize;
+    //   this.lastRecordInReport = Math.min(this.first + this.pageSize, this.totalRecords);
+    //     this.lastRecordInReport = Math.min(this.pageSize, this.totalRecords);
+    // }
+    // else{
+    //   this.pageSize =  this.totalRecords;
+    // }
+    // In initTable() - keep this logic:
+    if (!this.withoutPaging) {
       this.pageSize = this.gridModel.pageSize ? this.gridModel.pageSize : this.pageSizeDefault;
-      this.lastRecordInReport = Math.min(this.pageSize, this.totalRecords);
-    }
-    else{
-      this.pageSize =  this.totalRecords;
+      this.pageIndex = this.gridModel.pageIndex ? this.gridModel.pageIndex : 0;
+      this.first = this.pageIndex * this.pageSize;
+      this.lastRecordInReport = Math.min(this.first + this.pageSize, this.totalRecords);
     }
 
     if (!this.withoutToolbar && this.gridModel.toolbarModel) {
@@ -224,6 +237,18 @@ export class CustomGridComponent {
 
       this.toolbarModel = toolbarModel;
       this.customGridService.numResultsTextSignal.set({ key: this.gridKey, value: this.numResultsText });
+ 
+
+console.log('=== PAGINATOR DEBUG ===');
+console.log('withoutPaging:', this.withoutPaging);
+console.log('totalRecords:', this.totalRecords);
+console.log('pageSize:', this.pageSize);
+console.log('totalRecords > pageSize:', this.totalRecords > this.pageSize);
+console.log('!withoutPaging:', !this.withoutPaging);
+console.log('FINAL CONDITION:', !this.withoutPaging && this.totalRecords > this.pageSize);
+console.log('dataSource length:', this.dataSource?.length);
+console.log('gridModel exists:', !!this.gridModel);
+
     }
   }
   addPropertiesColumn() {
@@ -561,18 +586,26 @@ getTooltipSerials(rowData){
   isFirstPage = true;
   isLastPage = false;
   onPageChange(event: any) {
-    console.log("onPageChange-primeng", event)
-
-    // console.log("onPageChange:1", this.pVisible);
-    // console.log("onPageChange:2", this.paginatorPrimeng);
-    // console.log("onPageChange:3", this.first);
-
+     console.log('onPageChange event:', event);
+  console.log('pagingAPI:', this.pagingAPI);
+  console.log('gridKey:', this.gridKey);
+  
     this.first = event.first;
+    this.pageIndex = event.page;
     this.isLastPage = event.page === (event.pageCount - 1);
     this.isFirstPage = this.first === 0;
     this.lastRecordInReport = this.first + this.pageSize;
     if (this.lastRecordInReport > this.totalRecords) {
       this.lastRecordInReport = this.totalRecords;
+    }
+    
+    if (this.pagingAPI) {
+      this.customGridService.pagingSignal.set({
+        key: this.gridKey,
+        page: event.page + 1, // 1-based for parent
+        first: event.first,
+        rows: event.rows
+      });
     }
   }
   goToFirstPage() {
@@ -616,19 +649,19 @@ getTooltipSerials(rowData){
   }
 
   // ngx-bootstrap pagination
-  pageChanged(event){
-    console.log("pageChanged-ngx:event", event);
-    console.log("pageChanged-ngx:currentPage",  this.currentPage);
-    if (this.pagingAPI){
-      this.customGridService.pagingSignal.set(event)
-    }
-    else{
-      this.currentPage = event.page;
-      this.pageSize = event.itemsPerPage;
-      this.first = (event.page - 1) * this.pageSize;
-      this.onPageChange({ first: this.first, page: this.currentPage - 1, pageCount: Math.ceil(this.totalRecords / this.pageSize) });
-    }
-  }
+  // pageChanged(event){
+  //   console.log("pageChanged-ngx:event", event);
+  //   console.log("pageChanged-ngx:currentPage",  this.currentPage);
+  //   if (this.pagingAPI){
+  //     this.customGridService.pagingSignal.set(event)
+  //   }
+  //   else{
+  //     this.currentPage = event.page;
+  //     this.pageSize = event.itemsPerPage;
+  //     this.first = (event.page - 1) * this.pageSize;
+  //     this.onPageChange({ first: this.first, page: this.currentPage - 1, pageCount: Math.ceil(this.totalRecords / this.pageSize) });
+  //   }
+  // }
   //#endregion Paginator
 
 }

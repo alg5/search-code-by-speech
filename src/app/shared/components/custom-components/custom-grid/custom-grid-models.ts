@@ -75,6 +75,7 @@ export interface IColumn  {
     sortField? :string;
     dataColname?: string;
     tooltip? :string;
+    tooltipPosition? : string;
     tooltipByField? : string;
     columnInfo? : string;
     columnInfoByField? : string;
@@ -120,6 +121,7 @@ export interface ICustomGridModel {
     withoutPaging? :boolean;
     idField?: string;
     pageSize? :number;
+    pageIndex?: number;
     totalRecords? : number;
     pagingAPI? : boolean;
     disabled?:boolean;

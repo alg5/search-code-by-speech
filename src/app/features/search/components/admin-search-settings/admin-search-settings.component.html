@@ -1,0 +1,52 @@
+<div class="settings-panel-content">
+  <div class="panel-header">{{ 'search.settings.title' | translate }}</div>
+
+  <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+    <div class="setting-field">
+      <label for="kCategory">{{ 'search.settings.categoryWeight' | translate }}:</label>
+      <p-inputNumber
+        id="kCategory"
+        formControlName="kCategory"
+        [minFractionDigits]="0"
+        [maxFractionDigits]="2"
+        [step]="0.1"
+        mode="decimal" />
+    </div>
+    @if (kCategory?.invalid && kCategory?.touched) {
+      <div class="field-error">
+        @if (kCategory?.errors?.['required']) {
+          <span>{{ 'validation.required' | translate }}</span>
+        }
+        @if (kCategory?.errors?.['pattern']) {
+          <span>{{ 'validation.number.invalid' | translate }}</span>
+        }
+      </div>
+    }
+
+    <div class="setting-field">
+      <label for="kProcessing">{{ 'search.settings.processingWeight' | translate }}:</label>
+      <p-inputNumber
+        id="kProcessing"
+        formControlName="kProcessing"
+        [minFractionDigits]="0"
+        [maxFractionDigits]="2"
+        [step]="0.1"
+        mode="decimal" />
+    </div>
+    @if (kProcessing?.invalid && kProcessing?.touched) {
+      <div class="field-error">
+        @if (kProcessing?.errors?.['required']) {
+          <span>{{ 'search.validation.required' | translate }}</span>
+        }
+        @if (kProcessing?.errors?.['pattern']) {
+          <span>{{ 'validation.number.invalid' | translate }}</span>
+        }
+      </div>
+    }
+
+    <spr-custom-button
+      [buttonModel]="saveButtonModel()"
+      (onClick)="saveSettings()">
+    </spr-custom-button>
+  </form>
+</div>

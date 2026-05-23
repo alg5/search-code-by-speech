@@ -1,3 +1,4 @@
+
 // src/app/supabase.service.ts
 
 import { computed, Injectable, OnDestroy, signal } from '@angular/core';
@@ -97,36 +98,113 @@ private async loadProfileAfterSignIn(userId: string) {
     this._authState.complete();
   }
   // --- МЕТОДЫ CRUD ДЛЯ ПРОДУКТОВ 
-  // async getAllProducts() {
-  //    const { data, error } = await this.supabase
-  //     .from('products')
-  //     .select('*')
-  //     .order('id', { ascending: true });
 
-  //   if (error) {
-  //     console.error('Ошибка при получении данных:', error);
-  //     return null;
-  //   }
 
-  //   return data ?? [];
-  // }
-  async getAllProducts() {
-  const { data, error } = await this.supabase
-    .from('products')
-    .select(`
-      *,
-      category:product_categories(priority),
-      processing:product_processing(priority)
-    `)
-    .order('id', { ascending: true });
-
-  if (error) {
-    console.error('Ошибка при получении данных:', error);
-    return null;
+  /**
+   * Получить страницу продуктов с пагинацией
+   * @param limit Количество строк на страницу
+   * @param offset Смещение (offset = (page-1)*limit)
+   */
+  async getProductsPage(limit: number, offset: number = 0): Promise<IProduct[]> {
+    const { data, error } = await this.supabase
+      .from('products')
+      .select(`*, category:product_categories(priority), processing:product_processing(priority)`)
+      .order('id', { ascending: true })
+      .range(offset, offset + limit - 1);
+    if (error) {
+      console.error('Ошибка при получении страницы продуктов:', error);
+      return [];
+    }
+    return data ?? [];
   }
 
-  return data ?? [];
+  /**
+ * Get admin products page with partial match search, filters and pagination
+ * Uses SQL function search_products_admin with LIKE matching
+ * @param query Partial search query for scale_code, product_name, keys, categories
+ * @param pageNum Page number (0-based)
+ * @param pageSize Items per page
+ * @param categoryFilter Optional category code filter
+ * @param processingFilter Optional processing code filter
+ */
+async getAdminProductsPage(
+  query: string = '',
+  pageNum: number = 0,
+  pageSize: number = 15,
+  categoryFilter: string | null = null,
+  processingFilter: string | null = null
+): Promise<{ products: IProduct[]; totalCount: number }> {
+  const { data, error } = await this.supabase.rpc('search_products_admin', {
+    search_query: query,
+    page_num: pageNum,
+    page_size: pageSize,
+    category_filter: categoryFilter,
+    processing_filter: processingFilter
+  });
+
+  if (error) {
+    console.error('Error fetching admin products:', error);
+    return { products: [], totalCount: 0 };
+  }
+
+  if (!data || data.length === 0) {
+    return { products: [], totalCount: 0 };
+  }
+
+  const totalCount = data[0]?.total_count ?? 0;
+
+  const products: IProduct[] = data.map((row: any) => ({
+    id: row.id,
+    scale_code: row.scale_code,
+    product_name: row.product_name,
+    key_ru: row.key_ru,
+    key_en: row.key_en,
+    key_he: row.key_he,
+    key_fr: row.key_fr,
+    category_code: row.category_code,
+    category_name: row.category_name,
+    category_priority: row.category_priority,
+    processing_code: row.processing_code,
+    processing_name: row.processing_name,
+    processing_priority: row.processing_priority,
+  }));
+
+  return { products, totalCount };
 }
+
+  /**
+   * Умный поиск продуктов через Supabase RPC
+   * @param txtSearch Текст запроса (строка)
+   * @param lang Текущий язык интерфейса (например, 'ru', 'he', 'en')
+   * @param maxResults Максимальное количество результатов (по умолчанию 20)
+   */
+  async getProductsBySearch(txtSearch: string, lang: string, maxResults: number = 20) {
+    const query = txtSearch?.trim() || '';
+
+    // Если запрос пустой или слишком короткий, даже не делаем запрос к базе (экономим трафик)
+    if (query.length < 2) {
+      return [];
+    }
+
+    // Явно приводим maxResults к числу
+    const params = {
+      search_query: query,
+      display_language: lang,
+      max_results: Number(maxResults)
+    };
+    console.log('[Supabase] Поиск продуктов, параметры:', params);
+
+    const { data, error } = await this.supabase
+      .rpc('search_products_fuzzy', params);
+
+    if (error) {
+      console.error('Ошибка при поиске продуктов:', error);
+      return [];
+    }
+    console.log(`[Supabase] Найдены продукты: ${JSON.stringify(data)}`);
+    return data ?? [];
+  }
+
   async addProduct(product: NewProduct): Promise<IProduct> {
   // `product` - это один объект. Мы оборачиваем его в массив [product].
   const { data, error } = await this.supabase
@@ -550,4 +628,25 @@ async deleteProductProcessing(id: number): Promise<void> {
   // #endregion Processing CRUD
  
   //#endregion
+
+  // #region config
+
+  async getConfigValue(key: string): Promise<string> {
+  const { data } = await this.supabase
+    .from('config')
+    .select('value')
+    .eq('key', key)
+    .single();
+  return data?.value ?? '';
+}
+
+async updateConfig(key: string, value: string): Promise<void> {
+  await this.supabase
+    .from('config')
+    .update({ value, updated_at: new Date().toISOString() })
+    .eq('key', key);
+}
+
+  // #endregion config
+
 }

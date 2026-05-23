@@ -4,9 +4,6 @@
 @use 'custom-primeng' as *;
 
 
-// @use 'custom-primeng' as *;
-// @import 'scss/_custom-primeng.scss';
-// @import 'custom-primeng';
 @import "primeicons/primeicons.css";
 
 // body {
@@ -26,6 +23,7 @@ body {
   background-color: #f8faf8;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Cpath d='M25 10 Q32 17 25 25 Q18 17 25 10' fill='%234a9b6b' opacity='0.05'/%3E%3Cpath d='M25 25 Q32 32 25 40 Q18 32 25 25' fill='%236bc48a' opacity='0.05'/%3E%3C/svg%3E");
   background-size: 50px 50px;
+  overflow-y: hidden;
 }
 
 .highlight {

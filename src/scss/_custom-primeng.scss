@@ -25,7 +25,7 @@
 .p-datatable-thead th {
   font-weight: 600;
   letter-spacing: 0.5px;
-  text-align: right;
+  // text-align: right;
   color: $color-green;
   padding: 12px 16px;
   border: solid 1px $border-table-header;
@@ -51,7 +51,7 @@
   font-weight: normal;
   line-height: 1.4;
   letter-spacing: normal;
-  text-align: right !important;
+  // text-align: right !important;
   padding: 12px 16px;
   border: solid 1px $border-table-cell;
   color: $color-green;
@@ -96,7 +96,7 @@
 .p-datatable-thead th {
   font-weight: 600;
   letter-spacing: 0.5px;
-  text-align: right;
+  // text-align: right;
   color: #2d5a3d; // тёмно-зелёный
   padding: 12px 16px;
   border: solid 1px #d4e8da; // светло-зелёная граница
@@ -113,7 +113,7 @@
   background-color: $bg-table-header;
   font-weight: 700;
   letter-spacing: 0.667px;
-  text-align: right; 
+  // text-align: right; 
 }
 
 .p-datatable-tbody tr{
@@ -128,7 +128,7 @@
   font-weight: normal;
   line-height: 1.25;
   letter-spacing: normal;
-  text-align: right !important;
+  // text-align: right !important;
   padding: 16px;
   border: solid 1px $border-table-cell;
 }
@@ -146,99 +146,99 @@
 
 // #region CustomPaginator
 
-.paginator-wrapper{
-  display: flex;
-  padding: 15px 15px;
-  justify-content: space-between;
+// .paginator-wrapper{
+//   display: flex;
+//   padding: 15px 15px;
+//   justify-content: center;
   
-  &.hide{
-    display: none;
-  }
+//   &.hide{
+//     display: none;
+//   }
   
-  .report-bar{
-    font-weight: 300;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-  }
-}
+//   .report-bar{
+//     font-weight: 300;
+//     display: flex;
+//     flex-wrap: wrap;
+//     align-content: center;
+//   }
+// }
 
-.paginator-bar{
-  display: flex;
-  gap: 8px;
-  align-items: center;
+// .paginator-bar{
+//   display: flex;
+//   gap: 8px;
+//   align-items: center;
   
-  .paginator-links{
-    border: 0;
-    color: $color-green !important;
-    cursor: pointer;
+//   .paginator-links{
+//     border: 0;
+//     color: $color-green !important;
+//     cursor: pointer;
     
-    &.link-disabled{
-      cursor: not-allowed;
-      pointer-events: none; 
-    }
-  }
-} 
+//     &.link-disabled{
+//       cursor: not-allowed;
+//       pointer-events: none; 
+//     }
+//   }
+// } 
 
-.paginator-bar .report-text{
-  display: flex;
-  width: 20%;
-  align-items: center;
-  padding-right: 1rem;
-  line-height: 1.81;
-  font-size: 18px;
-}
+// .paginator-bar .report-text{
+//   display: flex;
+//   width: 20%;
+//   align-items: center;
+//   padding-right: 1rem;
+//   line-height: 1.81;
+//   font-size: 18px;
+// }
 
-.paginator-bar .data{
-  margin-top: 0.3em;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
+// .paginator-bar .data{
+//   margin-top: 0.3em;
+//   width: 100%;
+//   display: flex;
+//   justify-content: center;
+// }
 
-.p-paginator{
-  flex-direction: row-reverse;
-}
+// .p-paginator{
+//   // flex-direction: row-reverse;
+// }
 
-.p-paginator .p-paginator-pages .p-paginator-page {
-  gap: 10px;
-  padding: 8px;
-  border-radius: 8px;
-  width: 26px;
-  height: 26px;
-  margin-left: 5px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-  color: $color-green;
-  border: solid 1px #dadada;
+// .p-paginator .p-paginator-pages .p-paginator-page {
+//   gap: 10px;
+//   padding: 8px;
+//   border-radius: 8px;
+//   width: 26px;
+//   height: 26px;
+//   margin-left: 5px;
+//   font-size: 16px;
+//   font-weight: 600;
+//   line-height: 1.25;
+//   color: $color-green;
+//   border: solid 1px #dadada;
   
-  :hover{
-    background-color: #e9ecef;
-  }
+//   :hover{
+//     background-color: #e9ecef;
+//   }
   
-  &.p-highlight{
-    cursor: not-allowed;
-    pointer-events: none; 
-    color: $color-green-active;
-    border: solid 1px $color-green-active !important;
-    background-color: white;
-  }
-}
+//   &.p-highlight{
+//     cursor: not-allowed;
+//     pointer-events: none; 
+//     color: $color-green-active;
+//     border: solid 1px $color-green-active !important;
+//     background-color: white;
+//   }
+// }
 
-.p-paginator .p-paginator-pages{
-  display:flex;
-  gap: 8px;
-}
+// .p-paginator .p-paginator-pages{
+//   display:flex;
+//   gap: 8px;
+// }
 
-.p-paginator .p-paginator-next,
-.p-paginator .p-paginator-prev {
-  display: none;
-}
+// .p-paginator .p-paginator-next,
+// .p-paginator .p-paginator-prev {
+//   // display: none;
+// }
 
-.p-paginator.p-paginator-bottom{
-  display: none;
-}
+// .p-paginator.p-paginator-bottom{
+//   display: none;
+// }
 
 // #endregion CustomPaginator
 
@@ -437,7 +437,7 @@ p-dropdown.dropdown-invalid .p-dropdown{
 }
 
 .p-autocomplete-panel {
-  text-align: right;
+  // text-align: right;
 }
 
 .cdk-virtual-scroll-content-wrapper{

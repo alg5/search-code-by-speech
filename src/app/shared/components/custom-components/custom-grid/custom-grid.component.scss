@@ -77,7 +77,7 @@
   max-width: 100%;
   box-sizing: border-box;
   padding: 4px 8px;
-  direction: rtl;
+  // direction: rtl;
 }
 
 .save-button-wrapper {
@@ -177,16 +177,7 @@ tr.footer-row > td {
     align-items: center;
 }
 
-.column-makat {
-  display: flex;
-  gap: 8px;
-  
-  .serials {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-}
+
 
 .paginator-bar .report-text {
     display: flex;
@@ -235,7 +226,7 @@ tr.footer-row > td {
   .title {
     display: flex;
     gap: 8px;
-    text-align: right;
+    // text-align: right;
     font-family: SimplerPro_BEZEQ_HEBREW2;
     font-size: 18px;
     font-style: normal;
@@ -251,4 +242,82 @@ tr.footer-row > td {
 
 .editable-input.is-invalid {
   border-color: $color-error;
+}
+
+// Paginator layout: page-report on the left, paginator buttons centered
+.paginator-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+
+  .page-report {
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: $color-green;
+    font-size: 0.875rem;
+    order: -1;
+  }
+
+  ::ng-deep p-paginator {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    .p-paginator {
+      justify-content: center;
+      background: transparent;
+      border: none;
+      padding: 0;
+      gap: 0.25rem;
+    }
+
+    .p-paginator-page,
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+      min-width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.375rem;
+      color: $color-green;
+      border: 1px solid $bg-green-soft;
+      background: $bg-green-odd;
+
+      &:hover {
+        background: $bg-green-soft;
+        border-color: $color-green-active;
+        color: $color-green-active;
+      }
+
+      &.p-highlight {
+        background: $color-green-active;
+        color: #ffffff;
+        border-color: $color-green-active;
+
+        &:hover {
+          background: $color-menu-active;
+          border-color: $color-menu-active;
+        }
+      }
+    }
+
+    .p-paginator-icon {
+      color: $color-green;
+
+      &:hover {
+        color: $color-green-active;
+      }
+    }
+
+    .p-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      .p-paginator-icon {
+        color: $bg-green-soft;
+      }
+    }
+  }
 }
