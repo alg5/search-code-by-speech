@@ -23,9 +23,7 @@ import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { IProduct, IRecentProduct } from '../../../../shared/models/product.model';
-import { environment } from '../../../../../environments/environment';
 import { TooltipModule } from 'primeng/tooltip';
-import { SmartSearchService } from '../../../../core/services/smart-search.service';
 import { AdminSearchSettingsComponent } from '../admin-search-settings/admin-search-settings.component';
 
 @Component({
@@ -49,7 +47,6 @@ export class SearchInputComponent implements OnInit {
   private readonly supabaseService = inject(SupabaseService);
   private readonly speechService = inject(SpeechRecognitionService);
   private readonly messageService = inject(MessageService);
-  private readonly smartSearchService = inject(SmartSearchService);
   private readonly translate = inject(TranslatePipe);
 
   @Input() term = '';
@@ -62,6 +59,7 @@ export class SearchInputComponent implements OnInit {
   settingsOpen = signal(false);
   isListening = signal(false);
   isLoading = signal(false);
+  
 
   // micError and hasMicrophone are kept separate for future expansion:
   // - micError: microphone not found
@@ -82,24 +80,43 @@ export class SearchInputComponent implements OnInit {
   private readonly MAX_RECENT = 3;
 
   constructor() {
-    // effect(() => {
-    //   const data = this.products();
-    //   const currentLang = this.lang();
-    //   console.log(`[Fuse] Rebuilding for lang: ${currentLang}, products: ${data.length}`);
-    //   if (!data.length) return;
-    //   this.initFuse();
-    // });
+    effect(() => {
+        const lang = this.lang();
+        const isLoaded = this.languageService.isLangLoaded();
+        
+        if (isLoaded && lang) {
+          this.loadRecentProducts();
+        }
+    });
   }
 
   ngOnInit(): void {
     this.speechService.init();
-    this.loadRecentProducts();
+    // this.loadRecentProducts();
 
-    // Check microphone availability on component load
+    // Проверяем наличие микрофона при загрузке компонента
     this.speechService.checkMicrophone().then((hasMic) => {
       this.micError.set(!hasMic);
       this.hasMicrophone.set(hasMic);
+      
+      if (!hasMic) {
+        console.warn('⚠️ Microphone not available on this device');
+      }
     });
+    
+    // На мобильном браузере запрашиваем разрешение на микрофон при загрузке
+    if (/iPhone|iPad|Android|Mobile/.test(navigator.userAgent)) {
+      console.log('📱 Mobile device detected, requesting microphone access...');
+      navigator.mediaDevices?.getUserMedia({ audio: true })
+        .then(stream => {
+          // Закрываем поток - нам просто нужно разрешение
+          stream.getTracks().forEach(track => track.stop());
+          console.log('✅ Microphone permission granted');
+        })
+        .catch(err => {
+          console.warn('⚠️ Microphone permission denied:', err);
+        });
+    }
 
     // Debounce for search input
     this.searchTextChanged$
@@ -122,17 +139,36 @@ export class SearchInputComponent implements OnInit {
       this.isListening.set(status);
     });
 
-    // Subscribe to other speech errors (not microphone-related)
+    // Subscribe to speech errors and show them to user
     this.speechService.onError.subscribe((err) => {
+      console.log(' Speech Service Error:', err);
+      
       if (err && err.toLowerCase().includes('microphone')) {
-        // micError is already set above
+        this.micError.set(true);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Microphone Not Available',
+          detail: 'Please grant microphone permission in browser settings',
+          sticky: true,
+        });
         return;
       }
+      
+      if (err === 'start_error') {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Voice Recognition Error',
+          detail: 'Failed to start voice recognition. Please ensure microphone permission is granted and try again.',
+          sticky: true,
+        });
+        return;
+      }
+
       this.messageService.add({
         severity: 'error',
-        summary: 'Error',
+        summary: 'Voice Error',
         detail: err,
-        life: 5000,
+        sticky: true,
       });
     });
   }
@@ -245,6 +281,15 @@ export class SearchInputComponent implements OnInit {
 
   // Toggle voice search
   startVoiceSearch() {
+    if (this.micError()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Microphone Not Available',
+        detail: 'Please grant microphone permission in browser settings',
+        sticky: true,
+      });
+      return;
+    }
     this.speechService.toggle();
   }
 
@@ -314,6 +359,12 @@ export class SearchInputComponent implements OnInit {
   // Toggle settings panel
   toggleSettings() {
     this.settingsOpen.update((v) => !v);
+  }
+
+  // Refresh page (clear cache and reload)
+  refreshPage() {
+    // Hard reload to bypass cache
+    window.location.reload();
   }
 
   // Handle weights saved event from settings

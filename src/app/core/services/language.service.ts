@@ -8,15 +8,11 @@ import { toObservable } from '@angular/core/rxjs-interop';
 export class LanguageService {
   private readonly http = inject(HttpClient);
 
-  // ✅ Загруженные языки из assets/languages.json (замена хардкода LANGS)
   languages = signal<ILang[]>([]);
-  
   currentLang = signal<ILang | null>(null);
-  
-  // ✅ Доступные коды языков для Fuse и других компонентов
-  availableLangCodes = computed(() => this.languages().map(l => l.code));
+  isLangLoaded = signal(false);
 
-  // ✅ Добавляем Observable для совместимости
+  availableLangCodes = computed(() => this.languages().map(l => l.code));
   langChanges$ = toObservable(this.currentLang);
 
   private readonly STORAGE_KEY = 'spr_lang';
@@ -30,30 +26,28 @@ export class LanguageService {
     this.http.get<ILang[]>('assets/config/languages.json').subscribe({
       next: (data) => {
         this.languages.set(data);
-        
-        // Восстанавливаем сохранённый язык или ставим первый из JSON
-        const saved = localStorage.getItem(this.STORAGE_KEY);
-        const savedLang = saved ? data.find(l => l.code === saved) : null;
-        
-        this.currentLang.set(savedLang ?? data[0] ?? null);
+        this.restoreLanguage(data);
+        this.isLangLoaded.set(true);
       },
-      error: (err) => {
-        console.error('Failed to load languages:', err);
-        // Fallback — минимальный набор если JSON не загрузился
+      error: () => {
         const fallback: ILang[] = [
           { code: 'en', label: 'English', iconClass: 'fi fi-gb' },
           { code: 'ru', label: 'Русский', iconClass: 'fi fi-ru' }
         ];
         this.languages.set(fallback);
-        
-        const saved = localStorage.getItem(this.STORAGE_KEY);
-        const savedLang = saved ? fallback.find(l => l.code === saved) : null;
-        this.currentLang.set(savedLang ?? fallback[0]);
+        this.restoreLanguage(fallback);
+        this.isLangLoaded.set(true);
       }
     });
   }
 
-  setLang(lang: ILang) {
+  private restoreLanguage(available: ILang[]): void {
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    const savedLang = saved ? available.find(l => l.code === saved) : null;
+    this.currentLang.set(savedLang ?? available[0] ?? null);
+  }
+
+  setLang(lang: ILang): void {
     this.currentLang.set(lang);
     localStorage.setItem(this.STORAGE_KEY, lang.code);
   }
@@ -62,30 +56,19 @@ export class LanguageService {
     return this.currentLang();
   }
 
-  // ✅ Замена getAllLangs() — теперь из JSON
   getAllLangs(): ILang[] {
     return this.languages();
   }
 
-  langCode = computed(() => this.currentLang()?.code ?? 'ru');
+  langCode = computed(() => this.currentLang()?.code ?? this.availableLangCodes()[0] ?? 'en');
 
-  langEffect = effect(() => {
-    const lang = this.currentLang();
-    if (lang) {
-      console.log('Язык изменился на:', lang.label);
-    }
-  });
-
-  /**
-   * Translation with {{variables}} support
-   */
   translate(
     key: string,
     fallback: string = '',
     variables?: Record<string, string | number>
   ): string {
     const lang = this.langCode();
-    const value: TranslationValue | undefined = Translations[key];
+    const value: TranslationValue | undefined = this._translations[key];
 
     if (!value) {
       return fallback || key;

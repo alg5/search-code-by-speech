@@ -55,6 +55,14 @@ body {
     max-width: 100%;
   }
 }
+.p-toast{
+  @include media("max", "sm") {
+    width: 80% !important;
+    left: 20px !important;
+  }
+}
+
+
 //for test only
 // * {
 //   outline: 1px dashed rgba(255, 100, 100, 0.3);

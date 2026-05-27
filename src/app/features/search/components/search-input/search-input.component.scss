@@ -52,7 +52,7 @@
   box-sizing: border-box;
 
   @include media("max", "sm") {
-    padding: 1rem 0.5rem;
+    padding: 0;
   }
 }
 
@@ -63,7 +63,7 @@
   box-sizing: border-box;
 
   @include media("max", "sm") {
-    padding: 1rem 0.5rem;
+    padding: 0;
     max-width: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -88,6 +88,31 @@
   @include media("max", "sm") {
     top: 0.5rem;
     right: 1rem;
+  }
+}
+
+// Refresh button (mirror for settings-trigger on left side)
+.refresh-trigger {
+  position: absolute;
+  top: 0.5rem;
+  left: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 1.5rem;
+  color: $title-color;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: $color-green-active;
+    transform: rotate(180deg);
+  }
+
+  i {
+    display: inline-block;
+  }
+
+  @include media("max", "sm") {
+    left: 1rem;
   }
 }
 
@@ -158,7 +183,7 @@ spr-admin-search-settings {
   position: relative;
 
   @include media("max", "sm") {
-    width: 98vw !important;
+    width: 96vw !important;
   }
 }
 
@@ -177,6 +202,7 @@ spr-admin-search-settings {
 
     @include media("max", "sm") {
       max-width: 100%;
+      padding: 4px 0;
     }
 
     &:hover {

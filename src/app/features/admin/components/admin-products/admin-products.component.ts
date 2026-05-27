@@ -17,7 +17,6 @@ import { IProduct, IProductCategory, IProductProcessing } from '../../../../shar
 import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
 import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
 import { IDropDownModel } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown-models';
-import { ProductsStateService } from '../../../../core/services/products-state.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { CustomDropdownComponent } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown.component';
 import { ISelectOption } from '../../../../shared/models/generalModels';
@@ -55,10 +54,7 @@ import { CustomButtonComponent } from '../../../../shared/components/custom-comp
 export class AdminProductsComponent {
   private readonly supabaseService = inject(SupabaseService);
   private readonly fb = inject(FormBuilder);
-  private readonly confirmationService = inject(ConfirmationService);
-  private readonly toolbarService = inject(CustomToolbarService);
   private readonly customGridService = inject(CustomGridService);
-  private readonly productsState = inject(ProductsStateService);
   private readonly langService = inject(LanguageService);
   private readonly messageService = inject(MessageService);
   private readonly translate = inject(TranslatePipe);
