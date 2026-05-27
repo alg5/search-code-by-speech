@@ -59,7 +59,23 @@ User speaks: "Apple" ↓ Voice Recognition converts to text ↓ App searches dat
 ## Screenshots
 ### Home Page (English)
 ![Home Page EN](docs/screenshots/homepage-en.png)
-Coming soon
+
+### Home Page (Hebrew)
+![Home Page HE](docs/screenshots/homepage-he.png)
+
+### Voice Search Active
+![Voice Search](docs/screenshots/voice-search.png)
+
+### Voice Search Active (Hebrew)
+![Voice Search](docs/screenshots/voice-search-he.png)
+
+
+### Search Result
+![Result](docs/screenshots/result.png)
+
+### Admin Dashboard
+![Admin](docs/screenshots/admin-dashboard.png)
+
 
 ## ✨ Features
 
@@ -112,10 +128,10 @@ This project is intended as a portfolio piece and may be integrated into a
 commercial product in the future.
 
 ## 👤 Contact
-[Anna Gubanov]
-💼 LinkedIn: www.linkedin.com/in/anna-gubanov
-🐙 GitHub: [your-github](https://github.com/alg5)
-📧 Email: anna.gubanov1@gmail.com
+[Anna Gubanov]  
+💼 LinkedIn: www.linkedin.com/in/anna-gubanov     
+🐙 GitHub: [your-github](https://github.com/alg5)  
+📧 Email: anna.gubanov1@gmail.com  
 
 
 ## Getting Started
