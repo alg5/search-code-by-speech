@@ -56,8 +56,9 @@ User speaks: "Apple" ↓ Voice Recognition converts to text ↓ App searches dat
 🎥 **[Watch on YouTube](YOUR_YOUTUBE_LINK_HERE)** *(optional)*
 
 
-### Screenshots
-
+## Screenshots
+### Home Page (English)
+![Home Page EN](docs/screenshots/homepage-en.png)
 Coming soon
 
 ## ✨ Features
@@ -71,7 +72,6 @@ Coming soon
 - **Copy to Clipboard** — instant scale code copying
 
 - ## 🛠️ Tech Stack
-
 
 | Layer | Technology | Purpose |
 |:---|:---|:---|
