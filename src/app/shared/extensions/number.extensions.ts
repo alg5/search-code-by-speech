@@ -9,8 +9,6 @@ Number.prototype.toTimeStamp = function () {
   const s = this.toString();
   if (s.length != 4) return s;
 
-  const h = s.substring(0, 1);
-  const m = s.substring(2);
   const sTime = `01/01/1970 ${s.substring(0, 1)}:${s.substring(2)}`;
   const res = new Date(sTime).toTimeStamp();
 

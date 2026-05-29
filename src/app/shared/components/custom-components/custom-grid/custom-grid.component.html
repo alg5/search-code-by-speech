@@ -269,7 +269,7 @@
                     />
                   </ng-template>
                   <ng-template #output>
-                    @if (rowData[col.dataField] == '') {
+                    @if (rowData[col.dataField] === '') {
                       <span class="empty-value">הזנה</span>
                     } @else {
                       {{ rowData[col.dataField] }}

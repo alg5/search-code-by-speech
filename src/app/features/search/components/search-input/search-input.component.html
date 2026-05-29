@@ -1,9 +1,10 @@
 <div class="search-content">
   <div class="search-wrapper">
+
     <!-- Recent products chips -->
-    @if (recentProducts().length > 0) {
+    @if(recentProducts().length > 0) {
       <div class="recent-bar">
-        @for (product of recentProducts(); track product.scale_code) {
+        @for(product of recentProducts(); track product.scale_code) {
           <div class="recent-chip" (click)="selectFromRecent(product)">
             <span class="chip-code">{{ product.scale_code.toString().padStart(3, '0') }}</span>
             <span class="chip-name">{{ displayName(product) }}</span>
@@ -13,9 +14,9 @@
     }
 
     <!-- Settings trigger -->
-    @if (isAdmin()) {
+    @if(isAdmin()) {
       <div class="settings-trigger" (click)="toggleSettings()">
-        @if (settingsOpen()) {
+        @if(settingsOpen()) {
           <i class="pi pi-times"></i>
         } @else {
           <i class="pi pi-cog"></i>
@@ -23,11 +24,10 @@
       </div>
 
       <!-- Settings panel component -->
-      @if (settingsOpen()) {
+      @if(settingsOpen()) {
         <spr-admin-search-settings
           (weightsSaved)="onWeightsSaved()"
-          (close)="settingsOpen.set(false)"
-        >
+          (closeSetting)="settingsOpen.set(false)">
         </spr-admin-search-settings>
       }
     }
@@ -44,9 +44,9 @@
 
     <!-- Voice search hint -->
     <div class="voice-input-container">
-      @if (!isListening()) {
+      @if(!isListening()) {
         <div class="subtitle">
-          @if (hasMicrophone()) {
+          @if(hasMicrophone()) {
             {{ 'search.subtitle' | translate }}
           } @else {
             {{ 'search.microphone.notFound' | translate }}
@@ -63,20 +63,20 @@
     <!-- Search field -->
     <div class="search-row">
       <div class="p-inputgroup glossy-search">
+        
         <!-- Icon: search, loader, or clear button -->
         <span class="p-inputgroup-addon search-icon">
-          @if (searchTextValue.length > 0 && !isLoading()) {
+          @if(searchTextValue.length > 0 && !isLoading()) {
             <!-- Clear button -->
             <i class="pi pi-times clear-icon" (click)="clearSearch()"></i>
-          } @else if (isLoading()) {
+          } @else if(isLoading()) {
             <i class="pi pi-spinner pi-spin"></i>
           } @else {
             <i class="pi pi-search"></i>
           }
         </span>
 
-        <p-autoComplete
-          #autoComplete
+        <p-autoComplete #autoComplete
           [(ngModel)]="searchTextValue"
           (ngModelChange)="onSearchTextChange($event)"
           [suggestions]="results()"
@@ -85,20 +85,16 @@
           [placeholder]="'search.placeholder' | translate"
           [forceSelection]="false"
           field="fieldName"
-          class="search-autocomplete"
-        >
+          class="search-autocomplete">
+
           <ng-template let-item pTemplate="item">
             <div class="search-item">
               <span class="code">{{ item.scale_code.toString().padStart(3, '0') }}</span>
               <span class="divider">—</span>
               <span class="name">{{ displayName(item) }}</span>
-              @if (isAdmin()) {
-                @if (getProductDetails(item)) {
-                  <span
-                    class="info-icon"
-                    [pTooltip]="getProductDetails(item)"
-                    tooltipPosition="top"
-                  >
+              @if(isAdmin()) {
+                @if(getProductDetails(item)) {
+                  <span class="info-icon" [pTooltip]="getProductDetails(item)" tooltipPosition="top">
                     <i class="pi pi-info-circle"></i>
                   </span>
                 }
@@ -107,7 +103,7 @@
           </ng-template>
 
           <ng-template pTemplate="empty">
-            @if (!isLoading()) {
+            @if(!isLoading()) {
               <div class="empty-state">
                 <i class="pi pi-search-minus"></i>
                 <span>{{ 'search.noResults' | translate }}</span>
@@ -117,38 +113,27 @@
         </p-autoComplete>
 
         <!-- Microphone button -->
-        <button
-          type="button"
+        <button type="button"
           class="mic-btn"
           (click)="!hasMicrophone() || startVoiceSearch()"
           [class.on]="isListening()"
           [class.off]="!isListening() || !hasMicrophone()"
           [style.pointer-events]="hasMicrophone() ? 'auto' : 'none'"
           [style.cursor]="hasMicrophone() ? 'pointer' : 'not-allowed'"
-          [attr.title]="
-            !hasMicrophone()
-              ? ('search.microphone.notFound' | translate)
-              : isListening()
-                ? ('search.tooltip.microphone.off' | translate)
-                : ('search.tooltip.microphone.on' | translate)
-          "
-        >
-          @if (!hasMicrophone()) {
-            <img src="assets/images/mic-off.svg" class="mic-icon" alt="" />
+          [attr.title]="!hasMicrophone()
+            ? ('search.microphone.notFound' | translate)
+            : (isListening()
+              ? ('search.tooltip.microphone.off' | translate)
+              : ('search.tooltip.microphone.on' | translate))">
+
+          @if(!hasMicrophone()) {
+            <img src="assets/images/mic-off.svg" class="mic-icon" alt="">
           } @else {
-            <svg
-              class="mic-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" y1="19" x2="12" y2="23" />
-              <line x1="8" y1="23" x2="16" y2="23" />
+            <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
             </svg>
           }
         </button>
@@ -159,7 +144,7 @@
     <p-toast></p-toast>
 
     <!-- Result -->
-    @if (selectedProduct(); as product) {
+    @if(selectedProduct(); as product) {
       <div class="result">
         <div class="result-content">
           <div class="code-big">{{ product.scale_code.toString().padStart(3, '0') }}</div>
@@ -173,5 +158,6 @@
         </div>
       </div>
     }
+
   </div>
 </div>

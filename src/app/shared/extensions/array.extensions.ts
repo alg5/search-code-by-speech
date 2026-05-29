@@ -2,11 +2,11 @@ export {};
 declare global {
   interface Array<T> {
     sum(field: any, isFloat?: boolean): number;
-    unique(field: any): Array<T>;
+    unique(field: any): T[];
   }
 }
 if (!Array.prototype.sum) {
-  Array.prototype.sum = function sum<T>(this: Array<T>, field: any, isFloat?: boolean) {
+  Array.prototype.sum = function sum<T>(this: T[], field: any, isFloat?: boolean) {
     let value;
     if (isFloat) {
       value = this.reduce((a, b) => parseFloat(a.toString()) + parseFloat(b[field] || 0), 0.0);
@@ -19,13 +19,13 @@ if (!Array.prototype.sum) {
   };
 }
 if (!Array.prototype.unique) {
-  Array.prototype.unique = function unique<T>(this: Array<T>, field: any) {
-    var result = this.reduce((uniq: Array<T>, o) => {
+  Array.prototype.unique = function unique<T>(this: T[], field: any) {
+    const result = this.reduce((uniq: T[], o) => {
       if (!uniq.some((obj) => obj[field] === o[field])) {
         uniq.push(o);
       }
       return uniq;
     }, []);
-    return result as Array<any>;
+    return result as any[];
   };
 }

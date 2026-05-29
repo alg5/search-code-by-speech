@@ -1,6 +1,3 @@
-// TypeScript декларация для webkitSpeechRecognition
-declare var webkitSpeechRecognition: any;
-// speechRecognition.models.ts
 export interface SpeechRecognitionEvent {
   results: SpeechRecognitionResultList;
   resultIndex: number;

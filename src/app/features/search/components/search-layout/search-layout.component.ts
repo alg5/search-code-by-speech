@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { SearchInputComponent } from '../search-input/search-input.component';
-import { SearchResultsComponent } from '../search-results/search-results.component';
 
 @Component({
   selector: 'spr-search-layout',

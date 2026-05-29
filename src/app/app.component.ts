@@ -1,14 +1,14 @@
-import { Component, inject, Renderer2, signal } from '@angular/core';
+import { Component, inject, Renderer2, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
+  selector: 'spr-root',
   standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private readonly renderer = inject(Renderer2);
 
   async ngOnInit() {

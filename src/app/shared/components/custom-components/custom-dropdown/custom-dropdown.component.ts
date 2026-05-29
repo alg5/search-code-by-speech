@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, forwardRef, inject, Input, output } from '@angular/core';
 import {
-  AbstractControl,
   ControlValueAccessor,
   FormsModule,
   NG_VALIDATORS,
@@ -55,15 +54,15 @@ export class CustomDropdownComponent implements ControlValueAccessor {
   }
   private _dropDownModel!: IDropDownModel;
 
-  options: Array<ISelectOption>;
-  optionsText: string = '';
-  optionsCss: string = '';
-  optionsTextCss: string = '';
-  placeholder: string = '';
-  disabled: boolean = false;
-  required: boolean = false;
-  floatLabel: boolean = false;
-  customClassCss: string = '';
+  options: ISelectOption[];
+  optionsText = '';
+  optionsCss = '';
+  optionsTextCss = '';
+  placeholder = '';
+  disabled = false;
+  required = false;
+  floatLabel = false;
+  customClassCss = '';
   isMobile = false;
 
   constructor() {
@@ -154,7 +153,7 @@ export class CustomDropdownComponent implements ControlValueAccessor {
     this.markAsTouched();
   }
 
-  validate(control: AbstractControl): ValidationErrors | null {
+  validate(): ValidationErrors | null {
     if (this.required && (this.value === null || this.value === undefined || this.value === '')) {
       return { required: true };
     }

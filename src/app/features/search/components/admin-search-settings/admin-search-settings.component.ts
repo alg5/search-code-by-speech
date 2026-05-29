@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, EventEmitter, inject, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Output, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -22,7 +22,7 @@ import { IButtonModel } from '../../../../shared/components/custom-components/cu
   templateUrl: './admin-search-settings.component.html',
   styleUrl: './admin-search-settings.component.scss',
 })
-export class AdminSearchSettingsComponent {
+export class AdminSearchSettingsComponent implements OnInit {
   private readonly supabaseService = inject(SupabaseService);
   private readonly messageService = inject(MessageService);
   private readonly translate = inject(TranslatePipe);
@@ -32,7 +32,7 @@ export class AdminSearchSettingsComponent {
   readonly DEFAULT_K_PROCESSING = 1;
 
   @Output() weightsSaved = new EventEmitter<void>();
-  @Output() close = new EventEmitter<void>();
+  @Output() closeSetting = new EventEmitter<void>();
 
   settingsForm!: FormGroup;
   saving = signal(false);
@@ -93,7 +93,7 @@ export class AdminSearchSettingsComponent {
       ]);
 
       this.weightsSaved.emit();
-      this.close.emit();
+      this.closeSetting.emit();
 
       this.messageService.add({
         severity: 'success',

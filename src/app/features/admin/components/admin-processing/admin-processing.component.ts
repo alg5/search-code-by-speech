@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { Component, effect, inject, signal, untracked, OnInit } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -43,7 +43,7 @@ import { IProductProcessing } from '../../../../shared/models/product.model';
   templateUrl: './admin-processing.component.html',
   styleUrl: './admin-processing.component.scss',
 })
-export class AdminProcessingComponent {
+export class AdminProcessingComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly supabaseService = inject(SupabaseService);
   private readonly confirmationService = inject(ConfirmationService);

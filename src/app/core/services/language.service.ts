@@ -1,4 +1,4 @@
-import { computed, effect, Injectable, inject, signal } from '@angular/core';
+import { computed, Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ILang, ITranslations, TranslationValue } from '../../shared/models/translation.model';
 import { Translations } from '../../shared/models/constants';
@@ -64,7 +64,7 @@ export class LanguageService {
 
   translate(
     key: string,
-    fallback: string = '',
+    fallback = '',
     variables?: Record<string, string | number>,
   ): string {
     const lang = this.langCode();

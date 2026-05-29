@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { LangSwitchComponent } from '../../../../shared/components/lang-switch/lang-switch.component';
@@ -13,7 +13,7 @@ import { SupabaseService } from '../../../../core/services/supabase.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly supabaseService = inject(SupabaseService);
@@ -28,7 +28,6 @@ export class HeaderComponent {
 
   constructor() {
     effect(() => {
-      const admin = this.isAdmin();
       this.cdr.markForCheck();
     });
   }

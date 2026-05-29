@@ -8,11 +8,10 @@ import { importProvidersFrom } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 import { MessageService } from 'primeng/api';
 
 import { routes } from './app.routes';
-import { MyBootstrapLikePreset, MyGreenPreset } from './shared/models/constants';
+import { MyGreenPreset } from './shared/models/constants';
 
 export const appConfig: ApplicationConfig = {
   providers: [

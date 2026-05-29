@@ -1,4 +1,3 @@
-import { GridColumType } from '../components/custom-components/custom-grid/custom-grid-models';
 import { IProduct } from '../models/product.model';
 export default class Helper {
   static getColorStatusCssClass(status: number): string {
@@ -38,8 +37,8 @@ export default class Helper {
   //#endregion ExportToExcel
 
   /**
-   * Рассчитывает базовый приоритет продукта
-   * Используется в поиске и в админке
+   * Calculate priority score for a product based on category and processing priorities and their respective coefficients.
+   * Used in search and admin panel
    */
 
   static calculatePriority(product: IProduct, kCategory: number, kProcessing: number): number {

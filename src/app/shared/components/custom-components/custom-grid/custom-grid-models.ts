@@ -80,13 +80,13 @@ export interface IColumn {
   columnInfo?: string;
   columnInfoByField?: string;
   formattedOptions?: IFormattedOptions;
-  textComplexFields?: Array<string>;
+  textComplexFields?: string[];
   textComplexDelimiter?: string;
   isOnCardMobile?: boolean;
   onCardMobileOptions?: IOnCardMobileOptions;
   addSumToHeader?: boolean;
   colSpan?: string;
-  dropdownOptions?: Array<ISelectOption>;
+  dropdownOptions?: ISelectOption[];
 
   //footer
   footerText?: string;
@@ -104,10 +104,10 @@ export interface IColumn {
   calculateValue?: (rowData: any) => any; // ✅ Функция вычисления
 }
 export interface ICustomGridModel {
-  dataSource: Array<any>;
-  columns: Array<IColumn>;
-  dataSourceFooter?: Array<any>;
-  columnsFooter?: Array<IColumn>;
+  dataSource: any[];
+  columns: IColumn[];
+  dataSourceFooter?: any[];
+  columnsFooter?: IColumn[];
   toolbarModel?: IToolbarModel;
   key?: string;
   showExpandbleRow?: boolean;

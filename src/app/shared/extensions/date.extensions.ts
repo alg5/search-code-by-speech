@@ -7,9 +7,9 @@ declare global {
 }
 Date.prototype.getReference = function () {
   console.log('getStringDatetime', this);
-  var yyyy = this.getFullYear().toString();
-  var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
-  var dd = this.getDate().toString();
+  const yyyy = this.getFullYear().toString();
+  const mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
+  const dd = this.getDate().toString();
 
   return (
     yyyy +

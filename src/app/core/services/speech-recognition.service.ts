@@ -2,9 +2,7 @@ import { Injectable, effect, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import {
   SpeechRecognitionEvent,
-  SpeechRecognitionResultList,
   SpeechRecognitionResult,
-  SpeechRecognitionAlternative,
   SpeechRecognitionErrorEvent,
 } from '../../shared/models/speechRecognition.models';
 import { LanguageService } from './language.service';
@@ -32,6 +30,7 @@ export class SpeechRecognitionService {
       const devices = await navigator.mediaDevices.enumerateDevices();
       return devices.some((d: MediaDeviceInfo) => d.kind === 'audioinput');
     } catch (e) {
+      console.error('Error checking microphone:', e);
       return false;
     }
   }
@@ -62,7 +61,9 @@ export class SpeechRecognitionService {
 
         try {
           this.recognition.abort();
-        } catch (e) {}
+        } catch (e) {
+          console.error('Error aborting speech recognition:', e);
+        }
 
         setTimeout(() => {
           if (this.isListening()) {
@@ -74,6 +75,7 @@ export class SpeechRecognitionService {
             try {
               this.recognition.start();
             } catch (e) {
+              console.error('Error starting speech recognition:', e);
               this.isStarting = false;
             }
           }
@@ -131,7 +133,9 @@ export class SpeechRecognitionService {
           if (this.isListening()) {
             try {
               this.recognition?.start();
-            } catch (e) {}
+            } catch (e) {
+              console.error('Error starting speech recognition:', e);
+            }
           }
         }, 100);
       } else if (event.error === 'start_error') {
@@ -141,7 +145,9 @@ export class SpeechRecognitionService {
 
         try {
           this.recognition.abort();
-        } catch (e) {}
+        } catch (e) {
+          console.error('Error aborting speech recognition:', e);
+        }
 
         setTimeout(() => {
           if (this.isListening()) {
@@ -162,7 +168,9 @@ export class SpeechRecognitionService {
           if (this.isListening()) {
             try {
               this.recognition?.start();
-            } catch (e) {}
+            } catch (e) {
+              console.error('Error starting speech recognition:', e);
+            }
           }
         }, 100);
       }
@@ -193,18 +201,23 @@ export class SpeechRecognitionService {
 
     try {
       this.recognition.abort();
-    } catch (e) {}
+    } catch (e) {
+      console.error('Error aborting speech recognition:', e);
+    }
 
     try {
       this.recognition.start();
       this.isListening.set(true);
       this.onStatusChange.next(true);
     } catch (error) {
+      console.error('Error starting speech recognition:', error);
       this.onError.next('start_error');
 
       try {
         this.recognition.abort();
-      } catch (e) {}
+      } catch (e) {
+        console.error('Error aborting speech recognition:', e);
+      }
 
       this.isListening.set(false);
       this.onStatusChange.next(false);
@@ -222,6 +235,7 @@ export class SpeechRecognitionService {
         try {
           this.recognition.stop();
         } catch (e) {
+          console.error('Error stopping speech recognition:', e);
           this.recognition.abort();
         }
       }

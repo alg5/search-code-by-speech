@@ -9,10 +9,7 @@ import {
   DestroyRef,
   ElementRef,
   ChangeDetectorRef,
-  ViewChildren,
-  QueryList,
-  effect,
-  signal,
+  signal, OnInit, AfterViewChecked,
 } from '@angular/core';
 import { GridColumType, IColumn, ICustomGridEvent, ICustomGridModel } from './custom-grid-models';
 import { Paginator, PaginatorModule } from 'primeng/paginator';
@@ -22,19 +19,7 @@ import { CustomGridService } from './custom-grid.service';
 import { CommonModule } from '@angular/common';
 import { CustomToolbarComponent } from '../custom-toolbar/custom-toolbar.component';
 import { FormsModule } from '@angular/forms';
-// import { FormattedPipe } from '../../../pipes/formatted.pipe';
-// import { CommonService } from '../../../../../shared/services/common.service';
-// import { GeneralContent } from '../../../../../models/enums';
 import Helper from '../../../utils/helper';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-// import { ModalService } from '../../modals/modal.service';
-import { row } from '@primeuix/themes/aura/datatable';
-// import { PaginationModule } from 'ngx-bootstrap/pagination';
-// import { PopoverDirective, PopoverModule } from 'ngx-bootstrap/popover';
-// import { CommentsManagerComponent } from '../../comments-manager/comments-manager.component';
-// import { ICommentsManager } from '../../comments-manager/comments-manager-models';
-// import { CommentsManagerService } from '../../comments-manager/comments-manager.service';
-// import { IRemarkScreen } from '../../../../main/models/sfira-models';
 import { TooltipModule } from 'primeng/tooltip';
 import { HighlightPipe } from '../../../pipes/highlight-pipe';
 import { FormattedPipe } from '../../../pipes/formatted.pipe';
@@ -66,7 +51,7 @@ import { TranslatePipe } from '../../../pipes/translate-pipe';
   templateUrl: './custom-grid.component.html',
   styleUrl: './custom-grid.component.scss',
 })
-export class CustomGridComponent {
+export class CustomGridComponent implements OnInit, AfterViewChecked {
   private commonService = inject(CommonService);
   private customGridService = inject(CustomGridService);
   private readonly destroyRef = inject(DestroyRef);
@@ -102,12 +87,12 @@ export class CustomGridComponent {
   editingRowData = signal<any | null>(null);
   private originalRowData: any | null = null;
 
-  columns!: Array<IColumn>;
-  columnsFooter!: Array<IColumn>;
+  columns!: IColumn[];
+  columnsFooter!: IColumn[];
 
-  cols!: Array<IColumn>;
-  dataSource!: Array<any>;
-  dataSourceFooter!: Array<any>;
+  cols!: IColumn[];
+  dataSource!: any[];
+  dataSourceFooter!: any[];
 
   toolbarModel!: IToolbarModel;
   displayedColumns: string[] = [];
@@ -250,16 +235,6 @@ export class CustomGridComponent {
         key: this.gridKey,
         value: this.numResultsText,
       });
-
-      console.log('=== PAGINATOR DEBUG ===');
-      console.log('withoutPaging:', this.withoutPaging);
-      console.log('totalRecords:', this.totalRecords);
-      console.log('pageSize:', this.pageSize);
-      console.log('totalRecords > pageSize:', this.totalRecords > this.pageSize);
-      console.log('!withoutPaging:', !this.withoutPaging);
-      console.log('FINAL CONDITION:', !this.withoutPaging && this.totalRecords > this.pageSize);
-      console.log('dataSource length:', this.dataSource?.length);
-      console.log('gridModel exists:', !!this.gridModel);
     }
   }
   addPropertiesColumn() {
@@ -269,12 +244,11 @@ export class CustomGridComponent {
     });
     return cols;
   }
-  addPropertiesRow(dataSource: Array<any>) {
+  addPropertiesRow(dataSource: any[]) {
     const data = dataSource.slice();
-    let res = '';
-    data.forEach((row) => {
-      // row.isRowEditable = this.isRowEditable(row);
-    });
+    // data.forEach((row) => {
+    //   // row.isRowEditable = this.isRowEditable(row);
+    // });
     return data;
   }
   addInputProperty(dataSource: any) {
@@ -334,7 +308,7 @@ export class CustomGridComponent {
     // || colType == GridColumType.editableCellNumber
   }
 
-  getColorStatusCssClass(row: any, statusDesc: string): string {
+  getColorStatusCssClass(row: any): string {
     const empNumberField = this.idField ? this.idField : 'employeeNumber';
     if (!empNumberField) return '';
     const empNumber = row[empNumberField];
@@ -346,41 +320,40 @@ export class CustomGridComponent {
 
     return Helper.getColorStatusCssClass(Number(status));
   }
-  onClickCell(col: IColumn, row: any, approveBtnInd: number = 1) {
-    console.log(col, row);
+  onClickCell(col: IColumn, row: any) {
     const empNumberField = this.idField ? this.idField : 'employeeNumber';
     if (!empNumberField) return;
     const empNumber = row[empNumberField];
     if (!empNumber) return;
     const data = this.dataSource.slice();
     const item = data.find((x) => x[empNumberField] == empNumber);
-    let gridEvent: ICustomGridEvent;
+
+    let gridEvent: ICustomGridEvent | null = null;
+
     switch (col.dataType) {
       case GridColumType.employee:
         break;
 
       case GridColumType.editableCellNumber:
-        const gridEvent1: ICustomGridEvent = {
-          key: this.gridKey,
-          row: row,
-          col: col,
-          value: item[col.dataField],
-        };
-        this.customGridService.gridCellClickedSignal.set(gridEvent1);
-
-        break;
-
-      case GridColumType.cellClick:
-      case GridColumType.numericClick:
-      case GridColumType.imgPrimengIconClick:
-        const gridEvent: ICustomGridEvent = {
+        gridEvent = {
           key: this.gridKey,
           row: row,
           col: col,
           value: item[col.dataField],
         };
         this.customGridService.gridCellClickedSignal.set(gridEvent);
+        break;
 
+      case GridColumType.cellClick:
+      case GridColumType.numericClick:
+      case GridColumType.imgPrimengIconClick:
+        gridEvent = {
+          key: this.gridKey,
+          row: row,
+          col: col,
+          value: item[col.dataField],
+        };
+        this.customGridService.gridCellClickedSignal.set(gridEvent);
         break;
     }
   }
@@ -425,18 +398,6 @@ export class CustomGridComponent {
   onSaveEditableCell(col, rowData, i) {
     console.log('onSaveEditableCell', col, rowData, i);
     console.log('onSaveEditableCell:editRowId', this.editRowId);
-    // this.editRowId = null;
-    //TODO check to move it to function saveQuantityCountedMakat
-    const apiData = {
-      ymmDsfrUpdLineQtyIsScreenData: {
-        charg: rowData.charg,
-        gjahr: rowData.gjahr,
-        iblnr: rowData.iblnr,
-        lifnr: rowData.lifnr,
-        matnr: rowData.matnr,
-        menge: rowData.menge,
-      },
-    };
   }
 
   startEdit(row: any) {
@@ -531,7 +492,7 @@ export class CustomGridComponent {
     return d;
   })();
 
-  getDropDownModel(column: IColumn, item: any, rowIndex: number): IDropDownModel {
+  getDropDownModel(column: IColumn): IDropDownModel {
     return {
       options: column.dropdownOptions ? column.dropdownOptions : [],
       placeholder: this.placeholderDefault,
@@ -544,7 +505,6 @@ export class CustomGridComponent {
 
   onDropdownChange(rowValue, rowData, col) {
     console.log('onDropdownChange', rowValue, rowData, col);
-    const empNumberField = this.idField ? this.idField : 'employeeNumber';
   }
   getDropdownText(col: IColumn, value: any): string {
     let res = '';
@@ -564,7 +524,6 @@ export class CustomGridComponent {
     return serials.map((s) => (isNaN(s.sernr) ? s.sernr : +s.sernr)).join('\n');
   }
   getPaginatorPrimengData(event: any) {
-    const p = this.paginatorPrimeng;
     this.recordFirst = event.first;
     this.pageIndex = event.page;
   }
@@ -623,57 +582,20 @@ export class CustomGridComponent {
   }
   goToFirstPage() {
     this.first = 0;
-    const newEvent = { first: this.first, page: 0 };
-    //   // this.pVisible?.changePageToFirst(newEvent);
-    //   this.onPageChange({
-    //   first: this.first,
-    //   page: 0,
-    //   // pageCount: Math.ceil(this.totalRecords / this.pageSize)
-    // });
-    // const event = new MouseEvent('click');
-    // this.pVisible?.changePageToFirst(event);
+
   }
   goToPrevPage() {
     this.first = this.first - this.pageSize;
-    const newEvent = { first: this.first };
-    //   this.onPageChange({
-    //   first: this.first
-    //   // pageCount: Math.ceil(this.totalRecords / this.pageSize)
-    // });
-    //   const event = new MouseEvent('click');
-    // this.pVisible?.changePageToPrev(event);
   }
   goToNextPage() {
     this.first = this.first + this.pageSize;
-    const newEvent = { first: this.first };
-    //   this.onPageChange({
-    //   first: this.first + this.pageSize
-    //   // pageCount: Math.ceil(this.totalRecords / this.pageSize)
-    // });
-    //   const event = new MouseEvent('click');
-    //   this.pVisible?.changePageToNext(event);
   }
   goToLastPage() {
     console.log('goToLastPage', this.pVisible?.paginatorState);
     const paginatorState = this.pVisible?.paginatorState;
     this.first = paginatorState.rows * (paginatorState.pageCount - 1);
-    const newEvent = { first: this.first };
     this.pVisible?.changePageToLast(event);
   }
 
-  // ngx-bootstrap pagination
-  // pageChanged(event){
-  //   console.log("pageChanged-ngx:event", event);
-  //   console.log("pageChanged-ngx:currentPage",  this.currentPage);
-  //   if (this.pagingAPI){
-  //     this.customGridService.pagingSignal.set(event)
-  //   }
-  //   else{
-  //     this.currentPage = event.page;
-  //     this.pageSize = event.itemsPerPage;
-  //     this.first = (event.page - 1) * this.pageSize;
-  //     this.onPageChange({ first: this.first, page: this.currentPage - 1, pageCount: Math.ceil(this.totalRecords / this.pageSize) });
-  //   }
-  // }
   //#endregion Paginator
 }

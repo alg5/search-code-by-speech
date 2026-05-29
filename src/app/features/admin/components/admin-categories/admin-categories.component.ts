@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, OnInit } from '@angular/core';
 import { IProductCategory } from '../../../../shared/models/product.model';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { DialogModule } from 'primeng/dialog';
@@ -43,7 +43,7 @@ import { LanguageService } from '../../../../core/services/language.service';
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
 })
-export class AdminCategoriesComponent {
+export class AdminCategoriesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private readonly supabaseService = inject(SupabaseService);
   private readonly confirmationService = inject(ConfirmationService);

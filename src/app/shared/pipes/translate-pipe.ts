@@ -8,9 +8,9 @@ import { LanguageService } from '../../core/services/language.service';
 export class TranslatePipe implements PipeTransform {
   private languageService = inject(LanguageService);
 
-  transform(key: string, fallback: string = '', params?: Record<string, any>): string {
+  transform(key: string, fallback = '', params?: Record<string, any>): string {
     const translated = computed(() => {
-      let value = this.languageService.translate(key, fallback);
+      const value = this.languageService.translate(key, fallback);
 
       if (!params) return value;
 

@@ -3,8 +3,6 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { SearchLayoutComponent } from '../../../search/components/search-layout/search-layout.component';
-import { LangSwitchComponent } from '../../../../shared/components/lang-switch/lang-switch.component';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { LanguageService } from '../../../../core/services/language.service';
 
@@ -23,8 +21,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private readonly supabase = inject(SupabaseService);
   public readonly languageService = inject(LanguageService);
 
-  isLoggedIn: boolean = false;
-  isAdmin: boolean = false; // Будет определяться из профиля
+  isLoggedIn = false;
+  isAdmin = false; // Будет определяться из профиля
   private _authSubscription: Subscription | undefined;
 
   async ngOnInit() {

@@ -23,7 +23,7 @@ import { LanguageService } from '../../../../core/services/language.service';
 // import { TranslatePipe } from '../pipes/translate.pipe';
 
 @Component({
-  selector: 'app-auth',
+  selector: 'spr-auth',
   standalone: true,
   imports: [
     CommonModule,
@@ -51,8 +51,8 @@ export class AuthComponent implements OnInit {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  isSignUp: boolean = false;
-  loading: boolean = false;
+  isSignUp = false;
+  loading = false;
 
   ngOnInit(): void {
     this.checkSessionAndRedirect();

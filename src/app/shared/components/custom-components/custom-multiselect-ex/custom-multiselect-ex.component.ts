@@ -162,8 +162,6 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
       return;
     }
 
-    const selectedMap = new Set(currentSelectedValue.map((opt) => opt.Value));
-
     const selectedOptions: ISelectOption[] = [];
     const unselectedOptions: ISelectOption[] = [];
 
@@ -239,7 +237,7 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
     const MAX_TOOLTIP_LINES = 4;
     const MAX_DISPLAY_ITEMS_TOTAL = ITEMS_PER_LINE * MAX_TOOLTIP_LINES;
     const selectedValues = this._multiSelectedValue.map((option) => option.Value);
-    let tooltipContentLines: string[] = [];
+    const tooltipContentLines: string[] = [];
     for (
       let i = 0;
       i < Math.min(selectedValues.length, MAX_DISPLAY_ITEMS_TOTAL);

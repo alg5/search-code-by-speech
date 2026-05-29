@@ -1,4 +1,4 @@
-import { LangCode, LANGS } from './constants';
+import { LangCode } from './constants';
 
 export interface ILang {
   code: LangCode;
@@ -13,6 +13,4 @@ export interface TranslationValue {
   fr?: string;
 }
 
-export interface ITranslations {
-  [key: string]: TranslationValue;
-}
+export type ITranslations = Record<string, TranslationValue>;

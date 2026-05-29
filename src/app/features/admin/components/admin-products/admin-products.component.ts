@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked, OnInit } from '@angular/core';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { CommonModule } from '@angular/common';
 import {
@@ -18,7 +18,6 @@ import { MessageModule } from 'primeng/message';
 import { CustomGridComponent } from '../../../../shared/components/custom-components/custom-grid/custom-grid.component';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { SupabaseService } from '../../../../core/services/supabase.service';
-import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
 import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
 import {
   IProduct,
@@ -66,7 +65,7 @@ import { CustomButtonComponent } from '../../../../shared/components/custom-comp
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
 })
-export class AdminProductsComponent {
+export class AdminProductsComponent implements OnInit {
   private readonly supabaseService = inject(SupabaseService);
   private readonly fb = inject(FormBuilder);
   private readonly customGridService = inject(CustomGridService);
@@ -182,10 +181,6 @@ export class AdminProductsComponent {
     });
 
     effect(() => {
-      const text = this.searchText();
-      const cat = this.selectedCategory();
-      const proc = this.selectedProcessing();
-
       // Reset to page 1 when filters change
       untracked(() => {
         this.currentPage.set(1);
@@ -233,8 +228,6 @@ export class AdminProductsComponent {
       this.products.set(products);
       this.filteredProducts.set(products);
       this.totalRecords.set(totalCount);
-
-      const lang = this.langService.getLang().code;
 
       // Category dropdown
       const sortedCategories = this.sortByPriorityAndName(categories, (c) =>

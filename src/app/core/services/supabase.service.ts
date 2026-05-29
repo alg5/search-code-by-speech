@@ -105,7 +105,7 @@ export class SupabaseService implements OnDestroy {
    * @param limit Number of rows per page
    * @param offset Offset (offset = (page-1)*limit)
    */
-  async getProductsPage(limit: number, offset: number = 0): Promise<IProduct[]> {
+  async getProductsPage(limit: number, offset = 0): Promise<IProduct[]> {
     const { data, error } = await this.supabase
       .from('products')
       .select(`*, category:product_categories(priority), processing:product_processing(priority)`)
@@ -128,9 +128,9 @@ export class SupabaseService implements OnDestroy {
    * @param processingFilter Optional processing code filter
    */
   async getAdminProductsPage(
-    query: string = '',
-    pageNum: number = 0,
-    pageSize: number = 15,
+    query = '',
+    pageNum = 0,
+    pageSize = 15,
     categoryFilter: string | null = null,
     processingFilter: string | null = null,
   ): Promise<{ products: IProduct[]; totalCount: number }> {
@@ -178,7 +178,7 @@ export class SupabaseService implements OnDestroy {
    * @param lang Current interface language (e.g., 'ru', 'he', 'en')
    * @param maxResults Maximum number of results (default 20)
    */
-  async getProductsBySearch(txtSearch: string, lang: string, maxResults: number = 20) {
+  async getProductsBySearch(txtSearch: string, lang: string, maxResults = 20) {
     const query = txtSearch?.trim() || '';
 
     // if query is too short, return empty result to avoid unnecessary RPC calls
@@ -261,7 +261,7 @@ export class SupabaseService implements OnDestroy {
   async signUp(
     email: string,
     password: string,
-    fullName: string = '',
+    fullName = '',
   ): Promise<{ user: User | null; session: AuthSession | null }> {
     const { data, error } = await this.supabase.auth.signUp({
       email: email,
@@ -439,7 +439,7 @@ export class SupabaseService implements OnDestroy {
     return data;
   }
 
-  async getAllProfiles(): Promise<Array<{ id: string; full_name: string; role: string }>> {
+  async getAllProfiles(): Promise<{ id: string; full_name: string; role: string }[]> {
     const { data, error } = await this.supabase
       .from('profiles')
       .select('id, full_name, role')

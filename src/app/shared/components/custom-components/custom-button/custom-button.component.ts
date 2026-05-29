@@ -13,11 +13,11 @@ import { IButtonModel } from './custom-button-models';
 export class CustomButtonComponent {
   buttonModel = input<IButtonModel>();
 
-  onClick = output<void>();
+  buttonClick = output<void>();
 
   handleClick(): void {
     const model = this.buttonModel();
     if (model?.isDisabled || model?.isLoading) return;
-    this.onClick.emit();
+    this.buttonClick.emit();
   }
 }

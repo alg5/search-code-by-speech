@@ -22,20 +22,19 @@
         "@schematics/angular:guard": {
           "skipTests": true
         },
-
         "@schematics/angular:pipe": {
           "skipTests": true
         },
         "@schematics/angular:service": {
           "type": "service",
           "skipTests": true
-        },   
+        },
         "@schematics/angular:interceptor": {
           "skipTests": true
-        },  
+        },
         "@schematics/angular:resolver": {
           "skipTests": true
-        },                 
+        },
         "@schematics/angular:application": {
           "strict": true
         }
@@ -44,59 +43,60 @@
       "sourceRoot": "src",
       "prefix": "spr",
       "architect": {
-"build": {
-  "builder": "@angular/build:application",
-  "options": {
-    "stylePreprocessorOptions": {
-      "includePaths": [        
-        "src/scss",
-        "src/assets/images",
-        "src/assets/data"
-      ]
-    },
-    "browser": "src/main.ts",
-    "tsConfig": "tsconfig.app.json",
-    "inlineStyleLanguage": "scss",
-    "assets": [      "src/favicon.ico",
-      "src/assets"
-    ],
-    "styles": [      
-      "node_modules/primeflex/primeflex.css",
-      "node_modules/flag-icons/css/flag-icons.min.css",
-      "src/styles.scss"
-    ]
-  },
-  "configurations": {
-    "production": {
-      "budgets": [        {
-          "type": "initial",
-          "maximumWarning": "5MB",
-          "maximumError": "5MB"
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/scss",
+                "src/assets/images",
+                "src/assets/data"
+              ]
+            },
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "node_modules/primeflex/primeflex.css",
+              "node_modules/flag-icons/css/flag-icons.min.css",
+              "src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5MB",
+                  "maximumError": "5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "5MB",
+                  "maximumError": "5MB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "outputHashing": "media",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
         },
-        {
-          "type": "anyComponentStyle",
-          "maximumWarning": "5MB",
-          "maximumError": "5MB"
-        }
-      ],
-      "outputHashing": "all",
-      "fileReplacements": [
-        {
-          "replace": "src/environments/environment.ts",
-          "with": "src/environments/environment.prod.ts"
-        }
-      ]
-    },
-    "development": {
-      "outputHashing": "media",
-      "optimization": false,
-      "extractLicenses": false,
-      "sourceMap": true
-    }
-  },
-  "defaultConfiguration": "production"
-  },
-
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
@@ -125,11 +125,23 @@
               "src/styles.scss"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }
