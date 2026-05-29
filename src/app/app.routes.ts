@@ -13,24 +13,22 @@ import { AdminProcessingComponent } from './features/admin/components/admin-proc
 
 export const routes: Routes = [
   {
-    path: '', // Главный маршрут для всего приложения
+    path: '', 
     component: MainLayoutComponent,
     children: [
-      { path: '', component: SearchLayoutComponent, pathMatch: 'full' }, // Поиск на главной
-      { path: 'auth', component: AuthComponent }, // Страница входа/регистрации
+      { path: '', component: SearchLayoutComponent, pathMatch: 'full' },
+      { path: 'auth', component: AuthComponent },
       { path: 'admin', component: AdminDashboardComponent, canActivate: [AdminGuard] },
       { path: 'admin/users', component: AdminUsersComponent, canActivate: [AdminGuard] },
       { path: 'admin/products', component: AdminProductsComponent, canActivate: [AdminGuard] },
       { path: 'admin/categories', component: AdminCategoriesComponent, canActivate: [AdminGuard] },
       { path: 'admin/processing', component: AdminProcessingComponent, canActivate: [AdminGuard] },
-      {path: 'user/dashboard', component: UserDashboardComponent}, // Страница пользователя
-      {path: 'user/profile', component: UserProfileComponent}, // Страница пользователя
-      // Другие маршруты, работающие внутри MainLayout
-      // { path: 'about', component: AboutComponent },
-      // { path: 'contact', component: ContactComponent },
+      {path: 'user/dashboard', component: UserDashboardComponent}, 
+      {path: 'user/profile', component: UserProfileComponent}, 
+
     ]
   },
-  // { path: '**', redirectTo: '' } // Любой другой путь ведет на главную
+  // { path: '**', redirectTo: '' } 
 ];
 
 

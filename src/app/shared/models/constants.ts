@@ -41,7 +41,7 @@ export const MyGreenPreset = definePreset(lara, {
             200: '#bbf7d0',
             300: '#86efac',
             400: '#4ade80',
-            500: '#22c55e',  // основной зелёный
+            500: '#22c55e',  // base green
             600: '#16a34a',
             700: '#15803d',  // hover
             800: '#166534',
@@ -115,8 +115,8 @@ export const MyGreenPreset = definePreset(lara, {
         },
         surface: {
             0: '#ffffff',
-            50: '#f8faf8',   // почти белый с зелёным оттенком
-            100: '#f0fdf4',  // светло-зелёный
+            50: '#f8faf8',   // almost white with a green tint
+            100: '#f0fdf4',  // light green
             200: '#dcfce7',
             300: '#bbf7d0',
             400: '#86efac',
@@ -131,15 +131,15 @@ export const MyGreenPreset = definePreset(lara, {
     colorScheme: {
         light: {
             surface: {
-                ground: '#f0fdf4',       // фон страницы
-                section: '#ffffff',      // фон секций
-                card: '#ffffff',         // фон карточек
-                overlay: '#ffffff',      // фон модалок/дропдаунов
-                border: '#bbf7d0',       // границы
-                hover: '#dcfce7',        // hover фон
-                text: '#166534',         // основной текст
-                textSecondary: '#15803d', // вторичный текст
-                textMuted: '#16a34a'    // приглушённый текст
+                ground: '#f0fdf4',       // base background
+                section: '#ffffff',      // section background
+                card: '#ffffff',         // card background
+                overlay: '#ffffff',      // overlay background (modals, popovers)
+                border: '#bbf7d0',       // border
+                hover: '#dcfce7',        // hover background
+                text: '#166534',         // main text
+                textSecondary: '#15803d', // secondary text
+                textMuted: '#16a34a'    // muted text
             },
             primary: {
                 color: '#22c55e',
@@ -160,13 +160,13 @@ export const MyGreenPreset = definePreset(lara, {
         },
         dark: {
             surface: {
-                ground: '#052e16',       // тёмный фон страницы
-                section: '#14532d',      // фон секций
-                card: '#166534',         // фон карточек
-                overlay: '#166534',      // фон модалок
-                border: '#15803d',       // границы
+                ground: '#052e16',       // dark background
+                section: '#14532d',      // section background
+                card: '#166534',         // card background
+                overlay: '#166534',      // overlay background (modals, popovers)
+                border: '#15803d',       // border
                 hover: '#14532d',        // hover
-                text: '#f0fdf4',         // текст
+                text: '#f0fdf4',         // text
                 textSecondary: '#dcfce7',
                 textMuted: '#bbf7d0'
             },

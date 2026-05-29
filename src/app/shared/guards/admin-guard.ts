@@ -12,10 +12,10 @@ export class AdminGuard implements CanActivate {
   canActivate(): boolean {
     // проверяем сигнал
     if (this.supabaseService.isAdmin()) {
-      return true; // admin или superadmin — пропускаем
+      return true; // only admin or superadmin allowed
     }
 
-    // иначе редирект на главную или страницу логина
+    // otherwise, redirect to home 
     this.router.navigate(['/']);
     return false;
   }

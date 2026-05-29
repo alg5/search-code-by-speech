@@ -130,7 +130,7 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
     this.selectionChange.emit([]);
     this.reorderAndUpdateOptions();
     if (this.selectedItemsPopover) {
-      this.selectedItemsPopover.hide(); // Скрываем попап при очистке
+      this.selectedItemsPopover.hide(); 
     }
     this.cdr.detectChanges(); 
   }
@@ -170,17 +170,15 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
   }
 // #region POPOVER
 
-  // Метод для переключения видимости попапа
   togglePopover(event: Event): void {
-    // Предотвращаем всплытие события, чтобы не открывался/закрывался p-multiSelect
     event.stopPropagation();
-    // Показываем попап только если есть выбранные значения и не в режиме singleSelection
+    // Show popover only if there are selected items and it's not single selection mode
     if (this._multiSelectedValue && this._multiSelectedValue.length > 0 && !this.model.singleSelection) {
       this.selectedItemsPopover.toggle(event); // Используем toggle
     }
   }
 
-  // Метод для удаления отдельного элемента из попапа
+
 removeSelectedItem(optionToRemove: ISelectOption, event?: Event): void {
   if (event) {
     event.stopPropagation();
@@ -189,10 +187,9 @@ removeSelectedItem(optionToRemove: ISelectOption, event?: Event): void {
   const updatedSelection = this._multiSelectedValue.filter(opt => opt.Value !== optionToRemove.Value);
   this._multiSelectedValue = updatedSelection;
 
-  // Обновление value компонента
   this.writeValue(this._multiSelectedValue);
 
-  // Эмитируем изменения
+  // Emit changes after updating the value to ensure the model is in sync before emitting
   this.onChange(this._multiSelectedValue);
   this.onTouched();
   this.selectionChange.emit(this._multiSelectedValue);
@@ -209,22 +206,12 @@ trackByValue(index: number, item: ISelectOption): string {
   return item.Value;
 }
 
-
-// togglePopoverFromIcon(event: Event, target: HTMLElement): void {
-//   event.stopPropagation();
-//   if (this._multiSelectedValue && this._multiSelectedValue.length > 0 && !this.model.singleSelection) {
-//     // Используем show вместо toggle для лучшего контроля позиции
-//     this.selectedItemsPopover.show(event, target);
-//   }
-// }
 togglePopoverFromIcon(event: Event, target: HTMLElement): void {
   event.stopPropagation();
   if (this._multiSelectedValue && this._multiSelectedValue.length > 0) {
     if (this.selectedItemsPopover.overlayVisible) {
-      // Если открыт — закрываем
       this.selectedItemsPopover.hide();
     } else {
-      // Если закрыт — открываем слева от иконки
       this.selectedItemsPopover.show(event, target);
     }
   }
@@ -235,8 +222,6 @@ togglePopoverFromIcon(event: Event, target: HTMLElement): void {
 
 // #endregion POPOVER
 
-  // Удаляем этот геттер, он больше не нужен
-  // get selectedItemsTooltip(): string { /* ... */ }
   get selectedItemsTooltip(): string {
     if (!this._multiSelectedValue || this._multiSelectedValue.length === 0) {
       return '';

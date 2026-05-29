@@ -7,8 +7,6 @@ import { environment } from '../../../environments/environment';
 import { IProduct, IProductCategory, IProductProcessing, NewProduct } from '../../shared/models/product.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-// <--- НОВОЕ: Определение локального типа для состояния аутентификации
-// Тип `event` теперь `string`
 export interface AuthState {
   event: string; // ИСПРАВЛЕНО: event теперь string
   session: AuthSession | null;
@@ -19,7 +17,7 @@ export interface AuthState {
 })
 export class SupabaseService implements OnDestroy{
   public supabase: SupabaseClient; 
-   private _supabaseAuthSubscription: Subscription; // Переименовал, чтобы не путать с RxJS Subscription
+   private _supabaseAuthSubscription: Subscription; // rRenamed to avoid confusion with RxJS Subscription
 
   private _authState = new BehaviorSubject<AuthState | null>(null);
   public authStateChanges$: Observable<AuthState | null> = this._authState.asObservable();  
@@ -41,12 +39,11 @@ constructor() {
     environment.supabaseKey
   );
 
-  // Подписка на изменения auth
+  //subscribe to auth changes
   const { data: { subscription } } = this.supabase.auth.onAuthStateChange(
     (event: string, session: AuthSession | null) => {
       console.log('Supabase Auth state changed:', event, session);
 
-      // Обновляем BehaviorSubject
       this._authState.next({ event, session });
 
       if (event === 'SIGNED_OUT') {
@@ -64,7 +61,6 @@ constructor() {
   this._supabaseAuthSubscription = subscription;
 }
 
-// Функция загрузки профиля **вне onAuthStateChange**
 private async loadProfileAfterSignIn(userId: string) {
   this.isProfileLoading.set(true);
   try {
@@ -87,23 +83,20 @@ private async loadProfileAfterSignIn(userId: string) {
   }
 }
 
-  // --- МЕТОД ЖИЗНЕННОГО ЦИКЛА ДЛЯ ОЧИСТКИ ---
-  // Этот метод будет вызван автоматически, когда сервис уничтожается,
-  // и отменит подписку, предотвращая утечки памяти.
   ngOnDestroy(): void {
  if (this._supabaseAuthSubscription) {
       this._supabaseAuthSubscription.unsubscribe();
     }
-    // Завершаем BehaviorSubject
-    this._authState.complete();
+     this._authState.complete();
   }
-  // --- МЕТОДЫ CRUD ДЛЯ ПРОДУКТОВ 
+
+  // ---  CRUD for products --- 
 
 
   /**
-   * Получить страницу продуктов с пагинацией
-   * @param limit Количество строк на страницу
-   * @param offset Смещение (offset = (page-1)*limit)
+   * Get products page with pagination
+   * @param limit Number of rows per page
+   * @param offset Offset (offset = (page-1)*limit)
    */
   async getProductsPage(limit: number, offset: number = 0): Promise<IProduct[]> {
     const { data, error } = await this.supabase
@@ -112,7 +105,7 @@ private async loadProfileAfterSignIn(userId: string) {
       .order('id', { ascending: true })
       .range(offset, offset + limit - 1);
     if (error) {
-      console.error('Ошибка при получении страницы продуктов:', error);
+      console.error('Error fetching products page:', error);
       return [];
     }
     return data ?? [];
@@ -173,68 +166,50 @@ async getAdminProductsPage(
 }
 
   /**
-   * Умный поиск продуктов через Supabase RPC
-   * @param txtSearch Текст запроса (строка)
-   * @param lang Текущий язык интерфейса (например, 'ru', 'he', 'en')
-   * @param maxResults Максимальное количество результатов (по умолчанию 20)
+   * Smart search products via Supabase RPC
+   * @param txtSearch Search text (string)
+   * @param lang Current interface language (e.g., 'ru', 'he', 'en')
+   * @param maxResults Maximum number of results (default 20)
    */
   async getProductsBySearch(txtSearch: string, lang: string, maxResults: number = 20) {
     const query = txtSearch?.trim() || '';
 
-    // Если запрос пустой или слишком короткий, даже не делаем запрос к базе (экономим трафик)
+    // if query is too short, return empty result to avoid unnecessary RPC calls
     if (query.length < 2) {
       return [];
     }
 
-    // Явно приводим maxResults к числу
     const params = {
       search_query: query,
       display_language: lang,
       max_results: Number(maxResults)
     };
-    console.log('[Supabase] Поиск продуктов, параметры:', params);
+    // console.log('[Supabase] Smart search products, parameters:', params);
 
     const { data, error } = await this.supabase
       .rpc('search_products_fuzzy', params);
 
     if (error) {
-      console.error('Ошибка при поиске продуктов:', error);
+      console.error('Error:', error);
       return [];
     }
-    console.log(`[Supabase] Найдены продукты: ${JSON.stringify(data)}`);
+    console.log(`[Supabase] Found products: ${JSON.stringify(data)}`);
     return data ?? [];
   }
 
   async addProduct(product: NewProduct): Promise<IProduct> {
-  // `product` - это один объект. Мы оборачиваем его в массив [product].
   const { data, error } = await this.supabase
     .from('products')
-    .insert([product]) // <-- Оборачиваем объект в массив!
-    .select()         // <-- Говорим Supabase вернуть вставленную строку
-    .single();        // <-- Так как мы вставили 1 объект, мы ожидаем 1 объект в ответе.
-                      //     .single() извлечет его из массива и выдаст ошибку, если вернется не 1 запись.
-
+    .insert([product]) // <-- Convert ojbect to array for insert
+    .select()         // 
+    .single();        // 
   if (error) {
     console.error('Supabase error inserting product:', error);
     throw error;
   }
 
-  return data; // `data` теперь будет иметь тип IProduct, а не IProduct[]
+  return data; 
   }
-// async updateProduct1(id: number, updates: Partial<IProduct>): Promise<IProduct> {
-//     const { data, error } = await this.supabase
-//       .from('products')
-//       .update(updates)
-//       .eq('id', id)
-//       .select()
-//       .single();
-
-//     if (error) {
-//       throw error;
-//     }
-
-//     return data;
-// }
 
 async updateProduct(product: IProduct): Promise<IProduct> {
   if (!product.id) throw new Error('Product ID is required');
@@ -258,7 +233,7 @@ async deleteProduct(id: number): Promise<void> {
   if (error) throw error;
 }
 
-// Эта версия вернет удаленный объект или null, если ничего не найдено
+// this method deletes a product and returns the deleted product data (if needed for undo or confirmation)
 async deleteProductAndGetData(id: number): Promise<IProduct | null> {
   const { data, error } = await this.supabase
     .from('products')
@@ -271,25 +246,23 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
     console.error('Supabase error deleting product:', error);
     throw error;
   }
-  
-  // data будет содержать удаленный объект или null, если строка с таким id не была найдена
-  return data;
+   return data;
 }
-// --- МЕТОДЫ АУТЕНТИФИКАЦИИ ---
+// --- Methods Auth ---
 
   /**
-   * Регистрирует нового пользователя.
-   * @param email - Email пользователя.
-   * @param password - Пароль пользователя.
-   * @param fullName - Полное имя пользователя (для сохранения в profiles).
-   * @returns Данные пользователя Supabase, если успешно.
+   * Registers a new user.
+   * @param email - User's email.
+   * @param password - User's password.
+   * @param fullName - User's full name (for saving in profiles).
+   * @returns Supabase user data, if successful.
    */
   async signUp(email: string, password: string, fullName: string = ''): Promise<{ user: User | null, session: AuthSession | null }> {
     const { data, error } = await this.supabase.auth.signUp({
       email: email,
       password: password,
       options: {
-        // user_metadata будет передано в триггер handle_new_user для full_name
+        // user_metadata will be passed to the handle_new_user trigger for full_name
         data: { full_name: fullName } 
       }
     });
@@ -298,17 +271,17 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
       console.error('Supabase SignUp Error:', error);
       throw error;
     }
-    // Supabase по умолчанию требует подтверждение почты.
-    // Если вы это отключили, то data.session будет сразу доступен.
-    // Если подтверждение включено, data.session будет null до подтверждения.
+    // Supabase by default requires email confirmation.
+    // If you have disabled it, data.session will be immediately available.
+    // If confirmation is enabled, data.session will be null until confirmed.
     return { user: data.user, session: data.session };
   }
 
   /**
-   * Выполняет вход пользователя.
-   * @param email - Email пользователя.
-   * @param password - Пароль пользователя.
-   * @returns Данные сессии пользователя Supabase, если успешно.
+   * Executes user login.
+   * @param email - User's email.
+   * @param password - User's password.
+   * @returns Supabase session data, if successful.
    */
   async signIn(email: string, password: string): Promise<{ user: User | null, session: AuthSession | null }> {
     const { data, error } = await this.supabase.auth.signInWithPassword({
@@ -324,7 +297,7 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
   }
   async signInWithUsername(username: string, password: string): Promise<{ user: User | null, session: AuthSession | null }> {
   try {
-    // Шаг 1: получить email по username через RPC
+    // Step 1: get email by username via RPC
     const { data: email, error: rpcError } = await this.supabase.rpc('get_email_by_username', {
       username_input: username
     });
@@ -333,7 +306,7 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
       throw new Error('Invalid username or user not found');
     }
 
-    // Шаг 2: войти с email и password
+    // Step 2: sign in with email and password
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email: email,
       password: password
@@ -349,7 +322,7 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
 
 
   /**
-   * Выполняет выход пользователя.
+   * Executes user logout.
    */
   async signOut(): Promise<void> {
     const { error } = await this.supabase.auth.signOut();
@@ -360,8 +333,8 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
   }
 
   /**
-   * Получает текущего авторизованного пользователя.
-   * @returns Объект пользователя или null, если не авторизован.
+   * Gets the currently authenticated user.
+   * @returns The user object or null if not authenticated.
    */
   async getCurrentUser(): Promise<User | null> {
     const { data: { user }, error } = await this.supabase.auth.getUser();
@@ -373,8 +346,8 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
   }
 
   /**
-   * Получает текущую сессию пользователя.
-   * @returns Объект сессии или null.
+   * Gets the current user session.
+   * @returns The session object or null.
    */
   async getSession(): Promise<AuthSession | null> {
     const { data: { session }, error } = await this.supabase.auth.getSession();
@@ -385,18 +358,9 @@ async deleteProductAndGetData(id: number): Promise<IProduct | null> {
     return session;
   }
 
-  // --- СЛУШАТЕЛЬ СОСТОЯНИЙ АУТЕНТИФИКАЦИИ ---
-  // Это очень полезно для отслеживания изменений в состоянии аутентификации (вход/выход)
-  // и реагирования на них в приложении.
-  // public authChanges = this.supabase.auth.onAuthStateChange(
-  //   (event, session) => {
-  //     console.log('Auth state changed:', event, session);
-  //     // Здесь вы можете добавить свою логику, например, обновить observable в сервисе
-  //     // или отправить событие, которое слушают компоненты.
-  //   }
-  // );
+ 
 
-  // --- ПРОФИЛИ ---
+  // --- Profiles ---
 
   async getProfile(): Promise<{ role: string; full_name: string; preferences: any } | null> {
     const user = await this.getCurrentUser();
@@ -437,61 +401,6 @@ async updateUserRole(userId: string, role: 'user' | 'admin'): Promise<{ id: stri
   return data;
 }
 
-//TODO Check if use
-/**
- * Обновляет профиль пользователя: имя, email, пароль, preferences (опционально).
- * Возвращает объект профиля и пользователя (с новым email, если изменён).
- */
-  // async updateProfileFull(opts: {
-  //   full_name?: string;
-  //   preferences?: any;
-  //   email?: string;
-  //   password?: string;
-  //   }): Promise<{
-  //     profile: { full_name: string; preferences: any; role: string } | null;
-  //     user: { email: string } | null;
-  //   }> {
-  //     const user = await this.getCurrentUser();
-  //     if (!user) throw new Error('Not authenticated');
-
-  //     // Обновление email/password через auth API
-  //     let updatedUserInfo: { email: string } | null = null;
-  //     if (opts.email || opts.password) {
-  //       const { data, error } = await this.supabase.auth.update({
-  //         email: opts.email,
-  //         password: opts.password
-  //       });
-  //       if (error) {
-  //         throw error;
-  //       }
-  //       updatedUserInfo = { email: data.user?.email ?? user.email };
-  //     }
-
-  //     // Обновление таблицы profiles
-  //     const profileUpdates: any = {};
-  //     if (opts.full_name !== undefined) profileUpdates.full_name = opts.full_name;
-  //     if (opts.preferences !== undefined) profileUpdates.preferences = opts.preferences;
-
-  //     let updatedProfile: { full_name: string; preferences: any; role: string } | null = null;
-  //     if (Object.keys(profileUpdates).length > 0) {
-  //       const { data, error } = await this.supabase
-  //         .from('profiles')
-  //         .update(profileUpdates)
-  //         .eq('id', user.id)
-  //         .select('full_name, preferences, role')
-  //         .single();
-  //       if (error) {
-  //         throw error;
-  //       }
-  //       updatedProfile = data;
-  //     }
-
-  //     return {
-  //       profile: updatedProfile,
-  //       user: updatedUserInfo
-  //     };
-  // }
-
   async changeUserRole(userId: string, newRole: 'user' | 'admin' | 'superadmin'): Promise<{ id: string; role: string; full_name: string } | null> {
     const current = await this.getProfile();
     if (!current || current.role !== 'superadmin') {
@@ -516,8 +425,8 @@ async updateUserRole(userId: string, role: 'user' | 'admin'): Promise<{ id: stri
     return data ?? [];
   }
 
-  //#region Admin Panel --- МЕТОДЫ ДЛЯ РАБОТЫ С КАТЕГОРИЯМИ И ОБРАБОТКОЙ (ПО АНАЛОГИИ С ПРОДУКТАМИ) ---
-  async getDashboardCounts() {
+  //#region Admin Panel
+   async getDashboardCounts() {
     const [products, categories, processing, users] = await Promise.all([
       this.supabase.from('products').select('id', { count: 'exact', head: true }),
       this.supabase.from('product_categories').select('id', { count: 'exact', head: true }),
@@ -534,7 +443,6 @@ async updateUserRole(userId: string, role: 'user' | 'admin'): Promise<{ id: stri
   }
 
   // #region Category CRUD
-// Получить все категории
 async getProductCategories(): Promise<IProductCategory[]> {
   const { data, error } = await this.supabase
     .from('product_categories')
@@ -544,7 +452,6 @@ async getProductCategories(): Promise<IProductCategory[]> {
   return data;
 }
 
-// Вставка новой категории
 async insertProductCategory(category: IProductCategory): Promise<IProductCategory> {
   const { data, error } = await this.supabase
     .from('product_categories')
@@ -555,7 +462,6 @@ async insertProductCategory(category: IProductCategory): Promise<IProductCategor
   return data;
 }
 
-// Обновление категории
 async updateProductCategory(category: IProductCategory): Promise<IProductCategory> {
   if (!category.id) throw new Error('Category ID is required');
   const { data, error } = await this.supabase
@@ -568,7 +474,6 @@ async updateProductCategory(category: IProductCategory): Promise<IProductCategor
   return data;
 }
 
-// Удаление категории
 async deleteProductCategory(id: number): Promise<void> {
   const { error } = await this.supabase
     .from('product_categories')
@@ -579,10 +484,8 @@ async deleteProductCategory(id: number): Promise<void> {
 
   // #endregion Category CRUD
 
-  // *******************************
-
+ 
   // #region Processing CRUD
-// Получить все cпособы обработки
 async getProductProcessing(): Promise<IProductProcessing[]> {
   const { data, error } = await this.supabase
     .from('product_processing')
@@ -592,7 +495,6 @@ async getProductProcessing(): Promise<IProductProcessing[]> {
   return data;
 }
 
-// Вставка нового способа обработки
 async insertProductProcessing(processing: IProductProcessing): Promise<IProductProcessing> {
   const { data, error } = await this.supabase
     .from('product_processing')
@@ -603,7 +505,6 @@ async insertProductProcessing(processing: IProductProcessing): Promise<IProductP
   return data;
 }
 
-// Обновление способа обработки
 async updateProductProcessing(processing: IProductProcessing): Promise<IProductProcessing> {
   if (!processing.id) throw new Error('Processing ID is required');
   const { data, error } = await this.supabase
@@ -616,7 +517,6 @@ async updateProductProcessing(processing: IProductProcessing): Promise<IProductP
   return data;
 }
 
-// Удаление способа обработки
 async deleteProductProcessing(id: number): Promise<void> {
   const { error } = await this.supabase
     .from('product_processing')

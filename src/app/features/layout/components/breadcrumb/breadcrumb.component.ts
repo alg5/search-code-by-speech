@@ -29,13 +29,6 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit() {
-    // // Инициализируем breadcrumbs сразу
-    // this.breadcrumbs = this.breadcrumbService['buildBreadcrumbs']();
-
-    // // Подписываемся на изменения маршрута
-    // this.subscription = this.breadcrumbService.getBreadcrumbs().subscribe(
-    //   breadcrumbs => this.breadcrumbs = breadcrumbs
-    // );
     this.subscription = this.breadcrumbService.getBreadcrumbs().subscribe(
       breadcrumbs => this.breadcrumbs = breadcrumbs
     );  

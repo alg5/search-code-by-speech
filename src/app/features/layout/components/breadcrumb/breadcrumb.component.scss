@@ -1,4 +1,3 @@
-// breadcrumb.component.scss
 .breadcrumb-container {
   display: flex;
   align-items: center;
@@ -39,7 +38,6 @@
     margin: 0 0.25rem;
   }
 
-  // Обычные пункты
   .p-breadcrumb-item-link,
   .p-breadcrumb-item-link a,
   a {
@@ -52,7 +50,7 @@
     }
   }
 
-  // Активный (последний) пункт
+  // Active item (current)
   .p-menuitem-active .p-breadcrumb-item-link {
     color: var(--text-color, #166534) !important;
     pointer-events: none;

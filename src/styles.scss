@@ -46,7 +46,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   
-  // Для вложенных span/div в ячейках
+  // for nested span/div in cells
   > span, > div {
     overflow: hidden;
     text-overflow: ellipsis;

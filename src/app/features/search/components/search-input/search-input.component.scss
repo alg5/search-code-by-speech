@@ -248,6 +248,10 @@ spr-admin-search-settings {
     input {
       border: none !important;
     }
+    .p-inputtext{
+      width: 100% !important;
+      border: none !important;
+    }
 
     .p-inputtext:enabled:focus {
       border: none !important;

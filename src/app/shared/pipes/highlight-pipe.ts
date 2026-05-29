@@ -12,7 +12,7 @@ export class HighlightPipe implements PipeTransform {
     const text = value == null ? '' : String(value);
     if (!search) return text;
 
-    // Экранируем спецсимволы RegExp
+    // escape RegExp special characters
     const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp(`(${escapedSearch})`, 'gi');
 

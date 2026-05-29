@@ -9,8 +9,8 @@
   color: $color-green !important;      
 
   ::ng-deep &.p-select {
-    // border: 1px solid red !important; // для отладки
-    // min-width: 55px !important;  // компактная ширина
+    // border: 1px solid red !important;
+    // min-width: 55px !important; 
     background-color: white !important;
     display: flex !important;
     gap: 4px;
@@ -32,14 +32,12 @@
     }
   }
 
-  // выбранный элемент
   .selected-item {
     display: flex;
     align-items: center;
-    gap: 0.3rem; // чуть меньше промежуток
+    gap: 0.3rem; 
   }
 
-  // варианты в списке
   .lang-item {
     display: flex;
     align-items: center;
@@ -48,7 +46,7 @@
   }
 
   .lang-label {
-    font-size: 0.85rem;  // уменьшенный шрифт
+    font-size: 0.85rem;  
     color: $color-green;
     font-weight: 500;
   }

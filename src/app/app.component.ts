@@ -15,7 +15,7 @@ export class AppComponent {
   private readonly renderer = inject(Renderer2) ;
 
   async ngOnInit() {
-    // Принудительно светлая тема
+    // forcing light mode to avoid dark mode issues in some components (like PrimeNG DataTable)
     this.renderer.setStyle(document.body, 'background-color', '#ffffff');
     this.renderer.setStyle(document.body, 'color', '#16254f');
   }

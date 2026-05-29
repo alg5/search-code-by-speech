@@ -417,13 +417,13 @@ onSaveEditableCell(col, rowData, i){
   }
 
 }
-// при старте редактирования
+
 startEdit(row: any) {
   const id = row[this.idField];
   if (!id) return;
   this.editingRowId.set(id);
-  this.editingRowData.set({ ...row });  // создаём копию текущих данных
-  this.originalRowData = { ...row };    // сохраняем отдельно для CANCEL
+  this.editingRowData.set({ ...row });  
+  this.originalRowData = { ...row };   
 }
 
 validateRow(): boolean {
@@ -468,14 +468,12 @@ onCancelEdit(rowData: any) {
   const id = rowData[this.idField];
   if (!id) return;
   if (this.originalRowData) {
-    // восстанавливаем данные в оригинальном массиве 
     let currentRowData = this.dataSource.findIndex(r => r[this.idField] === id);
     if (currentRowData !== -1) {
       currentRowData = { ...this.originalRowData };
     }
   }
 
-  // сброс состояния редактирования
   this.resetEdit();
   
 }

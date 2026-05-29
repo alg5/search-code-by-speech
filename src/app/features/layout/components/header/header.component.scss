@@ -15,10 +15,10 @@
   margin: 0 auto;
   display: flex;
   justify-content: flex-start;
-  align-items: center;      // ✅ Добавить выравнивание по центру
-  flex-wrap: wrap;            // ✅ Разрешить перенос
-  gap:1.5rem;          // ✅ gap по вертикали и горизонтали
-  padding: 0 1rem;      // ✅ Добавить padding внутри контейнер
+  align-items: center;      
+  flex-wrap: wrap;   
+  gap:1.5rem;    
+  padding: 0 1rem; 
 
 
 }
@@ -28,8 +28,6 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  // flex: 1 1 auto;             // ✅ Растягиваться, но сжиматься при необходимости
-  // min-width: 0;   
   flex: 0 0 auto;
 }
 
@@ -37,8 +35,7 @@
   width: 60px;
   height: 60px;
   margin-top: -16px; 
-  // display: block;
-  // flex-shrink: 0;
+
 }
 
 Breadcrumb
@@ -105,21 +102,13 @@ Breadcrumb
 }
 
 
-// Право: Действия
 .header-actions {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  // flex-shrink: 0; // Не сжиматься
-   margin-left: auto;            // ✅ Прижать к правому краю
+   margin-left: auto; 
 }
 
-// .visit-time {
-//   font-size: 0.7rem;
-//   color: #9ca3af;
-//   font-weight: 400;
-//   white-space: nowrap;
-// }
 
 .lang-switch {
   display: flex;
@@ -231,13 +220,13 @@ Breadcrumb
   
   display: flex;
   align-items: center;
-  justify-content: flex-start;  // Прижат к логотипу
+  justify-content: flex-start;  
   padding: 0;
   
-  flex: 1 1 auto;               // Растягиваться
+  flex: 1 1 auto;               
   text-align: left;
-  min-width: 200px;             // Минимальная ширина, чтобы не слишком сжиматься
-  max-width: 600px;             // Максимальная ширина, чтобы не уходить слишком далеко от правой части
+  min-width: 200px;             
+  max-width: 600px;             
   @include media("max", "sm") {
     display: none;
   }

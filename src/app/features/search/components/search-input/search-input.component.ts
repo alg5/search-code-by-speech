@@ -94,7 +94,6 @@ export class SearchInputComponent implements OnInit {
     this.speechService.init();
     // this.loadRecentProducts();
 
-    // Проверяем наличие микрофона при загрузке компонента
     this.speechService.checkMicrophone().then((hasMic) => {
       this.micError.set(!hasMic);
       this.hasMicrophone.set(hasMic);
@@ -104,12 +103,12 @@ export class SearchInputComponent implements OnInit {
       }
     });
     
-    // На мобильном браузере запрашиваем разрешение на микрофон при загрузке
+    // on the mobile brouser, we can try to request microphone access immediately to avoid issues when user tries to start voice search for the first time
     if (/iPhone|iPad|Android|Mobile/.test(navigator.userAgent)) {
       console.log('📱 Mobile device detected, requesting microphone access...');
       navigator.mediaDevices?.getUserMedia({ audio: true })
         .then(stream => {
-          // Закрываем поток - нам просто нужно разрешение
+          // Close the stream immediately since we just wanted to trigger the permission prompt
           stream.getTracks().forEach(track => track.stop());
           console.log('✅ Microphone permission granted');
         })

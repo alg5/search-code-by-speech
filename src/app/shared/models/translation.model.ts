@@ -2,9 +2,9 @@ import { LangCode, LANGS } from "./constants";
 
 
 export interface ILang {
-  code: LangCode;       // код языка
-  label: string;        // текстовое название
-  iconClass?: string;    // for flag-icons
+  code: LangCode;       
+  label: string;        
+  iconClass?: string;  
 }
 
 

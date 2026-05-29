@@ -8,13 +8,6 @@ import { LangSwitchComponent } from '../../../../shared/components/lang-switch/l
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { LanguageService } from '../../../../core/services/language.service';
 
-// Ваши компоненты
-// import { SprLangSwitchComponent } from '../spr-lang-switch/spr-lang-switch.component'; // Убедитесь в пути
-// import { SprSearchLayoutComponent } from '../spr-search-layout/spr-search-layout.component'; // Убедитесь в пути
-
-// Сервисы
-// import { SupabaseService } from '../services/supabase.service';
-// import { LanguageService } from '../services/language.service';
 import { Subscription } from 'rxjs'; // <--- Импорт RxJS Subscription
 import { HeaderComponent } from '../header/header.component';
 
@@ -25,9 +18,7 @@ import { HeaderComponent } from '../header/header.component';
     CommonModule,
     RouterOutlet,
     ButtonModule,
-    // LangSwitchComponent,
     HeaderComponent
-    // SearchLayoutComponent // Ваш компонент поиска
   ],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.scss']
@@ -39,7 +30,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   isLoggedIn: boolean = false;
   isAdmin: boolean = false; // Будет определяться из профиля
- private _authSubscription: Subscription | undefined; // <--- Сохраняем RxJS подписку
+ private _authSubscription: Subscription | undefined; 
 
 async ngOnInit() {
     // <--- ИСПРАВЛЕНО: Подписываемся на Observable `authStateChanges$`
@@ -48,17 +39,15 @@ async ngOnInit() {
       if (state) {
         await this.checkAuthStatus();
       } else {
-        // Начальное состояние или null после SignOut
+        // Initial state or Null if user is not logged in
         this.isLoggedIn = false;
         this.isAdmin = false;
       }
     });
-    // Также проверяем статус при первом запуске
     await this.checkAuthStatus();
   }
 
   ngOnDestroy(): void {
-    // <--- Отписываемся от RxJS Observable при уничтожении компонента
     if (this._authSubscription) {
       this._authSubscription.unsubscribe();
     }
@@ -68,7 +57,7 @@ async ngOnInit() {
     const user = await this.supabase.getCurrentUser();
     this.isLoggedIn = !!user;
     if (user) {
-      const profile = await this.supabase.getProfile(); // Метод для получения профиля
+      const profile = await this.supabase.getProfile(); 
       this.isAdmin = profile?.role === 'admin';
     } else {
       this.isAdmin = false;
@@ -85,6 +74,6 @@ async ngOnInit() {
 
   async signOut() {
     await this.supabase.signOut();
-    this.router.navigate(['/auth']); // После выхода на страницу входа
+    this.router.navigate(['/auth']);
   }
 }
