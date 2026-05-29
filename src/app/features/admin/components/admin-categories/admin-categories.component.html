@@ -1,59 +1,49 @@
 <div class="admin-categories">
   <h2>{{'admin.categories'| translate}}</h2>
 
-      <!-- 🔍 FILTERS ROW -->
-    <div class="filters-row">
+  <div class="filters-row">
+    <div class="p-inputgroup search-box">
+      <span class="p-inputgroup-addon">
+        <i class="pi pi-search"></i>
+      </span>
 
-      <div class="p-inputgroup search-box">
-        <!-- 🔍 иконка слева -->
-        <span class="p-inputgroup-addon">
-          <i class="pi pi-search"></i>
-        </span>
+      <input pInputText
+            [ngModel]="searchText()"
+            (ngModelChange)="searchText.set($event)"
+            placeholder="Search..."
+            class="search-input"/>
 
-        <!-- input -->
-        <input pInputText
-              [ngModel]="searchText()"
-              (ngModelChange)="searchText.set($event)"
-              placeholder="Search..."
-              class="search-input"/>
-
-        <!-- ❌ кнопка очистки -->
-        <button *ngIf="searchText()"
-                pButton
+      @if(searchText()) {
+        <button pButton
                 icon="pi pi-times"
                 class="p-button-text"
                 (click)="searchText.set('')">
         </button>
-
-      </div>
-
+      }
     </div>
+  </div>
 
-  @if(!loading ()){
-    @if (categories().length > 0){
+  @if(!loading()) {
+    @if (categories().length > 0) {
       <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>
     } @else {
       <p>{{'admin.categories.notFound'| translate}}</p>
-    } 
-      
+    }
   }
-  @if(loading()){
+  @if(loading()) {
     <p>{{'message.loading'| translate}}</p>
   }
-
-
-
 </div>
+
+<!-- ADD DIALOG -->
 <p-dialog header="{{'admin.categories.add'| translate}}" 
   [(visible)]="dialogVisible" 
   [modal]="true" 
   [closable]="true"
   [style]="{ width: '450px' }"
-  (onHide)="dialogVisible.set(null)"
-  >
+  (onHide)="dialogVisible.set(false)">
 
   <form [formGroup]="fg" class="dialog-form">
-
     <div class="form-container">
       <div class="inputs-block">
         <p-floatlabel>
@@ -63,7 +53,7 @@
             [class.ng-dirty]="fg.get('code')?.touched"/>
           <label for="code">{{'column.code'| translate}}</label>
         </p-floatlabel>
-        @if (submited() && fg.get('code')?.invalid ) {
+        @if (submited() && fg.get('code')?.invalid) {
           <small class="p-error">{{'message.fieldRequired'| translate}}</small>
         }
         <p-floatlabel>
@@ -73,7 +63,7 @@
             [class.ng-dirty]="fg.get('name_en')?.touched"/>
           <label for="name_en">{{'caption.name.en'| translate}}</label>
         </p-floatlabel>
-        @if (submited() && fg.get('name_en')?.invalid ) {
+        @if (submited() && fg.get('name_en')?.invalid) {
           <small class="p-error">{{'message.fieldRequired'| translate}}</small>
         }
         <p-floatlabel>
@@ -83,38 +73,35 @@
             [class.ng-dirty]="fg.get('name_ru')?.touched"/>
           <label for="name_ru">{{'caption.name.ru'| translate}}</label>
         </p-floatlabel>
-        @if (submited() && fg.get('name_ru')?.invalid ) {
+        @if (submited() && fg.get('name_ru')?.invalid) {
           <small class="p-error">{{'message.fieldRequired'| translate}}</small>
         }
         <p-floatlabel>
           <input pInputText  
-          formControlName="name_he" 
-          />
+          formControlName="name_he" />
           <label for="name_he">{{'caption.name.he'| translate}}</label>
         </p-floatlabel>
        
         <p-floatlabel>
           <input pInputText  
-          formControlName="name_fr" 
-          />
+          formControlName="name_fr" />
           <label for="name_fr">{{'caption.name.fr'| translate}}</label>
         </p-floatlabel>        
 
         <p-floatlabel>
           <input pInputText  
-          formControlName="priority" 
-          />
+          formControlName="priority" />
           <label for="priority">{{'caption.priority'| translate}}</label>
         </p-floatlabel>      
-
       </div>
       <div class="actions-block">
         <button pButton label="{{'button.save'| translate}}" (click)="saveNew()"></button>
-        <button pButton label="{{'button.cancel'| translate}}" class="p-button-secondary" (click)="dialogVisible.set(null)"></button>
+        <button pButton label="{{'button.cancel'| translate}}" class="p-button-secondary" (click)="dialogVisible.set(false)"></button>
       </div>
     </div>
   </form>
-
 </p-dialog>
+
+<!-- ADD CONFIRM DIALOG AND TOAST -->
 <p-confirmDialog></p-confirmDialog>
 <p-toast></p-toast>

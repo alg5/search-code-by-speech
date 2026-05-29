@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -7,24 +7,24 @@ import { DialogModule } from 'primeng/dialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { CustomGridComponent } from '../../../../shared/components/custom-components/custom-grid/custom-grid.component';
-import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { SupabaseService } from '../../../../core/services/supabase.service';
-import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
-import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
-import { IProductProcessing } from '../../../../shared/models/product.model';
-import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
-import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
-import { LanguageService } from '../../../../core/services/language.service';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { CustomGridComponent } from '../../../../shared/components/custom-components/custom-grid/custom-grid.component';
+import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
+import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
+import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
+import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
+import { SupabaseService } from '../../../../core/services/supabase.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
+import { IProductProcessing } from '../../../../shared/models/product.model';
 
 @Component({
   selector: 'spr-admin-processing',
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     DialogModule,
     ButtonModule,
     InputTextModule,
@@ -35,11 +35,12 @@ import { ToastModule } from 'primeng/toast';
     TranslatePipe,
     ToastModule
   ],
-  providers: [ConfirmationService, TranslatePipe],  templateUrl: './admin-processing.component.html',
+  providers: [ConfirmationService, TranslatePipe],
+  templateUrl: './admin-processing.component.html',
   styleUrl: './admin-processing.component.scss',
 })
 export class AdminProcessingComponent {
-  private fb = inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
   private readonly supabaseService = inject(SupabaseService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly toolbarService = inject(CustomToolbarService);
@@ -48,21 +49,20 @@ export class AdminProcessingComponent {
   private readonly languageService = inject(LanguageService);
   private readonly translate = inject(TranslatePipe);
 
-// ===== state =====
+  // ===== state =====
   processingTypes = signal<IProductProcessing[]>([]);
   filteredProcessingTypes = signal<IProductProcessing[]>([]);
-  
+
   loading = signal(false);
   submited = signal(false);
   searchText = signal('');
 
- // inline edit
+  // inline edit
   editingId = signal<number | null>(null);
   editingRow = signal<IProductProcessing | null>(null);
 
   // dialog (add)
   dialogVisible = signal(false);
-
 
   // form (add)
   fg = this.fb.group({
@@ -75,10 +75,9 @@ export class AdminProcessingComponent {
   });
 
   //#region custom-grid definition
-    customGridModel:ICustomGridModel;
-    customToolbar:IToolbarModel
-    columns: IColumn[] ;
-
+  customGridModel: ICustomGridModel;
+  customToolbar: IToolbarModel;
+  columns: IColumn[];
   //#endregion custom-grid definition
 
 
@@ -86,39 +85,48 @@ export class AdminProcessingComponent {
     effect(() => {
       const event = this.toolbarService.newButtonClickedSignal();
       if (!event?.value) return;
+      if (event.key !== 'processing') return; // filter by component key
+
+
+      // Reset signal to prevent re-triggering on navigation
+      untracked(() => {
+        this.toolbarService.newButtonClickedSignal.set({ value: false, timestamp: Date.now() });
+      });
+
       this.openAdd();
     });
+
     effect(() => {
       const event = this.customGridService.rowDeleteSignal();
       if (!event?.row) return;
-      console.log('Delete signal received in AdminProcessingComponent', event.row);
+      if (event.key !== 'processing') return; // filter by component key
       this.confirmDelete(event.row);
     });
+
     effect(() => {
       const event = this.customGridService.saveEditedRowSignal();
       if (!event?.row) return;
+      if (event.key !== 'processing') return; // filter by component key
       console.log('Save signal received in AdminProcessingComponent', event.row);
       this.saveEdit(event.row);
-    }); 
+    });
 
     effect(() => {
       const text = this.searchText()?.toLowerCase() || '';
-       if(!this.customGridModel) return;
+      if (!this.customGridModel) return;
 
       const filtered = this.processingTypes().filter(p =>
-        (
-          !text ||
-          p.code?.toLowerCase().includes(text) ||
-          p.name_en?.toLowerCase().includes(text) ||
-          p.name_ru?.toLowerCase().includes(text) ||
-          p.name_he?.toLowerCase().includes(text) ||
-          p.name_fr?.toLowerCase().includes(text)
-        ) 
+        !text ||
+        p.code?.toLowerCase().includes(text) ||
+        p.name_en?.toLowerCase().includes(text) ||
+        p.name_ru?.toLowerCase().includes(text) ||
+        p.name_he?.toLowerCase().includes(text) ||
+        p.name_fr?.toLowerCase().includes(text)
       );
 
       this.filteredProcessingTypes.set(filtered);
 
-      // immutable update: создаём новый gridModel, чтобы дочерний компонент увидел изменение
+      // immutable update: create a new gridModel so the child component detects the change
       this.customGridModel = {
         ...this.customGridModel,
         toolbarModel: {
@@ -126,14 +134,8 @@ export class AdminProcessingComponent {
         },
         dataSource: filtered,
         filterStringInitial: text,
-        // totalRecords: filtered.length
       };
-
-
-
-    });        
-
-    
+    });
   }
 
   ngOnInit(): void {
@@ -144,7 +146,7 @@ export class AdminProcessingComponent {
 
   async loadProcessing() {
     try {
-       const data = await this.supabaseService.getProductProcessing();
+      const data = await this.supabaseService.getProductProcessing();
       this.processingTypes.set(data);
       this.filteredProcessingTypes.set(data);
       console.log('Processing loaded', data, this.processingTypes());
@@ -162,30 +164,30 @@ export class AdminProcessingComponent {
     this.dialogVisible.set(true);
   }
 
-    async saveNew() {
+  async saveNew() {
     this.submited.set(true);
-  
+
     if (this.fg.invalid) {
       this.fg.markAllAsTouched();
       return;
     }
-  
+
     try {
       await this.supabaseService.insertProductProcessing(
         this.fg.value as IProductProcessing
       );
-  
+
       this.dialogVisible.set(false);
       this.loadProcessing();
-  
-       this.messageService.add({
+
+      this.messageService.add({
         severity: 'success',
         summary: this.translate.transform('message.success.processing.created'),
       });
-  
+
     } catch (error: any) {
       console.error(error);
-  
+
       if (error?.code === '23505') {
         // duplicate code
         this.messageService.add({
@@ -194,13 +196,13 @@ export class AdminProcessingComponent {
           detail: this.languageService.translate(
             'message.error.processing.duplicateCode',
             '',
-            { code: this.fg.get('code').value }
-          )  ,    
+            { code: this.fg.get('code')?.value }
+          ),
           sticky: true
         });
-  
+
       } else {
-        // любая другая ошибка
+        // any other error
         this.messageService.add({
           severity: 'error',
           summary: this.translate.transform('message.error'),
@@ -210,22 +212,22 @@ export class AdminProcessingComponent {
       }
     }
   }
-// ===== EDIT INLINE =====
- 
+
+
+  // ===== EDIT INLINE =====
   async saveEdit(row: IProductProcessing) {
     try {
       await this.supabaseService.updateProductProcessing(row);
       this.loadProcessing();
-  
-      // опционально — успех
+
       this.messageService.add({
         severity: 'success',
         summary: this.translate.transform('message.success.processing.updated'),
       });
-  
+
     } catch (error: any) {
       console.error(error);
-  
+
       if (error?.code === '23505') {
         // duplicate code
         this.messageService.add({
@@ -235,10 +237,10 @@ export class AdminProcessingComponent {
             'message.error.processing.duplicateCode',
             '',
             { code: row.code }
-          )  ,      
+          ),
           sticky: true
         });
-  
+
       } else {
         this.messageService.add({
           severity: 'error',
@@ -250,78 +252,103 @@ export class AdminProcessingComponent {
     }
   }
 
+
   // ===== DELETE =====
-confirmDelete(row) {
-  this.confirmationService.confirm({
-    message: `${this.translate.transform('admin.processing.confirmDelete')} ${row.code}?`,
-    acceptLabel: this.translate.transform('message.yes'),
-    rejectLabel: this.translate.transform('message.no'),
-    acceptButtonStyleClass: 'p-button-danger',
-    accept: async () => {
-      try {
-        await this.supabaseService.deleteProductProcessing(row.id);
-        this.loadProcessing();
-        this.messageService.add({
-          severity: 'success',
-          // summary: this.translate.transform('message.success'),
-          detail: this.translate.transform('message.success.processing.deleted')
-        });
-
-
-      } catch (error: any) {
-        console.error(error);
-
-        if (error?.code === '23503') {
+  confirmDelete(row: IProductProcessing) {
+    this.confirmationService.confirm({
+      message: `${this.translate.transform('admin.processing.confirmDelete')} ${row.code}?`,
+      acceptLabel: this.translate.transform('message.yes'),
+      rejectLabel: this.translate.transform('message.no'),
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: async () => {
+        try {
+          await this.supabaseService.deleteProductProcessing(row.id);
+          this.loadProcessing();
           this.messageService.add({
-            severity: 'error',
-            summary: this.translate.transform('message.error'),
-            detail: this.translate.transform('message.error.processing.deleteHasProducts'),
-            sticky: true
+            severity: 'success',
+            detail: this.translate.transform('message.success.processing.deleted')
           });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: this.translate.transform('message.error'),
-            detail: this.translate.transform('message.unexpectedError'),
-            sticky: true
-          });
+
+        } catch (error: any) {
+          console.error(error);
+
+          if (error?.code === '23503') {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translate.transform('message.error'),
+              detail: this.translate.transform('message.error.processing.deleteHasProducts'),
+              sticky: true
+            });
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translate.transform('message.error'),
+              detail: this.translate.transform('message.unexpectedError'),
+              sticky: true
+            });
+          }
         }
       }
-    }
-  });
-}
+    });
+  }
 
   //#region custom-grid actions
   fillColumns() {
     this.columns = [
-      // { 
-      //   headerText: 'ID'
-      //   , dataField: 'id'
-      //   , dataType: GridColumType.numeric
-      // },
-      { headerText: this.translate.transform('column.code')
-        , dataField: 'code'
-        , dataType: GridColumType.textEditable
-        , required: true
-       },
-      { headerText: this.translate.transform('column.nameEn'), dataField: 'name_en', dataType: GridColumType.textEditable, required: true },
-      { headerText: this.translate.transform('column.nameRu'), dataField: 'name_ru', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.nameHe'), dataField: 'name_he', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.nameFr'), dataField: 'name_fr', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.priority'), dataField: 'priority', dataType: GridColumType.numericEditable },
-      { headerText: '', dataField: '', dataType: GridColumType.deleteButton},
-      { headerText: '', dataField: '', dataType: GridColumType.editButton},
-
+      {
+        headerText: this.translate.transform('column.code'),
+        dataField: 'code',
+        dataType: GridColumType.textEditable,
+        required: true
+      },
+      {
+        headerText: this.translate.transform('column.nameEn'),
+        dataField: 'name_en',
+        dataType: GridColumType.textEditable,
+        required: true
+      },
+      {
+        headerText: this.translate.transform('column.nameRu'),
+        dataField: 'name_ru',
+        dataType: GridColumType.textEditable
+      },
+      {
+        headerText: this.translate.transform('column.nameHe'),
+        dataField: 'name_he',
+        dataType: GridColumType.textEditable
+      },
+      {
+        headerText: this.translate.transform('column.nameFr'),
+        dataField: 'name_fr',
+        dataType: GridColumType.textEditable
+      },
+      {
+        headerText: this.translate.transform('column.priority'),
+        dataField: 'priority',
+        dataType: GridColumType.numericEditable
+      },
+      {
+        headerText: '',
+        dataField: '',
+        dataType: GridColumType.deleteButton
+      },
+      {
+        headerText: '',
+        dataField: '',
+        dataType: GridColumType.editButton
+      },
     ];
   }
+
   fillToolbar() {
     this.customToolbar = {
       showNumResults: true,
       numResultsTextBase: `${this.translate.transform('admin.processing.total')}: #`,
       showNewButton: true,
       showNewButtonText: this.translate.transform('admin.processing.add'),
-    }
+    };
   }
+
   fillCustomGridModel() {
     this.customGridModel = {
       dataSource: this.filteredProcessingTypes(),
@@ -333,10 +360,7 @@ confirmDelete(row) {
       innerScrollHeight: '46vh',
       filterStringInitial: this.searchText(),
       key: 'processing'
-    }
+    };
   }
-
   //#endregion custom-grid actions
-
-
 }

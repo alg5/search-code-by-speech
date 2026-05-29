@@ -183,7 +183,7 @@ spr-admin-search-settings {
   position: relative;
 
   @include media("max", "sm") {
-    width: 96vw !important;
+    width: 98vw !important;
   }
 }
 
@@ -257,6 +257,11 @@ spr-admin-search-settings {
     // Your working styles for panel alignment
     .p-autocomplete-overlay {
       left: -3rem !important;
+      @include media("max", "sm") {
+        left: -2.5rem !important;
+        width: 96vw;
+        margin-top: 8px !important;
+      }
     }
 
     .p-autocomplete-panel {
@@ -277,7 +282,7 @@ spr-admin-search-settings {
       max-width: 32rem !important;
 
       @include media("max", "sm") {
-        width: 100vw !important;
+        width: 96vw !important;
       }
     }
 
@@ -519,5 +524,13 @@ spr-admin-search-settings {
   span {
     font-size: 0.9rem;
     font-weight: 500;
+  }
+}
+.clear-icon {
+  cursor: pointer;
+  color: $color-green;
+  
+  &:hover {
+    color: $color-error;
   }
 }

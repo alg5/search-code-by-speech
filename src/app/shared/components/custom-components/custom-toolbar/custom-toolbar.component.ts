@@ -76,9 +76,12 @@ export class CustomToolbarComponent {
     this.showCalculatorIcon = this.toolbarModel.showCalculatorIcon ? this.toolbarModel.showCalculatorIcon : false;
     this.requestsCount = this.toolbarModel.requestsCount ? this.toolbarModel.requestsCount : 0; 
   }
-  onClicknewButton(){
-    console.log('new button clicked');
-      this.customToolbarService.newButtonClickedSignal.set({ value: true, timestamp: Date.now() });
+  onClicknewButton() {
+    this.customToolbarService.newButtonClickedSignal.set({ 
+      value: true, 
+      timestamp: Date.now(),
+      key: this.toolbarModel.key // 'categories', 'products', etc.
+    });
   }
   // onClickHandlingRequestsButton(){
   //     this.customToolbarService.handlingRequestsButtonClickedSignal.set(true);

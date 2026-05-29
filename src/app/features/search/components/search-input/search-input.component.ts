@@ -375,4 +375,10 @@ export class SearchInputComponent implements OnInit {
     }
     this.settingsOpen.set(false);
   }
+  clearSearch() {
+    this.searchText.set('');
+    this.searchTextValue = '';
+    this.results.set([]);
+    this.autoComplete?.hide();
+  }
 }

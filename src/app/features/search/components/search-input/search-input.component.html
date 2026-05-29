@@ -63,8 +63,13 @@
     <!-- Search field -->
     <div class="search-row">
       <div class="p-inputgroup glossy-search">
+        
+        <!-- Icon: search, loader, or clear button -->
         <span class="p-inputgroup-addon search-icon">
-          @if(isLoading()) {
+          @if(searchTextValue.length > 0 && !isLoading()) {
+            <!-- Clear button -->
+            <i class="pi pi-times clear-icon" (click)="clearSearch()"></i>
+          } @else if(isLoading()) {
             <i class="pi pi-spinner pi-spin"></i>
           } @else {
             <i class="pi pi-search"></i>
@@ -145,11 +150,6 @@
           <div class="code-big">{{ product.scale_code.toString().padStart(3, '0') }}</div>
           <div class="name">
             {{ displayName(product) }}
-            <!-- @if(isAdmin()) {
-              <span class="info-icon" [pTooltip]="getProductDetails(product)" tooltipPosition="top">
-                <i class="pi pi-info-circle"></i>
-              </span>
-            } -->
           </div>
           <button class="copy-btn" (click)="copyCode(product.scale_code)">
             <i class="pi pi-copy"></i>

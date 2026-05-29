@@ -50,25 +50,17 @@ export class AdminCategoriesComponent {
   private readonly languageService = inject(LanguageService);
   private readonly translate = inject(TranslatePipe);
 
-// ===== state =====
+  // State
   categories = signal<IProductCategory[]>([]);
-  filteredCategories = signal<IProductCategory[]>([])
-  ;
+  filteredCategories = signal<IProductCategory[]>([]);
   loading = signal(false);
   submited = signal(false);
   searchText = signal('');
 
-
- // inline edit
-  editingId = signal<number | null>(null);
-  editingRow = signal<IProductCategory | null>(null);
-  
-
-  // dialog (add)
+  // Dialog
   dialogVisible = signal(false);
 
-
-  // form (add)
+  // Form
   fg = this.fb.group({
     code: ['', Validators.required],
     name_en: ['', Validators.required],
@@ -79,63 +71,64 @@ export class AdminCategoriesComponent {
   });
 
   //#region custom-grid definition
-    customGridModel:ICustomGridModel;
-    customToolbar:IToolbarModel
-    columns: IColumn[] ;
+
+  customGridModel!: ICustomGridModel;
+  customToolbar!: IToolbarModel;
+  columns!: IColumn[];
 
   //#endregion custom-grid definition
 
-
   constructor() {
+    // Toolbar new button click
     effect(() => {
       const event = this.toolbarService.newButtonClickedSignal();
       if (!event?.value) return;
+      if (event.key !== 'categories') return; // filter by component key
+      
       this.openAdd();
     });
+
+    // Grid row delete
     effect(() => {
       const event = this.customGridService.rowDeleteSignal();
       if (!event?.row) return;
-      console.log('Delete signal received in AdminCategoriesComponent', event.row);
+      if (event.key !== 'categories') return; 
       this.confirmDelete(event.row);
     });
+
+    // Grid row save
     effect(() => {
       const event = this.customGridService.saveEditedRowSignal();
       if (!event?.row) return;
-      console.log('Save signal received in AdminCategoriesComponent', event.row);
-      this.saveEdit(event.row);
-    }); 
+      if (event.key !== 'categories') return; 
+     this.saveEdit(event.row);
+    });
+
+    // Search filter
     effect(() => {
       const text = this.searchText()?.toLowerCase() || '';
-       if(!this.customGridModel) return;
+      if (!this.customGridModel) return;
 
       const filtered = this.categories().filter(p =>
-        (
-          !text ||
-          p.code?.toLowerCase().includes(text) ||
-          p.name_en?.toLowerCase().includes(text) ||
-          p.name_ru?.toLowerCase().includes(text) ||
-          p.name_he?.toLowerCase().includes(text) ||
-          p.name_fr?.toLowerCase().includes(text)
-        ) 
+        !text ||
+        p.code?.toLowerCase().includes(text) ||
+        p.name_en?.toLowerCase().includes(text) ||
+        p.name_ru?.toLowerCase().includes(text) ||
+        p.name_he?.toLowerCase().includes(text) ||
+        p.name_fr?.toLowerCase().includes(text)
       );
 
       this.filteredCategories.set(filtered);
 
-      // immutable update: создаём новый gridModel, чтобы дочерний компонент увидел изменение
       this.customGridModel = {
         ...this.customGridModel,
         toolbarModel: {
           ...this.customGridModel.toolbarModel
         },
         dataSource: filtered,
-        filterStringInitial: text,
-        // totalRecords: filtered.length
+        filterStringInitial: text
       };
-
-
-
-    });        
-    
+    });
   }
 
   ngOnInit(): void {
@@ -146,17 +139,15 @@ export class AdminCategoriesComponent {
 
   async loadCategories() {
     try {
-       const data = await this.supabaseService.getProductCategories();
+      const data = await this.supabaseService.getProductCategories();
       this.categories.set(data);
       this.filteredCategories.set(data);
-      console.log('Categories loaded', data, this.categories());
     } finally {
       this.loading.set(false);
       this.submited.set(false);
       this.fillCustomGridModel();
     }
   }
-
 
   // ===== ADD =====
   openAdd() {
@@ -165,165 +156,178 @@ export class AdminCategoriesComponent {
   }
 
   async saveNew() {
-  this.submited.set(true);
+    this.submited.set(true);
 
-  if (this.fg.invalid) {
-    this.fg.markAllAsTouched();
-    return;
-  }
-
-  try {
-    await this.supabaseService.insertProductCategory(
-      this.fg.value as IProductCategory
-    );
-
-    this.dialogVisible.set(false);
-    this.loadCategories();
-
-     this.messageService.add({
-      severity: 'success',
-      summary: this.translate.transform('message.success.categories.created'),
-    });
-
-  } catch (error: any) {
-    console.error(error);
-
-    if (error?.code === '23505') {
-      // duplicate code
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.transform('message.error'),
-        detail: this.languageService.translate(
-          'message.error.categories.duplicateCode',
-          '',
-          { code: this.fg.get('code').value }
-        )  ,    
-        sticky: true
-      });
-
-    } else {
-      // любая другая ошибка
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.transform('message.error'),
-        detail: this.translate.transform('message.unexpectedError'),
-        sticky: true
-      });
+    if (this.fg.invalid) {
+      this.fg.markAllAsTouched();
+      return;
     }
-  }
-}
 
-async saveEdit(row: IProductCategory) {
-  try {
-    await this.supabaseService.updateProductCategory(row);
-    this.loadCategories();
+    try {
+      await this.supabaseService.insertProductCategory(
+        this.fg.value as IProductCategory
+      );
 
-    // опционально — успех
-    this.messageService.add({
-      severity: 'success',
-      summary: this.translate.transform('message.success.categories.updated'),
-    });
+      this.dialogVisible.set(false);
+      this.loadCategories();
 
-  } catch (error: any) {
-    console.error(error);
-
-    if (error?.code === '23505') {
-      // duplicate code
       this.messageService.add({
-        severity: 'error',
-        summary: this.translate.transform('message.error'),
-        detail: this.languageService.translate(
-          'message.error.categories.duplicateCode',
-          '',
-          { code: row.code }
-        )  ,      
-        sticky: true
+        severity: 'success',
+        summary: this.translate.transform('message.success.categories.created'),
       });
 
-    } else {
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.transform('message.error'),
-        detail: this.translate.transform('message.unexpectedError'),
-        sticky: true
-      });
-    }
-  }
-}
-
-  // ===== DELETE =====
-confirmDelete(row) {
-  this.confirmationService.confirm({
-    message: `${this.translate.transform('admin.categories.confirmDelete')} ${row.code}?`,
-    acceptLabel: this.translate.transform('message.yes'),
-    rejectLabel: this.translate.transform('message.no'),
-    acceptButtonStyleClass: 'p-button-danger',
-    accept: async () => {
-      try {
-        await this.supabaseService.deleteProductCategory(row.id);
-        this.loadCategories();
+    } catch (error: any) {
+      if (error?.code === '23505') {
         this.messageService.add({
-          severity: 'success',
-          // summary: this.translate.transform('message.success'),
-          detail: this.translate.transform('message.success.categories.deleted')
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.languageService.translate(
+            'message.error.categories.duplicateCode',
+            '',
+            { code: this.fg.get('code')?.value }
+          ),
+          sticky: true
         });
-
-
-      } catch (error: any) {
-        console.error(error);
-
-        if (error?.code === '23503') {
-          this.messageService.add({
-            severity: 'error',
-            summary: this.translate.transform('message.error'),
-            detail: this.translate.transform('message.error.categories.deleteHasProducts'),
-            sticky: true
-          });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: this.translate.transform('message.error'),
-            detail: this.translate.transform('message.unexpectedError'),
-            sticky: true
-          });
-        }
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.translate.transform('message.unexpectedError'),
+          sticky: true
+        });
       }
     }
-  });
-}
+  }
+
+  // ===== EDIT =====
+  async saveEdit(row: IProductCategory) {
+    try {
+      await this.supabaseService.updateProductCategory(row);
+      this.loadCategories();
+
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.transform('message.success.categories.updated'),
+      });
+
+    } catch (error: any) {
+      if (error?.code === '23505') {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.languageService.translate(
+            'message.error.categories.duplicateCode',
+            '',
+            { code: row.code }
+          ),
+          sticky: true
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.transform('message.error'),
+          detail: this.translate.transform('message.unexpectedError'),
+          sticky: true
+        });
+      }
+    }
+  }
+
+  // ===== Delete =====
+  confirmDelete(row: IProductCategory) {
+    this.confirmationService.confirm({
+      message: `${this.translate.transform('admin.categories.confirmDelete')} ${row.code}?`,
+      acceptLabel: this.translate.transform('message.yes'),
+      rejectLabel: this.translate.transform('message.no'),
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: async () => {
+        try {
+          await this.supabaseService.deleteProductCategory(row.id);
+          this.loadCategories();
+          this.messageService.add({
+            severity: 'success',
+            detail: this.translate.transform('message.success.categories.deleted')
+          });
+
+        } catch (error: any) {
+          if (error?.code === '23503') {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translate.transform('message.error'),
+              detail: this.translate.transform('message.error.categories.deleteHasProducts'),
+              sticky: true
+            });
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translate.transform('message.error'),
+              detail: this.translate.transform('message.unexpectedError'),
+              sticky: true
+            });
+          }
+        }
+      }
+    });
+  }
 
   //#region custom-grid actions
-  fillColumns() {
+  private fillColumns() {
     this.columns = [
-      // { 
-      //   headerText: 'ID'
-      //   , dataField: 'id'
-      //   , dataType: GridColumType.numeric
-      // },
-      { headerText: this.translate.transform('column.code')
-        , dataField: 'code'
-        , dataType: GridColumType.textEditable
-        , required: true
-       },
-      { headerText: this.translate.transform('column.nameEn'), dataField: 'name_en', dataType: GridColumType.textEditable, required: true },
-      { headerText: this.translate.transform('column.nameRu'), dataField: 'name_ru', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.nameHe'), dataField: 'name_he', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.nameFr'), dataField: 'name_fr', dataType: GridColumType.textEditable },
-      { headerText: this.translate.transform('column.priority'), dataField: 'priority', dataType: GridColumType.numericEditable },
-      { headerText: '', dataField: '', dataType: GridColumType.deleteButton},
-      { headerText: '', dataField: '', dataType: GridColumType.editButton},
-
+      {
+        headerText: this.translate.transform('column.code'),
+        dataField: 'code',
+        dataType: GridColumType.textEditable,
+        required: true
+      },
+      {
+        headerText: this.translate.transform('column.nameEn'),
+        dataField: 'name_en',
+        dataType: GridColumType.textEditable,
+        required: true
+      },
+      {
+        headerText: this.translate.transform('column.nameRu'),
+        dataField: 'name_ru',
+        dataType: GridColumType.textEditable
+      },
+      {
+        headerText: this.translate.transform('column.nameHe'),
+        dataField: 'name_he',
+        dataType: GridColumType.textEditable
+      },
+      {
+        headerText: this.translate.transform('column.nameFr'),
+        dataField: 'name_fr',
+        dataType: GridColumType.textEditable
+      },
+      {
+        headerText: this.translate.transform('column.priority'),
+        dataField: 'priority',
+        dataType: GridColumType.numericEditable
+      },
+      {
+        headerText: '',
+        dataField: '',
+        dataType: GridColumType.deleteButton
+      },
+      {
+        headerText: '',
+        dataField: '',
+        dataType: GridColumType.editButton
+      }
     ];
   }
-  fillToolbar() {
+
+  private fillToolbar() {
     this.customToolbar = {
       showNumResults: true,
       numResultsTextBase: `${this.translate.transform('admin.categories.total')}: #`,
       showNewButton: true,
       showNewButtonText: this.translate.transform('admin.categories.add'),
-    }
+    };
   }
-  fillCustomGridModel() {
+
+  private fillCustomGridModel() {
     this.customGridModel = {
       dataSource: this.filteredCategories(),
       columns: this.columns,
@@ -332,11 +336,8 @@ confirmDelete(row) {
       pageSize: 1000,
       withoutPaging: true,
       filterStringInitial: this.searchText(),
-      innerScrollHeight: '46vh',      
+      innerScrollHeight: '46vh',
       key: 'categories'
-    }
+    };
   }
-
-  //#endregion custom-grid actions
-
 }

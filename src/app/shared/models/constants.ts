@@ -370,6 +370,12 @@ export const Translations: ITranslations = {
   'admin.processing': { en: 'Processing Types', ru: 'Способы обработки', he: 'סוגי עיבוד', fr: 'Types de traitement' },
   'admin.users': { en: 'Users', ru: 'Пользователи', he: 'משתמשים', fr: 'Utilisateurs' },
   'admin.dashboard': { en: 'Dashboard', ru: 'Главная панель', he: 'לוח מחוצנים', fr: 'Tableau de bord' },
+  'admin.dashboard.statistics': {
+    en: 'Statistics and charts will appear here',
+    ru: 'Статистика и графики появятся здесь',
+    he: 'סטטיסטיקה ותרשימים יופיעו כאן',
+    fr: 'Les statistiques et graphiques apparaîtront ici'
+  },
 
   'admin.categories.total': { en: 'Total Categories', ru: 'Всего категорий ', he: 'סה"כ קטגוריות', fr: 'Total catégories' },
   'admin.categories.add': { en: 'Add Category', ru: 'Добавить категорию', he: 'הוסף קטגוריה', fr: 'Ajouter une catégorie' },

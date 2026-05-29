@@ -6,6 +6,10 @@ import { Injectable, signal } from '@angular/core';
 export class CustomToolbarService {
 
   constructor() { }
-  newButtonClickedSignal = signal<{ value: boolean; timestamp: number }>({ value: false, timestamp: Date.now() });
   calculatorIconClickedSignal = signal<{ value: boolean; timestamp: number }>({ value: false, timestamp: Date.now() });
+  newButtonClickedSignal = signal<{ value: boolean; timestamp: number; key?: string }>({ 
+    value: false, 
+    timestamp: Date.now() 
+  });
 }
+
