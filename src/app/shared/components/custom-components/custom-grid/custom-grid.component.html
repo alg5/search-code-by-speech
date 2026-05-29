@@ -1,327 +1,372 @@
 <div class="custom-grid-container" *ngIf="gridModel">
-<ng-container *ngIf="totalRecords > 0; else empty">
-    <div *ngIf="!withoutToolbar" class="custom-toolbar-block">  
-        <spr-custom-toolbar [toolbarModel]="toolbarModel"></spr-custom-toolbar>
+  <ng-container *ngIf="totalRecords > 0; else empty">
+    <div *ngIf="!withoutToolbar" class="custom-toolbar-block">
+      <spr-custom-toolbar [toolbarModel]="toolbarModel"></spr-custom-toolbar>
     </div>
-        <div class="table-container"   >
-            <p-table #pTable class="custom-grid"
-                [columns]="cols" [value]="dataSource" 
-                styleClass="p-datatable-striped"
-                [scrollable]="true"
-                [paginator]="false"   
-                [rows]="pageSize" 
-                [totalRecords]="totalRecords"
-                [scrollHeight]="innerScrollHeight"
-                [tableStyle]="{ 'width': '100%', 'min-width': 'isMobile? none : 50rem', height: 'auto'  }"
+    <div class="table-container">
+      <p-table
+        #pTable
+        class="custom-grid"
+        [columns]="cols"
+        [value]="dataSource"
+        styleClass="p-datatable-striped"
+        [scrollable]="true"
+        [paginator]="false"
+        [rows]="pageSize"
+        [totalRecords]="totalRecords"
+        [scrollHeight]="innerScrollHeight"
+        [tableStyle]="{ width: '100%', 'min-width': 'isMobile? none : 50rem', height: 'auto' }"
+      >
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <ng-container *ngFor="let col of columns; let colIndex = index">
+              <th
+                *ngIf="col.notSorting"
+                [ngClass]="'th-' + columns[colIndex].dataField"
+                [ngStyle]="{
+                  width: col.width,
+                  'min-width': col.minWidth,
+                  'max-width': col.maxWidth,
+                }"
+              >
+                <div class="th-display">
+                  <div>{{ col.headerText }}</div>
+                  <div *ngIf="col.columnInfo && col.columnInfo.length > 0" class="th-info"></div>
+                </div>
+              </th>
+              <th
+                *ngIf="!col.notSorting"
+                [pSortableColumn]="col.dataField"
+                [ngClass]="'th-' + columns[colIndex].dataField"
+                [ngStyle]="{
+                  width: col.width,
+                  'min-width': col.minWidth,
+                  'max-width': col.maxWidth,
+                }"
+              >
+                <div class="th-display">
+                  <div>{{ col.headerText }}</div>
+                  <div><p-sortIcon [field]="col.dataField"></p-sortIcon></div>
+                  <div *ngIf="col.columnInfo && col.columnInfo.length > 0" class="th-info"></div>
+                  <div
+                    *ngIf="col.tooltip?.length > 0"
+                    class="th-info"
+                    [pTooltip]="col.tooltip + 'qwerty'"
+                    [tooltipPosition]="'top'"
+                    [tooltipStyleClass]="'customtooltip-' + colIndex"
+                  ></div>
+                </div>
+              </th>
+            </ng-container>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns" let-i="rowIndex">
+          <tr [pSelectableRow]="rowData">
+            <ng-container *ngFor="let col of columns">
+              <td
+                *ngIf="col.dataType != GridColumType.editableCellNumber"
+                [class.cell-numeric1]="
+                  col.dataType == GridColumType.numeric ||
+                  col.dataType == GridColumType.numericClick
+                "
+                [ngClass]="'td-' + col.dataField"
+                [ngStyle]="{
+                  width: col.width,
+                  'min-width': col.minWidth,
+                  'max-width': col.maxWidth,
+                }"
+              >
+                <div
+                  *ngIf="!col.isSpecialColumn"
+                  [class.cell-numeric]="col.dataType == GridColumType.numeric"
                 >
-                <ng-template pTemplate="header" let-columns>
-                    <tr>
-                        <ng-container *ngFor="let col of columns; let colIndex = index">
-                            <th *ngIf="col.notSorting" 
-                                [ngClass]="'th-'+ columns[colIndex].dataField"
-                                [ngStyle]="{ 'width': col.width, 'min-width': col.minWidth, 'max-width': col.maxWidth }"
-                            >
-                                <div class="th-display">
-                                    <div>{{ col.headerText }}</div>
-                                    <div *ngIf="col.columnInfo && col.columnInfo.length > 0" class="th-info"></div>
-                                </div>
-                            </th>
-                            <th  *ngIf="!col.notSorting" [pSortableColumn]="col.dataField" 
-                                    [ngClass]="'th-'+ columns[colIndex].dataField" 
-                                    [ngStyle]="{ 'width': col.width, 'min-width': col.minWidth, 'max-width': col.maxWidth }"
-                                >
-                                <div class="th-display">
-                                    <div>{{ col.headerText }}</div>
-                                    <div><p-sortIcon [field]="col.dataField"></p-sortIcon></div>
-                                    <div *ngIf="col.columnInfo && col.columnInfo.length > 0" class="th-info" ></div>
-                                    <div *ngIf="col.tooltip?.length > 0" 
-                                        class="th-info"
-                                        [pTooltip]="col.tooltip + 'qwerty'"
-                                        [tooltipPosition]="'top'"
-                                        [tooltipStyleClass]="'customtooltip-' + colIndex"
-                                        
-                                    ></div>
-                                </div>
-                            </th>
+                  <span
+                    *ngIf="col.isColFiltering"
+                    [innerHTML]="
+                      rowData[col.dataField]
+                        | formatted: col.formattedOptions
+                        | highlight: filterString()
+                    "
+                  ></span>
+                  <span
+                    *ngIf="!col.isColFiltering"
+                    [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions"
+                  ></span>
+                </div>
 
-                        </ng-container>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-rowData let-columns="columns" let-i="rowIndex">
-                     <tr [pSelectableRow]="rowData">
-                        <ng-container *ngFor="let col of columns">
-                            <td *ngIf="col.dataType != GridColumType.editableCellNumber " 
-                                [class.cell-numeric1]="col.dataType == GridColumType.numeric || col.dataType == GridColumType.numericClick  "
-                                [ngClass]="'td-'+ col.dataField"
-                                [ngStyle]="{ 'width': col.width, 'min-width': col.minWidth, 'max-width': col.maxWidth }"
-                            >
-            
-                            <div *ngIf="!col.isSpecialColumn" [class.cell-numeric]="col.dataType == GridColumType.numeric">
-                                <span *ngIf="col.isColFiltering" [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions | highlight:filterString()"></span>
-                                <span *ngIf="!col.isColFiltering" [innerHTML]="rowData[col.dataField]  | formatted: col.formattedOptions"></span>
-                            </div> 
-                            
+                <div *ngIf="col.dataType == GridColumType.calculated" class="calculated-cell">
+                  {{ col.calculateValue ? col.calculateValue(rowData) : rowData[col.dataField] }}
+                </div>
+                <div
+                  *ngIf="col.dataType == GridColumType.imgPrimengIconClick"
+                  class="cell-link"
+                  (click)="onClickCell(col, rowData)"
+                >
+                  <span><i class="pi" [ngClass]="col.formattedOptions.primengIcon"></i></span>
+                </div>
 
-                            <div *ngIf="col.dataType == GridColumType.calculated"
-                                class="calculated-cell">
-                                {{ col.calculateValue ? col.calculateValue(rowData) : rowData[col.dataField] }}
-                            </div>
-                            <div *ngIf="col.dataType == GridColumType.imgPrimengIconClick"
-                                class="cell-link"
-                                (click)="onClickCell(col, rowData)">
-                                <span><i class="pi" [ngClass]="col.formattedOptions.primengIcon"></i></span> 
-                            </div>
-                            
-                        
-                            <div *ngIf="col.dataType == GridColumType.saveButton" class="save-button-wrapper" >
-                                    @if (rowData.isDirty && !rowData.isSaved) {
-                                  <!-- @if (true) { -->
-                                    <button  class="btn bzq1 mx-2 save-btn"
-                                        (click)="onSaveEditableCell(col, rowData, i)" 
-                                        >
-                                        <span>שמירה</span>
-                                    </button>
-                                    } 
-                                
-                                    @if(rowData?.isSaved){
-                                        <span class="dirty-indicator"><img src="assets/images/saved-indicator.svg" alt="Dirty"></span>
-                                    }
-                                    <!-- <span></span> -->
-                                
-                                                        
-                            </div>
-                            
-                            <span *ngIf="col.dataType == GridColumType.cellClick"
-                                class="cell-link" (click)="onClickCell(col, rowData)">
-                                {{ rowData[col.dataField]  | formatted: col.formattedOptions}}
-                            </span>
-                            <span *ngIf="col.dataType == GridColumType.deleteButton"
-                                class="cell-link" (click)="onClickCellDelete(rowData)">
-                                <!-- <img src="assets/images/trash.svg" alt=""  width="16px" height="16px" class="delete" /> -->
-                                <i class="pi pi-trash delete"></i>
-                            </span>
+                <div *ngIf="col.dataType == GridColumType.saveButton" class="save-button-wrapper">
+                  @if (rowData.isDirty && !rowData.isSaved) {
+                    <!-- @if (true) { -->
+                    <button
+                      class="btn bzq1 mx-2 save-btn"
+                      (click)="onSaveEditableCell(col, rowData, i)"
+                    >
+                      <span>שמירה</span>
+                    </button>
+                  }
 
-                            <span *ngIf="col.dataType == GridColumType.editButton">
+                  @if (rowData?.isSaved) {
+                    <span class="dirty-indicator"
+                      ><img src="assets/images/saved-indicator.svg" alt="Dirty"
+                    /></span>
+                  }
+                  <!-- <span></span> -->
+                </div>
 
-                            @if (editingRowId() !== rowData[idField]) {
+                <span
+                  *ngIf="col.dataType == GridColumType.cellClick"
+                  class="cell-link"
+                  (click)="onClickCell(col, rowData)"
+                >
+                  {{ rowData[col.dataField] | formatted: col.formattedOptions }}
+                </span>
+                <span
+                  *ngIf="col.dataType == GridColumType.deleteButton"
+                  class="cell-link"
+                  (click)="onClickCellDelete(rowData)"
+                >
+                  <!-- <img src="assets/images/trash.svg" alt=""  width="16px" height="16px" class="delete" /> -->
+                  <i class="pi pi-trash delete"></i>
+                </span>
 
-                                <!-- EDIT -->
-                                <span class="cell-link" (click)="startEdit(rowData)">
-                                <i class="pi pi-pencil"></i>
-                                </span>
+                <span *ngIf="col.dataType == GridColumType.editButton">
+                  @if (editingRowId() !== rowData[idField]) {
+                    <!-- EDIT -->
+                    <span class="cell-link" (click)="startEdit(rowData)">
+                      <i class="pi pi-pencil"></i>
+                    </span>
+                  } @else {
+                    <!-- SAVE -->
+                    <span class="cell-link" (click)="onSaveRow()">
+                      <i class="pi pi-check save"></i>
+                    </span>
 
-                            } @else {
+                    <!-- CANCEL -->
+                    <span class="cell-link" (click)="onCancelEdit(rowData)">
+                      <i class="pi pi-times cancel"></i>
+                    </span>
+                  }
+                </span>
+                <div *ngIf="col.dataType == GridColumType.textEditable">
+                  @if (editingRowId() === rowData[idField]) {
+                    <input
+                      [(ngModel)]="editingRowData()[col.dataField]"
+                      [class.is-invalid]="validationErrors()[col.dataField]"
+                      class="form-control editable-input"
+                    />
+                  } @else {
+                    <span
+                      [innerHTML]="
+                        rowData[col.dataField]
+                          | formatted: col.formattedOptions
+                          | highlight: filterString()
+                      "
+                    ></span>
+                  }
+                </div>
+                <div *ngIf="col.dataType == GridColumType.numericEditable" class="cell-numeric">
+                  @if (editingRowId() === rowData[idField]) {
+                    <input
+                      type="number"
+                      [(ngModel)]="editingRowData()[col.dataField]"
+                      [class.is-invalid]="validationErrors()[col.dataField]"
+                      class="form-control editable-input"
+                    />
+                  } @else {
+                    <span
+                      [innerHTML]="
+                        rowData[col.dataField]
+                          | formatted: col.formattedOptions
+                          | highlight: filterString()
+                      "
+                    ></span>
+                  }
+                </div>
 
-                                <!-- SAVE -->
-                                <span class="cell-link" (click)="onSaveRow()">
-                                <i class="pi pi-check save"></i>
-                                </span>
+                <span
+                  *ngIf="col.dataType == GridColumType.numericClick"
+                  class="count-link"
+                  [class.count-link-disabled]="
+                    (rowData['subty'] != '40' && rowData['subty'] != '80') ||
+                    (+rowData[col.dataField] == 0 && !col.formattedOptions?.ZeroAsClickabel)
+                  "
+                  (click)="onClickCell(col, rowData)"
+                >
+                  {{ rowData[col.dataField] | formatted: col.formattedOptions }}
+                </span>
+                <span *ngIf="col.dataType == GridColumType.textWithRemark" class="">
+                  {{ rowData[col.dataField] | formatted: col.formattedOptions }}
+                </span>
 
-                                <!-- CANCEL -->
-                                <span class="cell-link" (click)="onCancelEdit(rowData)">
-                                <i class="pi pi-times cancel"></i>
-                                </span>
+                <span *ngIf="col.dataType == GridColumType.booleanToText">
+                  <span *ngIf="rowData[col.dataField] == true">כן</span>
+                  <span *ngIf="rowData[col.dataField] == false">לא</span>
+                </span>
 
-                            }
+                <span
+                  *ngIf="col.dataType == GridColumType.posNegNumberColor"
+                  class="number-color-status"
+                  [ngClass]="{
+                    positive: rowData[col.dataField] > 0,
+                    negative: rowData[col.dataField] < 0,
+                    zero: rowData[col.dataField] == 0,
+                  }"
+                >
+                  {{ rowData[col.dataField] | formatted: col.formattedOptions }}
+                </span>
+                <div *ngIf="col.dataType == GridColumType.dropdownEditable">
+                  @if (editingRowId() === rowData[idField]) {
+                    <spr-custom-dropdown
+                      [dropDownModel]="col.formattedOptions?.dropdown"
+                      [(ngModel)]="editingRowData()[col.dataField]"
+                      [class.is-invalid]="validationErrors()[col.dataField]"
+                    >
+                    </spr-custom-dropdown>
+                  } @else {
+                    <span>
+                      <span
+                        [innerHTML]="
+                          getDropdownText(col, rowData[col.dataField])
+                            | formatted: col.formattedOptions
+                            | highlight: filterString()
+                        "
+                      ></span>
+                    </span>
+                  }
+                </div>
+              </td>
 
-                            </span>  
-                            <div *ngIf="col.dataType == GridColumType.textEditable">
-
-                                @if (editingRowId() === rowData[idField]) {
-                                    <input [(ngModel)]="editingRowData()[col.dataField]"
-                                        [class.is-invalid]="validationErrors()[col.dataField]"
-                                        class="form-control editable-input" />
-                                } @else {
-                                    <span [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions | highlight:filterString()"></span>
-                                }
-
-                            </div>                          
-                            <div *ngIf="col.dataType == GridColumType.numericEditable" class="cell-numeric">
-
-                            @if (editingRowId() === rowData[idField]) {
-                                    <input  type="number" [(ngModel)]="editingRowData()[col.dataField]" 
-                                        [class.is-invalid]="validationErrors()[col.dataField]"
-                                        class="form-control editable-input" />
-                            } @else {
-                                <span [innerHTML]="rowData[col.dataField] | formatted: col.formattedOptions | highlight:filterString()"></span>
-                            }
-
-                            </div>                            
-
-
-
-                            <span *ngIf="col.dataType == GridColumType.numericClick" 
-                                class="count-link" 
-                                [class.count-link-disabled]="(rowData['subty']!= '40' && rowData['subty']!= '80') || (+rowData[col.dataField] == 0 && !col.formattedOptions?.ZeroAsClickabel) "
-                                (click)="onClickCell(col, rowData)">
-                                {{ rowData[col.dataField]  | formatted: col.formattedOptions}}
-                            </span>
-                            <span *ngIf="col.dataType == GridColumType.textWithRemark" 
-                                class="" 
-                                >
-                                {{ rowData[col.dataField]  | formatted: col.formattedOptions}}
-                            </span>              
-                            
-
-                                <span *ngIf = "col.dataType == GridColumType.booleanToText">
-                                    <span *ngIf="rowData[col.dataField] == true" >כן</span>
-                                    <span *ngIf="rowData[col.dataField] == false" >לא</span>
-                                </span> 
-                                
-                                
-                                <span *ngIf="col.dataType == GridColumType.posNegNumberColor"
-                                    class="number-color-status"
-                                    [ngClass]="{
-                                        'positive': rowData[col.dataField] > 0,
-                                        'negative': rowData[col.dataField] < 0,
-                                        'zero': rowData[col.dataField] == 0
-                                    }">
-                                    {{ rowData[col.dataField] | formatted: col.formattedOptions}}
-                                </span> 
-                                <div *ngIf="col.dataType == GridColumType.dropdownEditable">
-                                    @if (editingRowId() === rowData[idField]) {
-
-                                        <spr-custom-dropdown
-                                        [dropDownModel]="col.formattedOptions?.dropdown"
-                                        [(ngModel)]="editingRowData()[col.dataField]"
-                                        [class.is-invalid]="validationErrors()[col.dataField]">
-                                        </spr-custom-dropdown>
-
-                                    } @else {
-
-                                        <span>
-                                        <span [innerHTML]="getDropdownText(col, rowData[col.dataField]) | formatted: col.formattedOptions | highlight:filterString()"></span>
-                                        </span>
-
-                                    }
-
-
-
-
-
-
-                                </div>
-
-                                                            
-                                
-                            </td>
-                            
-                            <td class="td-editable-wrapper-open" *ngIf="col.dataType == GridColumType.editableCellNumber"
-                                 [pEditableColumn]="rowData[col.dataField]" 
-                                 [pEditableColumnField]="col.dataField"
-                            
-                                 >
-                            <p-cellEditor #cellEditor>
-                                <ng-template #input>
-                                    <input  #editableInput pInputText type="number"
-                                     [(ngModel)]="rowData[col.dataField]" 
-                                    required pattern="^((?:[1-9][0-9]*)(?:\.[0-9]+)?)$"
-                                    placeholder="הזנה"  
-                                    (ngModelChange)="onEditableCellValueChange(col, rowData, i)"
-                                    (blur)="onCellBlur(col, rowData, i)"
-                                    fluid />
-                                    
-                                </ng-template>
-                                <ng-template #output>
-                                    @if(rowData[col.dataField] == "") {
-                                        <span class="empty-value">הזנה</span>
-                                    }
-                                    @else{
-                                        {{ rowData[col.dataField] }}
-                                    }
-                                    
-                                </ng-template>
-                            </p-cellEditor>
-                        </td>
-                    </ng-container>
-                    </tr>
-                     <tr *ngIf="optionalRow" >
-                        <td [attr.colspan]="colslength" class="optional-row">
-                            <!-- <spr-handle-request [empRequest]="dataSource[i]"></spr-handle-request> -->
-                            <ng-container  *ngTemplateOutlet="optionalRowTemplate; context: { row: dataSource[i] }"></ng-container>
-                        </td>
-                     </tr>
-                </ng-template>
-                <!-- <ng-container>
+              <td
+                class="td-editable-wrapper-open"
+                *ngIf="col.dataType == GridColumType.editableCellNumber"
+                [pEditableColumn]="rowData[col.dataField]"
+                [pEditableColumnField]="col.dataField"
+              >
+                <p-cellEditor #cellEditor>
+                  <ng-template #input>
+                    <input
+                      #editableInput
+                      pInputText
+                      type="number"
+                      [(ngModel)]="rowData[col.dataField]"
+                      required
+                      pattern="^((?:[1-9][0-9]*)(?:\.[0-9]+)?)$"
+                      placeholder="הזנה"
+                      (ngModelChange)="onEditableCellValueChange(col, rowData, i)"
+                      (blur)="onCellBlur(col, rowData, i)"
+                      fluid
+                    />
+                  </ng-template>
+                  <ng-template #output>
+                    @if (rowData[col.dataField] == '') {
+                      <span class="empty-value">הזנה</span>
+                    } @else {
+                      {{ rowData[col.dataField] }}
+                    }
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+            </ng-container>
+          </tr>
+          <tr *ngIf="optionalRow">
+            <td [attr.colspan]="colslength" class="optional-row">
+              <!-- <spr-handle-request [empRequest]="dataSource[i]"></spr-handle-request> -->
+              <ng-container
+                *ngTemplateOutlet="optionalRowTemplate; context: { row: dataSource[i] }"
+              ></ng-container>
+            </td>
+          </tr>
+        </ng-template>
+        <!-- <ng-container>
  
 
     
                 </ng-container> -->
-                
-                <ng-template pTemplate="footer" *ngIf="showFooter">
-                    <tr class="footer-row">
-                        <ng-container *ngFor="let col of columns">
-                            <td >
-                                <span *ngIf="col.footerText">{{col.footerText}}</span>
-                                <span *ngIf="col.footerDataType == GridColumType.footerSum" class="cell-numeric" [innerHTML]="calcSumByField(col.dataField)"></span>
-                            </td>
-                        </ng-container>
-                        
-                    </tr>
-        
-                </ng-template>
-            </p-table>
-        </div>
 
-</ng-container>
-<!-- Custom paginator  -->
-    <!-- =============================== -->
-     @if(!withoutPaging && totalRecords > pageSize) {
-          <div   class=" paginator-wrapper">
-
-        <div class="paginator-bar custom-pagination" [class.hide]="withoutPaging">
-            <!-- Custom page report instead of PrimeNG built-in -->
-            <span class="page-report">
-                {{ 'paginator.showing' | translate }} 
-                {{ first + 1 }} 
-                {{ 'paginator.to' | translate }} 
-                {{ lastRecordInReport }} 
-                {{ 'paginator.of' | translate }} 
-                {{ totalRecords }} 
-                {{ 'paginator.entries' | translate }}
-            </span>
-            <span>
-                <p-paginator #pVisible  
-                    (onPageChange)="onPageChange($event)"
-                    [first]="first" 
-                    [rows]="pageSize" 
-                    [totalRecords]="totalRecords"
-                    [showFirstLastIcon]="true"
-                    [showCurrentPageReport]="false"
-                    >
-                </p-paginator>            
-            </span>
-            <!-- <span (click)="goToNextPage()" class="paginator-links page-link" [class.link-disabled]="isLastPage">
+        <ng-template pTemplate="footer" *ngIf="showFooter">
+          <tr class="footer-row">
+            <ng-container *ngFor="let col of columns">
+              <td>
+                <span *ngIf="col.footerText">{{ col.footerText }}</span>
+                <span
+                  *ngIf="col.footerDataType == GridColumType.footerSum"
+                  class="cell-numeric"
+                  [innerHTML]="calcSumByField(col.dataField)"
+                ></span>
+              </td>
+            </ng-container>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </ng-container>
+  <!-- Custom paginator  -->
+  <!-- =============================== -->
+  @if (!withoutPaging && totalRecords > pageSize) {
+    <div class="paginator-wrapper">
+      <div class="paginator-bar custom-pagination" [class.hide]="withoutPaging">
+        <!-- Custom page report instead of PrimeNG built-in -->
+        <span class="page-report">
+          {{ 'paginator.showing' | translate }}
+          {{ first + 1 }}
+          {{ 'paginator.to' | translate }}
+          {{ lastRecordInReport }}
+          {{ 'paginator.of' | translate }}
+          {{ totalRecords }}
+          {{ 'paginator.entries' | translate }}
+        </span>
+        <span>
+          <p-paginator
+            #pVisible
+            (onPageChange)="onPageChange($event)"
+            [first]="first"
+            [rows]="pageSize"
+            [totalRecords]="totalRecords"
+            [showFirstLastIcon]="true"
+            [showCurrentPageReport]="false"
+          >
+          </p-paginator>
+        </span>
+        <!-- <span (click)="goToNextPage()" class="paginator-links page-link" [class.link-disabled]="isLastPage">
                 >
             </span>        
             <span (click)="goToLastPage()" class="paginator-links page-link" [class.link-disabled]="isLastPage">
                 אחרון
             </span> -->
-    
-        </div>
-        <div class="actions-bar"> 
-            <button   *ngIf="showSaveButton" 
-            [ngClass]="isSaveEnabled ? 'btn btn-primary save-btn': 'btn-disabled' " 
-                          (click)="onClickSaveButton()">
-                {{ GeneralContent.SAVE_CHANGES }}
+      </div>
+      <div class="actions-bar">
+        <button
+          *ngIf="showSaveButton"
+          [ngClass]="isSaveEnabled ? 'btn btn-primary save-btn' : 'btn-disabled'"
+          (click)="onClickSaveButton()"
+        >
+          {{ GeneralContent.SAVE_CHANGES }}
         </button>
-        
-        </div>
-        <br />
-        <!-- <div *ngIf="submited && txtError" class="invalid-feedback show">
+      </div>
+      <br />
+      <!-- <div *ngIf="submited && txtError" class="invalid-feedback show">
             <span >{{txtError}}</span>
         </div> -->
     </div>
-    }
-    <!-- =============================== -->
+  }
+  <!-- =============================== -->
 
-<ng-template #empty>
+  <ng-template #empty>
     <ng-container *ngIf="showNoResults">
-        <div class="empty">
-            {{emptyText}}
-        </div>
+      <div class="empty">
+        {{ emptyText }}
+      </div>
     </ng-container>
-</ng-template>
-
+  </ng-template>
 </div>
- 

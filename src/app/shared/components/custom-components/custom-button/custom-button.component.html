@@ -1,11 +1,11 @@
 @if (buttonModel()) {
-  <button 
-    pButton 
+  <button
+    pButton
     [label]="buttonModel()!.isLoading ? '' : buttonModel()!.label"
-    [icon]="buttonModel()!.isLoading ? 'pi pi-spin pi-spinner' : (buttonModel()!.icon || '')"
+    [icon]="buttonModel()!.isLoading ? 'pi pi-spin pi-spinner' : buttonModel()!.icon || ''"
     [class]="buttonModel()!.buttonClass || 'p-button-primary'"
     [disabled]="buttonModel()!.isDisabled || buttonModel()!.isLoading"
     [style.min-width]="buttonModel()!.minWidth || '120px'"
-    (click)="handleClick()">
-  </button>
+    (click)="handleClick()"
+  ></button>
 }

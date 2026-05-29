@@ -31,12 +31,12 @@ import { LanguageService } from '../../../../core/services/language.service';
     CardModule,
     ButtonModule,
     InputTextModule,
-    ToastModule, 
-    TranslatePipe
+    ToastModule,
+    TranslatePipe,
   ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
-  providers: [MessageService] // <--- ОБЯЗАТЕЛЬНО: предоставляем MessageService здесь
+  providers: [MessageService], // <--- ОБЯЗАТЕЛЬНО: предоставляем MessageService здесь
 })
 export class AuthComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -47,13 +47,13 @@ export class AuthComponent implements OnInit {
 
   authForm: FormGroup = this.fb.group({
     fullName: ['', Validators.required],
-    email: ['' ],
+    email: [''],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   isSignUp: boolean = false;
   loading: boolean = false;
-  
+
   ngOnInit(): void {
     this.checkSessionAndRedirect();
   }
@@ -81,7 +81,7 @@ export class AuthComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    this.messageService.clear(); 
+    this.messageService.clear();
     this.loading = true;
 
     if (this.authForm.invalid) {
@@ -97,22 +97,38 @@ export class AuthComponent implements OnInit {
       if (this.isSignUp) {
         const { user, session } = await this.supabase.signUp(email, password, fullName);
         if (user && session) {
-          this.messageService.add({ severity: 'success', summary: this.languageService.translate('auth.signUp'), detail: this.languageService.translate('auth.signUpSuccess') });
+          this.messageService.add({
+            severity: 'success',
+            summary: this.languageService.translate('auth.signUp'),
+            detail: this.languageService.translate('auth.signUpSuccess'),
+          });
           this.router.navigate(['/']);
         } else if (user && !session) {
-          this.messageService.add({ severity: 'info', summary: this.languageService.translate('auth.signUp'), detail: this.languageService.translate('auth.signUpCheckEmail') });
+          this.messageService.add({
+            severity: 'info',
+            summary: this.languageService.translate('auth.signUp'),
+            detail: this.languageService.translate('auth.signUpCheckEmail'),
+          });
         }
       } else {
         // const { user, session } = await this.supabase.signIn(email, password);
         const { user, session } = await this.supabase.signInWithUsername(fullName, password);
         if (user && session) {
-          this.messageService.add({ severity: 'success', summary: this.languageService.translate('auth.signIn'), detail: this.languageService.translate('auth.signInSuccess') });
+          this.messageService.add({
+            severity: 'success',
+            summary: this.languageService.translate('auth.signIn'),
+            detail: this.languageService.translate('auth.signInSuccess'),
+          });
           this.router.navigate(['/']);
         }
       }
     } catch (error: any) {
       console.error('Auth operation failed:', error);
-      this.messageService.add({ severity: 'error', summary: this.languageService.translate('auth.genericError'), detail: error.message || this.languageService.translate('auth.genericError') });
+      this.messageService.add({
+        severity: 'error',
+        summary: this.languageService.translate('auth.genericError'),
+        detail: error.message || this.languageService.translate('auth.genericError'),
+      });
     } finally {
       this.loading = false;
     }

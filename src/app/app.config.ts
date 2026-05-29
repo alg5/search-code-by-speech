@@ -1,4 +1,8 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { importProvidersFrom } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
@@ -9,7 +13,6 @@ import { MessageService } from 'primeng/api';
 
 import { routes } from './app.routes';
 import { MyBootstrapLikePreset, MyGreenPreset } from './shared/models/constants';
-
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,15 +26,15 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: MyGreenPreset,
         options: {
-            darkModeSelector: 'none', 
-            cssLayer: {
-                name: 'primeng', 
-                order: 'primeng, theme'
-            }
-        }
+          darkModeSelector: 'none',
+          cssLayer: {
+            name: 'primeng',
+            order: 'primeng, theme',
+          },
+        },
       },
       // translation: HEBREW_LOCALE,
-      ripple: true
+      ripple: true,
     }),
-  ]
+  ],
 };

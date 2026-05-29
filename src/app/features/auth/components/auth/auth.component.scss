@@ -1,23 +1,20 @@
-
-
 :host {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
-  min-height: 100vh; 
-  background-color: var(--surface-100); 
-  padding: 1rem; 
-  box-sizing: border-box; 
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--surface-100);
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 // styles for card PrimeNG
 .p-card {
-  width: 100%; 
-  max-width: 400px; 
-  box-shadow: var(--p-card-shadow); 
-  border-radius: var(--border-radius); 
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--p-card-shadow);
+  border-radius: var(--border-radius);
 }
-
 
 .p-card-header h3 {
   margin: 0;
@@ -28,23 +25,21 @@
   text-align: center;
 }
 
-
 .field {
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
 }
 
 // Styles for labels
 label {
-  display: block; 
-  margin-bottom: 0.5rem; 
-  font-weight: 600; 
-  color: var(--text-color); 
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
 }
 
 // Styles for input fields (text fields, passwords)
 input.p-inputtext {
-  width: 100%; 
-
+  width: 100%;
 }
 
 // Styles for the form submission button
@@ -72,17 +67,31 @@ small.p-error {
 
 // Styles for buttons in the footer (text buttons)
 .p-button-text {
-   // color: var(--primary-color);
+  // color: var(--primary-color);
 }
 
 // PrimeFlex utilities styles for layout
-.flex { display: flex; }
-.justify-content-center { justify-content: center; }
-.align-items-center { align-items: center; }
-.min-h-screen { min-height: 100vh; }
-.p-mt-2 { margin-top: 0.5rem; }
-.p-mt-3 { margin-top: 1rem; }
-.p-mt-4 { margin-top: 1.5rem; }
+.flex {
+  display: flex;
+}
+.justify-content-center {
+  justify-content: center;
+}
+.align-items-center {
+  align-items: center;
+}
+.min-h-screen {
+  min-height: 100vh;
+}
+.p-mt-2 {
+  margin-top: 0.5rem;
+}
+.p-mt-3 {
+  margin-top: 1rem;
+}
+.p-mt-4 {
+  margin-top: 1.5rem;
+}
 
 // Styles for mobile devices
 @media screen and (max-width: 576px) {

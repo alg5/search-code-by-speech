@@ -6,10 +6,10 @@
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 14px;
   table-layout: auto !important;
-     
+
   // replace sort icon
   & p-sorticon .pi-sort-alt:before {
-    content: "\2193";
+    content: '\2193';
     width: 8.2px;
     height: 9.6px;
     flex-grow: 0;
@@ -20,7 +20,7 @@
 .p-datatable-thead {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-} 
+}
 
 .p-datatable-thead th {
   font-weight: 600;
@@ -33,7 +33,7 @@
   vertical-align: top;
 
   .th-display {
-    display: flex; 
+    display: flex;
     align-items: flex-start !important;
     height: 100% !important;
   }
@@ -72,26 +72,24 @@
 
 // #endregion CustomGrid
 
-
-.p-datatable-table{
-  font-family: 'Segoe UI', system-ui, sans-serif; 
+.p-datatable-table {
+  font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 14px;
   table-layout: auto !important;
-     
+
   // replace sort icon
-  & p-sorticon .pi-sort-alt:before{
-    content: "\2193";
+  & p-sorticon .pi-sort-alt:before {
+    content: '\2193';
     width: 8.2px;
     height: 9.6px;
     flex-grow: 0;
   }
 }
 
-.p-datatable-thead{
+.p-datatable-thead {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-} 
-
+}
 
 .p-datatable-thead th {
   font-weight: 600;
@@ -102,8 +100,8 @@
   border: solid 1px #d4e8da; // light green border
   background: linear-gradient(180deg, #e8f5e9 0%, #d4edda 100%);
   vertical-align: top;
-   .th-display {
-    display: flex; 
+  .th-display {
+    display: flex;
     align-items: flex-start !important;
     height: 100% !important;
   }
@@ -113,10 +111,10 @@
   background-color: $bg-table-header;
   font-weight: 700;
   letter-spacing: 0.667px;
-  // text-align: right; 
+  // text-align: right;
 }
 
-.p-datatable-tbody tr{
+.p-datatable-tbody tr {
   background-color: white;
 }
 
@@ -124,7 +122,7 @@
   background: rgb(251, 251, 251);
 }
 
-.p-datatable-tbody td{
+.p-datatable-tbody td {
   font-weight: normal;
   line-height: 1.25;
   letter-spacing: normal;
@@ -146,8 +144,6 @@
 
 // #region CustomPaginator
 
-
-
 // #endregion CustomPaginator
 
 // #region SideMenu
@@ -157,8 +153,8 @@
   height: calc(100vh - 200px);
   border: none;
   padding: 0;
-  
-  @include media("max", "sm") {
+
+  @include media('max', 'sm') {
     width: 100%;
     height: auto;
     padding: 8px 0;
@@ -166,7 +162,7 @@
   }
 }
 
-.p-menu ul{
+.p-menu ul {
   margin-right: 2px !important;
 }
 
@@ -179,21 +175,21 @@
   margin-right: 0;
 }
 
-.p-menuitem-link-active{
+.p-menuitem-link-active {
   border: 0;
   border-right: 3px solid $color-menu-active !important;
   background-color: white !important;
   font-size: 15px !important;
   color: $color-menu-active !important;
   width: 100%;
-  
+
   .p-menuitem-text {
     color: $color-menu-active !important;
     font-weight: bold;
   }
 }
 
-.p-menu .p-menuitem-link:focus{
+.p-menu .p-menuitem-link:focus {
   border: 0;
   box-shadow: none !important;
 }
@@ -206,7 +202,7 @@
 
 // #region PanelMenu
 
-.p-panelmenu{
+.p-panelmenu {
   background: $bg-menu;
   height: calc(100vh - 200px);
   border: none;
@@ -214,8 +210,8 @@
   color: #212529;
   border-radius: 4px;
   width: 12.5rem;
-  
-  @include media("max", "sm") {
+
+  @include media('max', 'sm') {
     width: 100%;
     height: auto;
     padding: 8px 0;
@@ -228,21 +224,21 @@
 // #region TabPanel
 
 .p-tabview .p-tabview-panels {
-  @include media("max", "sm") {
+  @include media('max', 'sm') {
     padding: 0.25rem;
     background: $bg-green;
   }
 }
 
-.p-tabview .p-tabview-nav{
-  @include media("max", "sm") {
+.p-tabview .p-tabview-nav {
+  @include media('max', 'sm') {
     display: flex;
     flex-wrap: wrap;
   }
 }
 
-.p-tabview .p-tabview-nav li{
-  @include media("max", "sm") {
+.p-tabview .p-tabview-nav li {
+  @include media('max', 'sm') {
     flex: 1 1 auto;
     text-align: center;
   }
@@ -258,42 +254,42 @@
 
 // #endregion TabPanel
 
-.p-dropdown:not(.height-small){
+.p-dropdown:not(.height-small) {
   width: $input-width;
-  
-  @include media("max", "sm") {
+
+  @include media('max', 'sm') {
     width: $input-width-mobile !important;
-  } 
+  }
 }
 
-.height-small{
-  .p-dropdown{
+.height-small {
+  .p-dropdown {
     height: 20px;
     width: 100% !important;
   }
-  
+
   .p-dropdown .p-dropdown-label.p-placeholder {
     display: flex;
     align-items: center;
   }
-  
+
   .p-dropdown-label {
     display: flex;
     align-items: center;
   }
 }
 
-.width-small{
-  .p-dropdown{
+.width-small {
+  .p-dropdown {
     width: 100% !important;
   }
 }
 
-.width-td-small{
-  .p-dropdown{
+.width-td-small {
+  .p-dropdown {
     width: 135px !important;
     height: 28px !important;
-    
+
     .p-dropdown-label {
       line-height: 28px !important;
       padding: 0 8px !important;
@@ -302,39 +298,39 @@
       color: $color-green !important;
       font-family: 'SimplerPro_BEZEQ_HEBREW2' !important;
     }
-    
-    .p-dropdown-trigger{
+
+    .p-dropdown-trigger {
       width: 24px !important;
     }
   }
 }
 
-.td-small{
-  .p-dropdown{
+.td-small {
+  .p-dropdown {
     width: 120px !important;
     height: 35px;
   }
 }
 
-.width-middle{
-  .p-dropdown{
+.width-middle {
+  .p-dropdown {
     width: 160px;
   }
 }
 
-.width-td-middle{
-  .p-dropdown{
+.width-td-middle {
+  .p-dropdown {
     width: 180px !important;
   }
 }
 
-p-dropdown.invalid .p-dropdown, 
+p-dropdown.invalid .p-dropdown,
 .p-dropdown.dropdown-invalid,
-p-dropdown.dropdown-invalid .p-dropdown{
+p-dropdown.dropdown-invalid .p-dropdown {
   border-color: $color-error !important;
 }
 
-.p-float-label.is-invalid{
+.p-float-label.is-invalid {
   border-color: $color-error !important;
   border-radius: 4px;
 }
@@ -348,11 +344,11 @@ p-dropdown.dropdown-invalid .p-dropdown{
   // text-align: right;
 }
 
-.cdk-virtual-scroll-content-wrapper{
+.cdk-virtual-scroll-content-wrapper {
   right: 0 !important;
 }
 
-.p-error{
+.p-error {
   font-size: 12px;
   color: $color-error !important;
   margin-top: -28px;

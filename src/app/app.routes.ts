@@ -13,7 +13,7 @@ import { AdminProcessingComponent } from './features/admin/components/admin-proc
 
 export const routes: Routes = [
   {
-    path: '', 
+    path: '',
     component: MainLayoutComponent,
     children: [
       { path: '', component: SearchLayoutComponent, pathMatch: 'full' },
@@ -23,13 +23,9 @@ export const routes: Routes = [
       { path: 'admin/products', component: AdminProductsComponent, canActivate: [AdminGuard] },
       { path: 'admin/categories', component: AdminCategoriesComponent, canActivate: [AdminGuard] },
       { path: 'admin/processing', component: AdminProcessingComponent, canActivate: [AdminGuard] },
-      {path: 'user/dashboard', component: UserDashboardComponent}, 
-      {path: 'user/profile', component: UserProfileComponent}, 
-
-    ]
+      { path: 'user/dashboard', component: UserDashboardComponent },
+      { path: 'user/profile', component: UserProfileComponent },
+    ],
   },
-  // { path: '**', redirectTo: '' } 
+  // { path: '**', redirectTo: '' }
 ];
-
-
-

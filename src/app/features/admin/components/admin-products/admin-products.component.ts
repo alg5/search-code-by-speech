@@ -1,7 +1,14 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { TranslatePipe } from '../../../../shared/pipes/translate-pipe';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,8 +20,16 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
 import { CustomGridService } from '../../../../shared/components/custom-components/custom-grid/custom-grid.service';
-import { IProduct, IProductCategory, IProductProcessing } from '../../../../shared/models/product.model';
-import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
+import {
+  IProduct,
+  IProductCategory,
+  IProductProcessing,
+} from '../../../../shared/models/product.model';
+import {
+  GridColumType,
+  IColumn,
+  ICustomGridModel,
+} from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
 import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
 import { IDropDownModel } from '../../../../shared/components/custom-components/custom-dropdown/custom-dropdown-models';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -45,7 +60,7 @@ import { CustomButtonComponent } from '../../../../shared/components/custom-comp
     ToastModule,
     DrawerModule,
     FoodLoaderComponent,
-    CustomButtonComponent
+    CustomButtonComponent,
   ],
   providers: [ConfirmationService, TranslatePipe],
   templateUrl: './admin-products.component.html',
@@ -101,12 +116,12 @@ export class AdminProductsComponent {
     label: this.translate.transform('button.save'),
     buttonClass: 'p-button-primary',
     isLoading: false,
-    isDisabled: true
+    isDisabled: true,
   });
 
   cancelButtonModel: IButtonModel = {
     label: this.translate.transform('button.cancel'),
-    buttonClass: 'p-button-secondary'
+    buttonClass: 'p-button-secondary',
   };
 
   searchText = signal('');
@@ -161,157 +176,158 @@ export class AdminProductsComponent {
     effect(() => {
       const pageEvent = this.customGridService.pagingSignal();
       if (!pageEvent || pageEvent.key !== 'products') return;
-      
+
       this.currentPage.set(pageEvent.page);
-      this.loadProducts(); 
+      this.loadProducts();
     });
 
-    
+    effect(() => {
+      const text = this.searchText();
+      const cat = this.selectedCategory();
+      const proc = this.selectedProcessing();
 
-  effect(() => {
-    const text = this.searchText();
-    const cat = this.selectedCategory();
-    const proc = this.selectedProcessing();
-    
-    // Reset to page 1 when filters change
-    untracked(() => {
+      // Reset to page 1 when filters change
+      untracked(() => {
         this.currentPage.set(1);
         this.loadInit();
       });
     });
   }
-    
 
   ngOnInit(): void {
     this.loadInit();
   }
 
-totalRecords = signal(0);
-currentPage = signal(1);
-pageSize = 15;
+  totalRecords = signal(0);
+  currentPage = signal(1);
+  pageSize = 15;
 
-// Coefficients for priority calculation
-kCategory = signal(0);
-kProcessing = signal(0);
+  // Coefficients for priority calculation
+  kCategory = signal(0);
+  kProcessing = signal(0);
 
-async loadInit() {
-  try {
-    this.loading.set(true);
+  async loadInit() {
+    try {
+      this.loading.set(true);
 
-    const [{ products, totalCount }, categories, processing, kCat, kProc] = await Promise.all([
-      this.supabaseService.getAdminProductsPage(
+      const [{ products, totalCount }, categories, processing, kCat, kProc] = await Promise.all([
+        this.supabaseService.getAdminProductsPage(
+          this.searchText(),
+          this.currentPage() - 1,
+          this.pageSize,
+          this.selectedCategory(),
+          this.selectedProcessing(),
+        ),
+        this.supabaseService.getProductCategories(),
+        this.supabaseService.getProductProcessing(),
+        this.supabaseService.getConfigValue('search.k_category'),
+        this.supabaseService.getConfigValue('search.k_processing'),
+      ]);
+
+      // Set current coefficients from config (0 if not set)
+      this.kCategory.set(parseFloat(kCat) || 0);
+      this.kProcessing.set(parseFloat(kProc) || 0);
+
+      this.categories.set(categories);
+      this.processingList.set(processing);
+      this.products.set(products);
+      this.filteredProducts.set(products);
+      this.totalRecords.set(totalCount);
+
+      const lang = this.langService.getLang().code;
+
+      // Category dropdown
+      const sortedCategories = this.sortByPriorityAndName(categories, (c) =>
+        this.getLocalizedName(c),
+      );
+      const categoryOptionsBase: ISelectOption[] = sortedCategories.map((c) => ({
+        Value: c.code,
+        Text: `${c.priority} - ${this.getLocalizedName(c)}`,
+        Selected: false,
+      }));
+
+      this.categoryModelGrid = {
+        options: [
+          {
+            Text: this.translate.transform('admin.categories.without'),
+            Value: null,
+            Selected: false,
+          },
+          ...categoryOptionsBase,
+        ],
+        placeholder: this.translate.transform('admin.categories'),
+        floatLabel: true,
+      };
+      this.categoryModelFilter = {
+        options: [
+          { Text: this.translate.transform('admin.categories.all'), Value: null, Selected: false },
+          ...categoryOptionsBase,
+        ],
+        placeholder: this.translate.transform('admin.categories'),
+        floatLabel: true,
+      };
+
+      // Processing dropdown
+      const sortedProcessing = this.sortByPriorityAndName(processing, (p) =>
+        this.getLocalizedName(p),
+      );
+
+      const processingOptionsBase: ISelectOption[] = sortedProcessing.map((p) => ({
+        Value: p.code,
+        Text: `${p.priority} - ${this.getLocalizedName(p)}`,
+        Selected: false,
+      }));
+
+      this.processingModelGrid = {
+        options: [
+          {
+            Text: this.translate.transform('admin.processing.without'),
+            Value: null,
+            Selected: false,
+          },
+          ...processingOptionsBase,
+        ],
+        placeholder: this.translate.transform('admin.processing'),
+        floatLabel: true,
+      };
+      this.processingModelFilter = {
+        options: [
+          { Text: this.translate.transform('admin.processing.all'), Value: null, Selected: false },
+          ...processingOptionsBase,
+        ],
+        placeholder: this.translate.transform('admin.processing'),
+        floatLabel: true,
+      };
+    } finally {
+      this.loading.set(false);
+      this.createForm();
+      this.fillColumns();
+      this.fillToolbar();
+      this.fillCustomGridModel();
+    }
+  }
+
+  // Called on pagination or search - only reloads products
+  async loadProducts() {
+    try {
+      this.loading.set(true);
+
+      const { products, totalCount } = await this.supabaseService.getAdminProductsPage(
         this.searchText(),
         this.currentPage() - 1,
         this.pageSize,
         this.selectedCategory(),
-        this.selectedProcessing()
-      ),
-      this.supabaseService.getProductCategories(),
-      this.supabaseService.getProductProcessing(),
-      this.supabaseService.getConfigValue('search.k_category'),
-      this.supabaseService.getConfigValue('search.k_processing')
-    ]);
+        this.selectedProcessing(),
+      );
 
-    // Set current coefficients from config (0 if not set)
-    this.kCategory.set(parseFloat(kCat) || 0);
-    this.kProcessing.set(parseFloat(kProc) || 0);
-
-    this.categories.set(categories);
-    this.processingList.set(processing);
-    this.products.set(products);
-    this.filteredProducts.set(products);
-    this.totalRecords.set(totalCount);
-
-    const lang = this.langService.getLang().code;
-
-    // Category dropdown
-    const sortedCategories = this.sortByPriorityAndName(
-      categories,
-      c => this.getLocalizedName(c)
-    );
-    const categoryOptionsBase: ISelectOption[] = sortedCategories.map(c => ({
-      Value: c.code,
-      Text: `${c.priority} - ${this.getLocalizedName(c)}`,
-      Selected: false
-    }));
-
-    this.categoryModelGrid = {
-      options: [
-        { Text: this.translate.transform('admin.categories.without'), Value: null, Selected: false },
-        ...categoryOptionsBase
-      ],
-      placeholder: this.translate.transform('admin.categories'),
-      floatLabel: true
-    };
-    this.categoryModelFilter = {
-      options: [
-        { Text: this.translate.transform('admin.categories.all'), Value: null, Selected: false },
-        ...categoryOptionsBase
-      ],
-      placeholder: this.translate.transform('admin.categories'),
-      floatLabel: true
-    };
-
-    // Processing dropdown
-    const sortedProcessing = this.sortByPriorityAndName(
-      processing,
-      p => this.getLocalizedName(p)
-    );
-
-    const processingOptionsBase: ISelectOption[] = sortedProcessing.map(p => ({
-      Value: p.code,
-      Text: `${p.priority} - ${this.getLocalizedName(p)}`,
-      Selected: false
-    }));
-
-    this.processingModelGrid = {
-      options: [
-        { Text: this.translate.transform('admin.processing.without'), Value: null, Selected: false },
-        ...processingOptionsBase
-      ],
-      placeholder: this.translate.transform('admin.processing'),
-      floatLabel: true
-    };
-    this.processingModelFilter = {
-      options: [
-        { Text: this.translate.transform('admin.processing.all'), Value: null, Selected: false },
-        ...processingOptionsBase
-      ],
-      placeholder: this.translate.transform('admin.processing'),
-      floatLabel: true
-    };
-
-  } finally {
-    this.loading.set(false);
-    this.createForm();
-    this.fillColumns();
-    this.fillToolbar();
-    this.fillCustomGridModel();
+      this.products.set(products);
+      this.filteredProducts.set(products);
+      this.totalRecords.set(totalCount);
+    } finally {
+      this.loading.set(false);
+      this.fillCustomGridModel();
+    }
   }
-}
-
-// Called on pagination or search - only reloads products
-async loadProducts() {
-  try {
-    this.loading.set(true);
-
-    const { products, totalCount } = await this.supabaseService.getAdminProductsPage(
-      this.searchText(),
-      this.currentPage() - 1,
-      this.pageSize,
-      this.selectedCategory(),
-      this.selectedProcessing()
-    );
-
-    this.products.set(products);
-    this.filteredProducts.set(products);
-    this.totalRecords.set(totalCount);
-
-  } finally {
-    this.loading.set(false);
-    this.fillCustomGridModel();
-  }
-}
 
   createForm() {
     this.fg = this.fb.group({
@@ -320,41 +336,41 @@ async loadProducts() {
       key_he: new FormControl(null, Validators.required),
       key_fr: new FormControl(null, Validators.required),
       category_code: new FormControl(null),
-      processing_code: new FormControl(null)
+      processing_code: new FormControl(null),
     });
 
     // Track any form change
     this.fg.valueChanges.subscribe(() => {
-      this.saveButtonModel.update(model => ({
+      this.saveButtonModel.update((model) => ({
         ...model,
-        isDisabled: !this.checkFormDirty()
+        isDisabled: !this.checkFormDirty(),
       }));
     });
 
     // Subscribe to selected changes
-    this.fg.get('category_code')?.valueChanges.subscribe(code => {
+    this.fg.get('category_code')?.valueChanges.subscribe((code) => {
       const current = this.editingProduct();
       if (!current) return;
 
-      const category = this.categories().find(c => c.code === code);
+      const category = this.categories().find((c) => c.code === code);
       this.editingProduct.set({
         ...current,
         category_code: code,
         category,
-        category_priority: category?.priority ?? 0  // Add flat field
+        category_priority: category?.priority ?? 0, // Add flat field
       });
     });
 
-    this.fg.get('processing_code')?.valueChanges.subscribe(code => {
+    this.fg.get('processing_code')?.valueChanges.subscribe((code) => {
       const current = this.editingProduct();
       if (!current) return;
 
-      const processing = this.processingList().find(p => p.code === code);
+      const processing = this.processingList().find((p) => p.code === code);
       this.editingProduct.set({
         ...current,
         processing_code: code,
         processing,
-        processing_priority: processing?.priority ?? 0  // Add flat field
+        processing_priority: processing?.priority ?? 0, // Add flat field
       });
     });
   }
@@ -372,14 +388,14 @@ async loadProducts() {
       key_he: product.key_he,
       key_fr: product.key_fr,
       category_code: product.category_code,
-      processing_code: product.processing_code
+      processing_code: product.processing_code,
     });
 
     // Reset button state
-    this.saveButtonModel.update(model => ({
+    this.saveButtonModel.update((model) => ({
       ...model,
       isDisabled: true,
-      isLoading: false
+      isLoading: false,
     }));
   }
 
@@ -390,28 +406,28 @@ async loadProducts() {
   private getLocalizedName(item: IProductCategory | IProductProcessing) {
     const lang = this.langService.getLang().code;
     const fieldName = `name_${lang}` as keyof (IProductCategory | IProductProcessing);
-    return item[fieldName] as string || item.code;
+    return (item[fieldName] as string) || item.code;
   }
 
-onSearchChange(text: string) {
-  this.searchText.set(text);
-  this.currentPage.set(1);
-  this.loadProducts();
-}
+  onSearchChange(text: string) {
+    this.searchText.set(text);
+    this.currentPage.set(1);
+    this.loadProducts();
+  }
 
-onCategoryChange(value: string | null) {
-  this.selectedCategoryValue = value;
-  this.selectedCategory.set(value);
-  this.currentPage.set(1);
-  this.loadProducts();
-}
+  onCategoryChange(value: string | null) {
+    this.selectedCategoryValue = value;
+    this.selectedCategory.set(value);
+    this.currentPage.set(1);
+    this.loadProducts();
+  }
 
-onProcessingChange(value: string | null) {
-  this.selectedProcessingValue = value;
-  this.selectedProcessing.set(value);
-  this.currentPage.set(1);
-  this.loadProducts();
-}
+  onProcessingChange(value: string | null) {
+    this.selectedProcessingValue = value;
+    this.selectedProcessing.set(value);
+    this.currentPage.set(1);
+    this.loadProducts();
+  }
 
   private checkFormDirty(): boolean {
     const original = this.originalProduct();
@@ -440,13 +456,13 @@ onProcessingChange(value: string | null) {
     this.saveButtonModel.set({
       ...this.saveButtonModel(),
       isLoading: true,
-      isDisabled: true
+      isDisabled: true,
     });
 
     try {
       const updatedProduct = {
         ...this.editingProduct(),
-        ...this.fg.value
+        ...this.fg.value,
       } as IProduct;
       delete updatedProduct.category;
       delete updatedProduct.processing;
@@ -457,20 +473,19 @@ onProcessingChange(value: string | null) {
       this.messageService.add({
         severity: 'success',
         summary: this.translate.transform('message.success'),
-        detail: this.translate.transform('message.success.products.updated')
+        detail: this.translate.transform('message.success.products.updated'),
       });
-
     } catch (e: any) {
       this.messageService.add({
         severity: 'error',
         summary: this.translate.transform('message.error'),
-        detail: e?.message || this.translate.transform('message.unexpectedError')
+        detail: e?.message || this.translate.transform('message.unexpectedError'),
       });
     } finally {
       this.saveButtonModel.set({
         ...this.saveButtonModel(),
         isLoading: false,
-        isDisabled: !this.checkFormDirty()
+        isDisabled: !this.checkFormDirty(),
       });
     }
   }
@@ -495,7 +510,7 @@ onProcessingChange(value: string | null) {
         dataField: 'id',
         dataType: GridColumType.numeric,
         width: '60px',
-        minWidth: '60px'
+        minWidth: '60px',
       },
       {
         headerText: this.translate.transform('column.productCode'),
@@ -503,7 +518,7 @@ onProcessingChange(value: string | null) {
         dataType: GridColumType.numeric,
         isColFiltering: true,
         width: '80px',
-        minWidth: '80px'
+        minWidth: '80px',
       },
       {
         headerText: this.translate.transform('column.productName'),
@@ -511,7 +526,7 @@ onProcessingChange(value: string | null) {
         isColFiltering: true,
         width: '160px',
         maxWidth: '160px',
-        rowClass: 'col-ellipsis'
+        rowClass: 'col-ellipsis',
       },
       {
         headerText: this.translate.transform('column.nameEn'),
@@ -520,7 +535,7 @@ onProcessingChange(value: string | null) {
         isColFiltering: true,
         width: '140px',
         maxWidth: '140px',
-        rowClass: 'col-ellipsis'
+        rowClass: 'col-ellipsis',
       },
       {
         headerText: this.translate.transform('column.nameRu'),
@@ -529,7 +544,7 @@ onProcessingChange(value: string | null) {
         isColFiltering: true,
         width: '140px',
         maxWidth: '140px',
-        rowClass: 'col-ellipsis'
+        rowClass: 'col-ellipsis',
       },
       {
         headerText: this.translate.transform('column.nameHe'),
@@ -538,7 +553,7 @@ onProcessingChange(value: string | null) {
         isColFiltering: true,
         width: '140px',
         maxWidth: '140px',
-        rowClass: 'col-ellipsis'
+        rowClass: 'col-ellipsis',
       },
       {
         headerText: this.translate.transform('column.nameFr'),
@@ -547,7 +562,7 @@ onProcessingChange(value: string | null) {
         isColFiltering: true,
         width: '140px',
         maxWidth: '140px',
-        rowClass: 'col-ellipsis'
+        rowClass: 'col-ellipsis',
       },
       {
         headerText: this.translate.transform('column.categoryCode'),
@@ -556,7 +571,7 @@ onProcessingChange(value: string | null) {
         width: '140px',
         maxWidth: '140px',
         rowClass: 'col-ellipsis',
-        formattedOptions: { dropdown: this.categoryModelGrid }
+        formattedOptions: { dropdown: this.categoryModelGrid },
       },
       {
         headerText: this.translate.transform('column.processingCode'),
@@ -565,7 +580,7 @@ onProcessingChange(value: string | null) {
         width: '140px',
         maxWidth: '140px',
         rowClass: 'col-ellipsis',
-        formattedOptions: { dropdown: this.processingModelGrid }
+        formattedOptions: { dropdown: this.processingModelGrid },
       },
       {
         headerText: this.translate.transform('column.priority'),
@@ -574,7 +589,8 @@ onProcessingChange(value: string | null) {
         width: '80px',
         minWidth: '60px',
         tooltip: this.translate.transform('tooltip.priority'),
-        calculateValue: (rowData: IProduct) => Helper.calculatePriority(rowData, this.kCategory(), this.kProcessing())
+        calculateValue: (rowData: IProduct) =>
+          Helper.calculatePriority(rowData, this.kCategory(), this.kProcessing()),
       },
       {
         headerText: '',
@@ -582,10 +598,10 @@ onProcessingChange(value: string | null) {
         dataType: GridColumType.imgPrimengIconClick,
         width: '50px',
         minWidth: '50px',
-        formattedOptions: { primengIcon: 'pi-pencil' }
+        formattedOptions: { primengIcon: 'pi-pencil' },
       },
     ];
-  }  
+  }
 
   fillToolbar() {
     this.customToolbar = {
@@ -617,7 +633,7 @@ onProcessingChange(value: string | null) {
       innerScrollHeight: '46vh',
       filterStringInitial: this.searchText(),
       idField: 'id',
-      key: 'products'
+      key: 'products',
     };
   }
 
@@ -625,7 +641,7 @@ onProcessingChange(value: string | null) {
 
   private sortByPriorityAndName<T extends { priority?: number | null }>(
     items: T[],
-    getName: (item: T) => string
+    getName: (item: T) => string,
   ): T[] {
     return [...items].sort((a, b) => {
       const priorityA = a.priority ?? 0;

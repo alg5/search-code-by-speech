@@ -1,23 +1,22 @@
 @if (dropDownModel) {
-
   <p-floatlabel>
     <p-select
-    inputId="customDropdown"
-    name="customDropdown"
-    [options]="options"
-    optionLabel="Text"
-    optionValue="Value"
-    [placeholder]="placeholder"
-    [disabled]="disabled"
-    appendTo="body"
-    [(ngModel)]="value"
-    (onChange)="onValueChange($event)"
-    [ngClass]="[
-      customClassCss ?? '',
-      (required && (touched || dirty) && (value == null || value === '')) ? 'dropdown-invalid' : ''
-    ]">
-  </p-select>
-    <label for="customDropdown">{{optionsText}}</label>
+      inputId="customDropdown"
+      name="customDropdown"
+      [options]="options"
+      optionLabel="Text"
+      optionValue="Value"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      appendTo="body"
+      [(ngModel)]="value"
+      (onChange)="onValueChange($event)"
+      [ngClass]="[
+        customClassCss ?? '',
+        required && (touched || dirty) && (value == null || value === '') ? 'dropdown-invalid' : '',
+      ]"
+    >
+    </p-select>
+    <label for="customDropdown">{{ optionsText }}</label>
   </p-floatlabel>
 }
-

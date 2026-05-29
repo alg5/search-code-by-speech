@@ -14,14 +14,9 @@ import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'spr-main-layout',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    ButtonModule,
-    HeaderComponent
-  ],
+  imports: [CommonModule, RouterOutlet, ButtonModule, HeaderComponent],
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.scss']
+  styleUrls: ['./main-layout.component.scss'],
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
@@ -30,9 +25,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   isLoggedIn: boolean = false;
   isAdmin: boolean = false; // Будет определяться из профиля
- private _authSubscription: Subscription | undefined; 
+  private _authSubscription: Subscription | undefined;
 
-async ngOnInit() {
+  async ngOnInit() {
     // <--- ИСПРАВЛЕНО: Подписываемся на Observable `authStateChanges$`
     this._authSubscription = this.supabase.authStateChanges$.subscribe(async (state) => {
       // state будет { event, session } или null
@@ -57,7 +52,7 @@ async ngOnInit() {
     const user = await this.supabase.getCurrentUser();
     this.isLoggedIn = !!user;
     if (user) {
-      const profile = await this.supabase.getProfile(); 
+      const profile = await this.supabase.getProfile();
       this.isAdmin = profile?.role === 'admin';
     } else {
       this.isAdmin = false;

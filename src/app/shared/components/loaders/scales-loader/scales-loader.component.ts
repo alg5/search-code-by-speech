@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './scales-loader.component.html',
   styleUrl: './scales-loader.component.scss',
 })
-export class ScalesLoaderComponent {
-
-}
+export class ScalesLoaderComponent {}

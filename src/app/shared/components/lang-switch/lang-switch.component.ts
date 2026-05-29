@@ -10,14 +10,9 @@ import { TranslatePipe } from '../../pipes/translate-pipe';
 @Component({
   selector: 'spr-lang-switch',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule, 
-    SelectModule,
-    TranslatePipe
-  ],
+  imports: [CommonModule, FormsModule, SelectModule, TranslatePipe],
   templateUrl: './lang-switch.component.html',
-  styleUrls: ['./lang-switch.component.scss']
+  styleUrls: ['./lang-switch.component.scss'],
 })
 export class LangSwitchComponent {
   private langService = inject(LanguageService);
@@ -33,7 +28,7 @@ export class LangSwitchComponent {
   }
   set langValue(newCode: string) {
     if (newCode !== this.currentLangCode()) {
-      const lang = this.langs.find(l => l.code === newCode);
+      const lang = this.langs.find((l) => l.code === newCode);
       if (lang) {
         this.changeLang(lang);
       }

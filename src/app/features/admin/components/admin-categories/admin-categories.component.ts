@@ -8,7 +8,11 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { GridColumType, IColumn, ICustomGridModel } from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
+import {
+  GridColumType,
+  IColumn,
+  ICustomGridModel,
+} from '../../../../shared/components/custom-components/custom-grid/custom-grid-models';
 import { IToolbarModel } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar-models';
 import { CustomGridComponent } from '../../../../shared/components/custom-components/custom-grid/custom-grid.component';
 import { CustomToolbarService } from '../../../../shared/components/custom-components/custom-toolbar/custom-toolbar.service';
@@ -24,7 +28,7 @@ import { LanguageService } from '../../../../core/services/language.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     DialogModule,
     ButtonModule,
     InputTextModule,
@@ -33,14 +37,13 @@ import { LanguageService } from '../../../../core/services/language.service';
     MessageModule,
     CustomGridComponent,
     TranslatePipe,
-    ToastModule
+    ToastModule,
   ],
   providers: [ConfirmationService, TranslatePipe],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
 })
 export class AdminCategoriesComponent {
-  
   private fb = inject(FormBuilder);
   private readonly supabaseService = inject(SupabaseService);
   private readonly confirmationService = inject(ConfirmationService);
@@ -67,7 +70,7 @@ export class AdminCategoriesComponent {
     name_ru: ['', Validators.required],
     name_he: [''],
     name_fr: [''],
-    priority: [null]
+    priority: [null],
   });
 
   //#region custom-grid definition
@@ -84,7 +87,7 @@ export class AdminCategoriesComponent {
       const event = this.toolbarService.newButtonClickedSignal();
       if (!event?.value) return;
       if (event.key !== 'categories') return; // filter by component key
-      
+
       this.openAdd();
     });
 
@@ -92,7 +95,7 @@ export class AdminCategoriesComponent {
     effect(() => {
       const event = this.customGridService.rowDeleteSignal();
       if (!event?.row) return;
-      if (event.key !== 'categories') return; 
+      if (event.key !== 'categories') return;
       this.confirmDelete(event.row);
     });
 
@@ -100,8 +103,8 @@ export class AdminCategoriesComponent {
     effect(() => {
       const event = this.customGridService.saveEditedRowSignal();
       if (!event?.row) return;
-      if (event.key !== 'categories') return; 
-     this.saveEdit(event.row);
+      if (event.key !== 'categories') return;
+      this.saveEdit(event.row);
     });
 
     // Search filter
@@ -109,13 +112,14 @@ export class AdminCategoriesComponent {
       const text = this.searchText()?.toLowerCase() || '';
       if (!this.customGridModel) return;
 
-      const filtered = this.categories().filter(p =>
-        !text ||
-        p.code?.toLowerCase().includes(text) ||
-        p.name_en?.toLowerCase().includes(text) ||
-        p.name_ru?.toLowerCase().includes(text) ||
-        p.name_he?.toLowerCase().includes(text) ||
-        p.name_fr?.toLowerCase().includes(text)
+      const filtered = this.categories().filter(
+        (p) =>
+          !text ||
+          p.code?.toLowerCase().includes(text) ||
+          p.name_en?.toLowerCase().includes(text) ||
+          p.name_ru?.toLowerCase().includes(text) ||
+          p.name_he?.toLowerCase().includes(text) ||
+          p.name_fr?.toLowerCase().includes(text),
       );
 
       this.filteredCategories.set(filtered);
@@ -123,10 +127,10 @@ export class AdminCategoriesComponent {
       this.customGridModel = {
         ...this.customGridModel,
         toolbarModel: {
-          ...this.customGridModel.toolbarModel
+          ...this.customGridModel.toolbarModel,
         },
         dataSource: filtered,
-        filterStringInitial: text
+        filterStringInitial: text,
       };
     });
   }
@@ -164,9 +168,7 @@ export class AdminCategoriesComponent {
     }
 
     try {
-      await this.supabaseService.insertProductCategory(
-        this.fg.value as IProductCategory
-      );
+      await this.supabaseService.insertProductCategory(this.fg.value as IProductCategory);
 
       this.dialogVisible.set(false);
       this.loadCategories();
@@ -175,25 +177,22 @@ export class AdminCategoriesComponent {
         severity: 'success',
         summary: this.translate.transform('message.success.categories.created'),
       });
-
     } catch (error: any) {
       if (error?.code === '23505') {
         this.messageService.add({
           severity: 'error',
           summary: this.translate.transform('message.error'),
-          detail: this.languageService.translate(
-            'message.error.categories.duplicateCode',
-            '',
-            { code: this.fg.get('code')?.value }
-          ),
-          sticky: true
+          detail: this.languageService.translate('message.error.categories.duplicateCode', '', {
+            code: this.fg.get('code')?.value,
+          }),
+          sticky: true,
         });
       } else {
         this.messageService.add({
           severity: 'error',
           summary: this.translate.transform('message.error'),
           detail: this.translate.transform('message.unexpectedError'),
-          sticky: true
+          sticky: true,
         });
       }
     }
@@ -209,25 +208,22 @@ export class AdminCategoriesComponent {
         severity: 'success',
         summary: this.translate.transform('message.success.categories.updated'),
       });
-
     } catch (error: any) {
       if (error?.code === '23505') {
         this.messageService.add({
           severity: 'error',
           summary: this.translate.transform('message.error'),
-          detail: this.languageService.translate(
-            'message.error.categories.duplicateCode',
-            '',
-            { code: row.code }
-          ),
-          sticky: true
+          detail: this.languageService.translate('message.error.categories.duplicateCode', '', {
+            code: row.code,
+          }),
+          sticky: true,
         });
       } else {
         this.messageService.add({
           severity: 'error',
           summary: this.translate.transform('message.error'),
           detail: this.translate.transform('message.unexpectedError'),
-          sticky: true
+          sticky: true,
         });
       }
     }
@@ -246,27 +242,26 @@ export class AdminCategoriesComponent {
           this.loadCategories();
           this.messageService.add({
             severity: 'success',
-            detail: this.translate.transform('message.success.categories.deleted')
+            detail: this.translate.transform('message.success.categories.deleted'),
           });
-
         } catch (error: any) {
           if (error?.code === '23503') {
             this.messageService.add({
               severity: 'error',
               summary: this.translate.transform('message.error'),
               detail: this.translate.transform('message.error.categories.deleteHasProducts'),
-              sticky: true
+              sticky: true,
             });
           } else {
             this.messageService.add({
               severity: 'error',
               summary: this.translate.transform('message.error'),
               detail: this.translate.transform('message.unexpectedError'),
-              sticky: true
+              sticky: true,
             });
           }
         }
-      }
+      },
     });
   }
 
@@ -277,44 +272,44 @@ export class AdminCategoriesComponent {
         headerText: this.translate.transform('column.code'),
         dataField: 'code',
         dataType: GridColumType.textEditable,
-        required: true
+        required: true,
       },
       {
         headerText: this.translate.transform('column.nameEn'),
         dataField: 'name_en',
         dataType: GridColumType.textEditable,
-        required: true
+        required: true,
       },
       {
         headerText: this.translate.transform('column.nameRu'),
         dataField: 'name_ru',
-        dataType: GridColumType.textEditable
+        dataType: GridColumType.textEditable,
       },
       {
         headerText: this.translate.transform('column.nameHe'),
         dataField: 'name_he',
-        dataType: GridColumType.textEditable
+        dataType: GridColumType.textEditable,
       },
       {
         headerText: this.translate.transform('column.nameFr'),
         dataField: 'name_fr',
-        dataType: GridColumType.textEditable
+        dataType: GridColumType.textEditable,
       },
       {
         headerText: this.translate.transform('column.priority'),
         dataField: 'priority',
-        dataType: GridColumType.numericEditable
+        dataType: GridColumType.numericEditable,
       },
       {
         headerText: '',
         dataField: '',
-        dataType: GridColumType.deleteButton
+        dataType: GridColumType.deleteButton,
       },
       {
         headerText: '',
         dataField: '',
-        dataType: GridColumType.editButton
-      }
+        dataType: GridColumType.editButton,
+      },
     ];
   }
 
@@ -337,7 +332,7 @@ export class AdminCategoriesComponent {
       withoutPaging: true,
       filterStringInitial: this.searchText(),
       innerScrollHeight: '46vh',
-      key: 'categories'
+      key: 'categories',
     };
   }
 }

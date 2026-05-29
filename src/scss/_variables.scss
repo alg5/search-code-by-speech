@@ -3,9 +3,9 @@
 
 // widthes
 $item-width: 30%;
-$input-width:187px;
+$input-width: 187px;
 // $input-width-mobile:93vw;
-$input-width-mobile:87vw;
+$input-width-mobile: 87vw;
 $input-width-sel-time: calc(187px - 12px);
 // $caption-width: 86px;
 $caption-width: 7rem;
@@ -13,18 +13,18 @@ $caption-width: 7rem;
 $input-height: 42px;
 
 // colors
-$color-green:#166534;
+$color-green: #166534;
 $color-green-active: #22c55e;
 $color-green-bright: #4ade80;
 $color-menu-active: #16a34a;
 $title-color: #393939;
-$color-error:#dc3545;
+$color-error: #dc3545;
 $color-warning: #f59e0b;
-$bg-gray:#f6f8fa;
-$bg-green-odd:#f0fdf4;
-$bg-td-standart:#fcfbfc;
-$bg-td-standart-gray:#f0f0f0;
-$bg-green :#f0fdf4;
+$bg-gray: #f6f8fa;
+$bg-green-odd: #f0fdf4;
+$bg-td-standart: #fcfbfc;
+$bg-td-standart-gray: #f0f0f0;
+$bg-green: #f0fdf4;
 $bg-green-highlight: #e8f0e8;
 $bg-green-soft: #e8f0e8;
 $bg-green-header-end: #d4edda;
@@ -36,23 +36,18 @@ $bg-table-header: #f3f4ff;
 $bg-image-mobile: linear-gradient(196deg, #dcfce7 10%, #dcfce7 50%, #bbf7d0 110%);
 $bg-gray-light: #f0f2fd;
 
-
 //borders
 $border-gray-light: 1px solid $bg-gray-light;
-$border-gray: 1px solid #D4D4D4;
+$border-gray: 1px solid #d4d4d4;
 $border-active: 1px solid $color-green-active;
-$table-header-row-border:  1px solid  #e2e5fa;
-$border-td-standart:solid 1px #f0f0f0;
+$table-header-row-border: 1px solid #e2e5fa;
+$border-td-standart: solid 1px #f0f0f0;
 $border-color-blue: solid 1px $color-green;
 $border-table-header: #e2e5fa;
 $border-table-cell: #efeeee;
 
 //border-colors
 $border-color-focus: #80bdff;
-$border-color-gray: #D4D4D4;
+$border-color-gray: #d4d4d4;
 
-
-$box-shadow-error: 0 0 0 0.2rem rgba(220,53,69,.25);
-
-
-
+$box-shadow-error: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);

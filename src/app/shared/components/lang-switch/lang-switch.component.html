@@ -6,8 +6,8 @@
     optionValue="code"
     placeholder="{{ 'language.selectPlaceholder' | translate }}"
     class="lang-select"
-    [showClear]="false">
-    
+    [showClear]="false"
+  >
     <!-- выбранный вариант -->
     <ng-template #selectedItem let-selected>
       <div class="selected-item">
@@ -17,7 +17,7 @@
         <span class="lang-label">{{ selected?.code }}</span>
       </div>
     </ng-template>
-    
+
     <!-- вариант в списке -->
     <ng-template let-lang #item>
       <div class="lang-item">

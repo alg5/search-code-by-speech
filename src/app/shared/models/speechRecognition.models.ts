@@ -20,7 +20,7 @@ export interface SpeechRecognitionResult {
 }
 
 export interface SpeechRecognitionAlternative {
-  transcript: string;  // ← ВОТ ЗДЕСЬ transcript!
+  transcript: string; // ← ВОТ ЗДЕСЬ transcript!
   confidence: number;
 }
 

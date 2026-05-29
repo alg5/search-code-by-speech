@@ -15,15 +15,11 @@ export class BreadcrumbService {
   getBreadcrumbs(): Observable<MenuItem[]> {
     return combineLatest([
       this.router.events.pipe(
-        filter(event => event instanceof NavigationEnd),
-        startWith(null)
+        filter((event) => event instanceof NavigationEnd),
+        startWith(null),
       ),
-      this.languageService.langChanges$.pipe(
-        startWith(this.languageService.currentLang())
-      )
-    ]).pipe(
-      map(() => this.buildBreadcrumbs())
-    );
+      this.languageService.langChanges$.pipe(startWith(this.languageService.currentLang())),
+    ]).pipe(map(() => this.buildBreadcrumbs()));
   }
 
   private buildBreadcrumbs(): MenuItem[] {
@@ -38,25 +34,25 @@ export class BreadcrumbService {
 
         // Разбиваем путь на сегменты и создаём breadcrumb для КАЖДОГО
         const segments = path.split('/').filter((s: string) => s.trim() !== '');
-        
-        // Если это составной путь (например "admin/products"), 
+
+        // Если это составной путь (например "admin/products"),
         // нужно создать breadcrumbs для каждого сегмента
         if (segments.length > 1) {
           // Удаляем последний добавленный, если он был составным
           breadcrumbs.pop();
-          
+
           let segmentUrl = '';
           for (const segment of segments) {
             segmentUrl += `/${segment}`;
             breadcrumbs.push({
               label: `breadcrumb.${segment}`,
-              routerLink: segmentUrl
+              routerLink: segmentUrl,
             });
           }
         } else {
           breadcrumbs.push({
             label: `breadcrumb.${path}`,
-            routerLink: url
+            routerLink: url,
           });
         }
       }

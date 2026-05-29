@@ -1,5 +1,5 @@
 <div class="admin-categories">
-  <h2>{{'admin.processing'| translate}}</h2>
+  <h2>{{ 'admin.processing' | translate }}</h2>
 
   <div class="filters-row">
     <div class="p-inputgroup search-box">
@@ -9,106 +9,111 @@
       </span>
 
       <!-- input -->
-      <input pInputText
-             [ngModel]="searchText()"
-             (ngModelChange)="searchText.set($event)"
-             placeholder="Search..."
-             class="search-input"/>
+      <input
+        pInputText
+        [ngModel]="searchText()"
+        (ngModelChange)="searchText.set($event)"
+        placeholder="Search..."
+        class="search-input"
+      />
 
       <!-- clear button -->
-      <button *ngIf="searchText()"
-              pButton
-              icon="pi pi-times"
-              class="p-button-text"
-              (click)="searchText.set('')">
-      </button>
+      <button
+        *ngIf="searchText()"
+        pButton
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="searchText.set('')"
+      ></button>
     </div>
   </div>
 
-  @if(!loading()){
-    @if (processingTypes().length > 0){
+  @if (!loading()) {
+    @if (processingTypes().length > 0) {
       <spr-custom-grid [gridModel]="customGridModel"></spr-custom-grid>
     } @else {
-      <p>{{'admin.processing.notFound'| translate}}</p>
+      <p>{{ 'admin.processing.notFound' | translate }}</p>
     }
   }
-  @if(loading()){
-    <p>{{'message.loading'| translate}}</p>
+  @if (loading()) {
+    <p>{{ 'message.loading' | translate }}</p>
   }
 </div>
 
-<p-dialog header="{{'admin.processing.add'| translate}}"
-          [(visible)]="dialogVisible"
-          [modal]="true"
-          [closable]="true"
-          [style]="{ width: '450px' }"
-          (onHide)="dialogVisible.set(null)">
-
+<p-dialog
+  header="{{ 'admin.processing.add' | translate }}"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '450px' }"
+  (onHide)="dialogVisible.set(null)"
+>
   <form [formGroup]="fg" class="dialog-form">
     <div class="form-container">
       <div class="inputs-block">
         <p-floatlabel>
-          <input pInputText
-                 formControlName="code"
-                 [class.ng-invalid]="fg.get('code')?.invalid && fg.get('code')?.touched"
-                 [class.ng-dirty]="fg.get('code')?.touched"/>
+          <input
+            pInputText
+            formControlName="code"
+            [class.ng-invalid]="fg.get('code')?.invalid && fg.get('code')?.touched"
+            [class.ng-dirty]="fg.get('code')?.touched"
+          />
           <label for="code">Code</label>
         </p-floatlabel>
         @if (submited() && fg.get('code')?.invalid) {
-          <small class="p-error">{{'message.fieldRequired'| translate}}</small>
+          <small class="p-error">{{ 'message.fieldRequired' | translate }}</small>
         }
 
         <p-floatlabel>
-          <input pInputText
-                 formControlName="name_en"
-                 [class.ng-invalid]="fg.get('name_en')?.invalid && fg.get('name_en')?.touched"
-                 [class.ng-dirty]="fg.get('name_en')?.touched"/>
-          <label for="name_en">{{'caption.name.en'| translate}}</label>
+          <input
+            pInputText
+            formControlName="name_en"
+            [class.ng-invalid]="fg.get('name_en')?.invalid && fg.get('name_en')?.touched"
+            [class.ng-dirty]="fg.get('name_en')?.touched"
+          />
+          <label for="name_en">{{ 'caption.name.en' | translate }}</label>
         </p-floatlabel>
         @if (submited() && fg.get('name_en')?.invalid) {
-          <small class="p-error">{{'message.fieldRequired'| translate}}</small>
+          <small class="p-error">{{ 'message.fieldRequired' | translate }}</small>
         }
 
         <p-floatlabel>
-          <input pInputText
-                 formControlName="name_ru"
-                 [class.ng-invalid]="fg.get('name_ru')?.invalid && fg.get('name_ru')?.touched"
-                 [class.ng-dirty]="fg.get('name_ru')?.touched"/>
-          <label for="name_ru">{{'caption.name.ru'| translate}}</label>
+          <input
+            pInputText
+            formControlName="name_ru"
+            [class.ng-invalid]="fg.get('name_ru')?.invalid && fg.get('name_ru')?.touched"
+            [class.ng-dirty]="fg.get('name_ru')?.touched"
+          />
+          <label for="name_ru">{{ 'caption.name.ru' | translate }}</label>
         </p-floatlabel>
         @if (submited() && fg.get('name_ru')?.invalid) {
-          <small class="p-error">{{'message.fieldRequired'| translate}}</small>
+          <small class="p-error">{{ 'message.fieldRequired' | translate }}</small>
         }
 
         <p-floatlabel>
-          <input pInputText
-                 formControlName="name_he"/>
-          <label for="name_he">{{'caption.name.he'| translate}}</label>
+          <input pInputText formControlName="name_he" />
+          <label for="name_he">{{ 'caption.name.he' | translate }}</label>
         </p-floatlabel>
 
         <p-floatlabel>
-          <input pInputText
-                 formControlName="name_fr"/>
-          <label for="name_fr">{{'caption.name.fr'| translate}}</label>
+          <input pInputText formControlName="name_fr" />
+          <label for="name_fr">{{ 'caption.name.fr' | translate }}</label>
         </p-floatlabel>
 
         <p-floatlabel>
-          <input pInputText
-                 formControlName="priority"/>
-          <label for="priority">{{'caption.priority'| translate}}</label>
+          <input pInputText formControlName="priority" />
+          <label for="priority">{{ 'caption.priority' | translate }}</label>
         </p-floatlabel>
       </div>
 
       <div class="actions-block">
-        <button pButton
-                label="{{'button.save'| translate}}"
-                (click)="saveNew()">
-        </button>
-        <button pButton
-                label="{{'button.cancel'| translate}}"
-                class="p-button-secondary"
-                (click)="dialogVisible.set(null)">
-        </button>
+        <button pButton label="{{ 'button.save' | translate }}" (click)="saveNew()"></button>
+        <button
+          pButton
+          label="{{ 'button.cancel' | translate }}"
+          class="p-button-secondary"
+          (click)="dialogVisible.set(null)"
+        ></button>
       </div>
     </div>
   </form>

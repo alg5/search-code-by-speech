@@ -17,7 +17,7 @@ import { IButtonModel } from '../../../../shared/components/custom-components/cu
     ButtonModule,
     InputNumberModule,
     TranslatePipe,
-    CustomButtonComponent
+    CustomButtonComponent,
   ],
   templateUrl: './admin-search-settings.component.html',
   styleUrl: './admin-search-settings.component.scss',
@@ -41,7 +41,7 @@ export class AdminSearchSettingsComponent {
     label: this.translate.transform('button.save'),
     buttonClass: 'p-button-primary',
     isLoading: this.saving(),
-    isDisabled: this.saving() || this.settingsForm?.invalid
+    isDisabled: this.saving() || this.settingsForm?.invalid,
   }));
 
   async ngOnInit() {
@@ -52,20 +52,20 @@ export class AdminSearchSettingsComponent {
 
     this.settingsForm.patchValue({
       kCategory: parseFloat(k1) || this.DEFAULT_K_CATEGORY,
-      kProcessing: parseFloat(k2) || this.DEFAULT_K_PROCESSING
+      kProcessing: parseFloat(k2) || this.DEFAULT_K_PROCESSING,
     });
   }
 
   private initForm(): void {
     this.settingsForm = this.fb.group({
-      kCategory: [this.DEFAULT_K_CATEGORY, [
-        Validators.required,
-        Validators.pattern(/^-?\d+(\.\d+)?$/)
-      ]],
-      kProcessing: [this.DEFAULT_K_PROCESSING, [
-        Validators.required,
-        Validators.pattern(/^-?\d+(\.\d+)?$/)
-      ]]
+      kCategory: [
+        this.DEFAULT_K_CATEGORY,
+        [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)],
+      ],
+      kProcessing: [
+        this.DEFAULT_K_PROCESSING,
+        [Validators.required, Validators.pattern(/^-?\d+(\.\d+)?$/)],
+      ],
     });
   }
 
@@ -89,7 +89,7 @@ export class AdminSearchSettingsComponent {
 
       await Promise.all([
         this.supabaseService.updateConfig('search.k_category', kCategory.toString()),
-        this.supabaseService.updateConfig('search.k_processing', kProcessing.toString())
+        this.supabaseService.updateConfig('search.k_processing', kProcessing.toString()),
       ]);
 
       this.weightsSaved.emit();
@@ -98,7 +98,7 @@ export class AdminSearchSettingsComponent {
       this.messageService.add({
         severity: 'success',
         summary: this.translate.transform('message.success'),
-        detail: this.translate.transform('message.success.settings.updated')
+        detail: this.translate.transform('message.success.settings.updated'),
       });
     } finally {
       this.saving.set(false);

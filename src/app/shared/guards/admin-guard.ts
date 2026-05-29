@@ -15,7 +15,7 @@ export class AdminGuard implements CanActivate {
       return true; // only admin or superadmin allowed
     }
 
-    // otherwise, redirect to home 
+    // otherwise, redirect to home
     this.router.navigate(['/']);
     return false;
   }

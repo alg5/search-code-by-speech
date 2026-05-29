@@ -5,16 +5,13 @@ import { SearchResultsComponent } from '../search-results/search-results.compone
 
 @Component({
   selector: 'spr-search-layout',
-  imports: [
-    CommonModule, 
-    SearchInputComponent, 
-   ],
+  imports: [CommonModule, SearchInputComponent],
   templateUrl: './search-layout.component.html',
   styleUrl: './search-layout.component.scss',
 })
 export class SearchLayoutComponent {
   searchTerm = '';
-  
+
   filters = {};
 
   // событие от input

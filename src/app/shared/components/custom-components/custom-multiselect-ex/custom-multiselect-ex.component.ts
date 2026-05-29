@@ -1,5 +1,14 @@
-
-import { Component, ChangeDetectionStrategy, forwardRef, Input, Output, EventEmitter, ViewChild, ChangeDetectorRef, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  forwardRef,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ChangeDetectorRef,
+  inject,
+} from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -11,18 +20,17 @@ import { Popover, PopoverModule } from 'primeng/popover'; // ДОБАВЛЯЕМ 
 import { ButtonModule } from 'primeng/button'; // Этот модуль все еще актуален
 import { IMultiselectModel, ISelectOption } from '../../../models/generalModels';
 
-
 @Component({
   selector: 'spr-custom-multiselect-ex',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
     FloatLabelModule,
     MultiSelectModule,
-    TooltipModule ,
-    PopoverModule, 
-    ButtonModule 
+    TooltipModule,
+    PopoverModule,
+    ButtonModule,
   ],
   templateUrl: './custom-multiselect-ex.component.html',
   styleUrls: ['./custom-multiselect-ex.component.scss'],
@@ -30,13 +38,12 @@ import { IMultiselectModel, ISelectOption } from '../../../models/generalModels'
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CustomMultiselectExComponent),
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomMultiselectExComponent implements ControlValueAccessor {
-
   @Input()
   set model(value: IMultiselectModel) {
     this._model = value;
@@ -51,18 +58,18 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
 
   @Output() selectionChange = new EventEmitter<ISelectOption[]>();
   @ViewChild('multiSelectComponent') pMultiSelect!: MultiSelect;
-  @ViewChild('selectedItemsPopover') selectedItemsPopover!: Popover; 
-  
+  @ViewChild('selectedItemsPopover') selectedItemsPopover!: Popover;
+
   _multiSelectedValue: ISelectOption[] = [];
   _optionsForDisplay: ISelectOption[] = [];
 
-  onChange: (_: ISelectOption[]) => void = () => {}; 
+  onChange: (_: ISelectOption[]) => void = () => {};
   onTouched: () => void = () => {};
 
   private readonly cdr = inject(ChangeDetectorRef);
 
   private initData() {
-    this._multiSelectedValue = this.model.options?.filter(opt => opt.Selected) ?? [];
+    this._multiSelectedValue = this.model.options?.filter((opt) => opt.Selected) ?? [];
     this.reorderAndUpdateOptions();
   }
 
@@ -79,9 +86,9 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
     } else if (value) {
       incomingSelected = [value];
     }
-    
-    const incomingValuesSet = new Set(incomingSelected.map(v => v.Value ?? v));
-    this._multiSelectedValue = this.model.options.filter(opt => incomingValuesSet.has(opt.Value));
+
+    const incomingValuesSet = new Set(incomingSelected.map((v) => v.Value ?? v));
+    this._multiSelectedValue = this.model.options.filter((opt) => incomingValuesSet.has(opt.Value));
 
     this.reorderAndUpdateOptions();
   }
@@ -93,46 +100,46 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
   setDisabledState?(isDisabled: boolean): void {
-     if (this.model) {
-        this.model.disabled = isDisabled;
+    if (this.model) {
+      this.model.disabled = isDisabled;
     }
     this.cdr.detectChanges();
   }
 
-  onMultiSelectChange(event: {originalEvent: Event, value: ISelectOption[]}): void {
+  onMultiSelectChange(event: { originalEvent: Event; value: ISelectOption[] }): void {
     if (!this.model) return;
-    
+
     this._multiSelectedValue = event.value;
 
     if (this.model.singleSelection && this._multiSelectedValue.length > 1) {
-        this._multiSelectedValue = [this._multiSelectedValue[this._multiSelectedValue.length - 1]];
+      this._multiSelectedValue = [this._multiSelectedValue[this._multiSelectedValue.length - 1]];
     }
 
     const valuesToEmit = [...this._multiSelectedValue];
-    this.onChange(valuesToEmit); 
+    this.onChange(valuesToEmit);
     this.onTouched();
     this.selectionChange.emit(valuesToEmit);
-    
+
     if (this.model.singleSelection && this.pMultiSelect && this.pMultiSelect.overlayVisible) {
-        this.pMultiSelect.hide();
+      this.pMultiSelect.hide();
     }
     // Если попап открыт, скрываем его, так как выбор изменился через основной дропдаун
-    if (this.selectedItemsPopover && this.selectedItemsPopover.overlayVisible) { 
+    if (this.selectedItemsPopover && this.selectedItemsPopover.overlayVisible) {
       this.selectedItemsPopover.hide();
     }
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
-  
+
   onClearSelection(): void {
-    this._multiSelectedValue = []; 
-    this.onChange([]); 
+    this._multiSelectedValue = [];
+    this.onChange([]);
     this.onTouched();
     this.selectionChange.emit([]);
     this.reorderAndUpdateOptions();
     if (this.selectedItemsPopover) {
-      this.selectedItemsPopover.hide(); 
+      this.selectedItemsPopover.hide();
     }
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
 
   onPanelShow(): void {
@@ -155,12 +162,12 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
       return;
     }
 
-    const selectedMap = new Set(currentSelectedValue.map(opt => opt.Value));
-    
+    const selectedMap = new Set(currentSelectedValue.map((opt) => opt.Value));
+
     const selectedOptions: ISelectOption[] = [];
     const unselectedOptions: ISelectOption[] = [];
 
-    this.model.options.forEach(opt => {
+    this.model.options.forEach((opt) => {
       // (selectedMap.has(opt.Value) ? selectedOptions : unselectedOptions).push(opt);
       opt.Selected === true ? selectedOptions.push(opt) : unselectedOptions.push(opt);
     });
@@ -168,59 +175,61 @@ export class CustomMultiselectExComponent implements ControlValueAccessor {
     this._optionsForDisplay = [...selectedOptions, ...unselectedOptions];
     this.cdr.detectChanges();
   }
-// #region POPOVER
+  // #region POPOVER
 
   togglePopover(event: Event): void {
     event.stopPropagation();
     // Show popover only if there are selected items and it's not single selection mode
-    if (this._multiSelectedValue && this._multiSelectedValue.length > 0 && !this.model.singleSelection) {
+    if (
+      this._multiSelectedValue &&
+      this._multiSelectedValue.length > 0 &&
+      !this.model.singleSelection
+    ) {
       this.selectedItemsPopover.toggle(event); // Используем toggle
     }
   }
 
+  removeSelectedItem(optionToRemove: ISelectOption, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
 
-removeSelectedItem(optionToRemove: ISelectOption, event?: Event): void {
-  if (event) {
-    event.stopPropagation();
-  }
+    const updatedSelection = this._multiSelectedValue.filter(
+      (opt) => opt.Value !== optionToRemove.Value,
+    );
+    this._multiSelectedValue = updatedSelection;
 
-  const updatedSelection = this._multiSelectedValue.filter(opt => opt.Value !== optionToRemove.Value);
-  this._multiSelectedValue = updatedSelection;
+    this.writeValue(this._multiSelectedValue);
 
-  this.writeValue(this._multiSelectedValue);
+    // Emit changes after updating the value to ensure the model is in sync before emitting
+    this.onChange(this._multiSelectedValue);
+    this.onTouched();
+    this.selectionChange.emit(this._multiSelectedValue);
 
-  // Emit changes after updating the value to ensure the model is in sync before emitting
-  this.onChange(this._multiSelectedValue);
-  this.onTouched();
-  this.selectionChange.emit(this._multiSelectedValue);
+    this.reorderAndUpdateOptions();
 
-  this.reorderAndUpdateOptions();
-
-  if (this._multiSelectedValue.length === 0) {
-    this.selectedItemsPopover.hide();
-  }
-  this.cdr.detectChanges();
-}
-
-trackByValue(index: number, item: ISelectOption): string {
-  return item.Value;
-}
-
-togglePopoverFromIcon(event: Event, target: HTMLElement): void {
-  event.stopPropagation();
-  if (this._multiSelectedValue && this._multiSelectedValue.length > 0) {
-    if (this.selectedItemsPopover.overlayVisible) {
+    if (this._multiSelectedValue.length === 0) {
       this.selectedItemsPopover.hide();
-    } else {
-      this.selectedItemsPopover.show(event, target);
+    }
+    this.cdr.detectChanges();
+  }
+
+  trackByValue(index: number, item: ISelectOption): string {
+    return item.Value;
+  }
+
+  togglePopoverFromIcon(event: Event, target: HTMLElement): void {
+    event.stopPropagation();
+    if (this._multiSelectedValue && this._multiSelectedValue.length > 0) {
+      if (this.selectedItemsPopover.overlayVisible) {
+        this.selectedItemsPopover.hide();
+      } else {
+        this.selectedItemsPopover.show(event, target);
+      }
     }
   }
-}
 
-
-
-
-// #endregion POPOVER
+  // #endregion POPOVER
 
   get selectedItemsTooltip(): string {
     if (!this._multiSelectedValue || this._multiSelectedValue.length === 0) {
@@ -229,9 +238,13 @@ togglePopoverFromIcon(event: Event, target: HTMLElement): void {
     const ITEMS_PER_LINE = 5;
     const MAX_TOOLTIP_LINES = 4;
     const MAX_DISPLAY_ITEMS_TOTAL = ITEMS_PER_LINE * MAX_TOOLTIP_LINES;
-    const selectedValues = this._multiSelectedValue.map(option => option.Value);
+    const selectedValues = this._multiSelectedValue.map((option) => option.Value);
     let tooltipContentLines: string[] = [];
-    for (let i = 0; i < Math.min(selectedValues.length, MAX_DISPLAY_ITEMS_TOTAL); i += ITEMS_PER_LINE) {
+    for (
+      let i = 0;
+      i < Math.min(selectedValues.length, MAX_DISPLAY_ITEMS_TOTAL);
+      i += ITEMS_PER_LINE
+    ) {
       tooltipContentLines.push(selectedValues.slice(i, i + ITEMS_PER_LINE).join(', '));
     }
     if (selectedValues.length > MAX_DISPLAY_ITEMS_TOTAL) {

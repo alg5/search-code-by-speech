@@ -1,11 +1,11 @@
-@use "variables" as *;
+@use 'variables' as *;
 
 body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background-color: $bg-green-odd;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 Q40 15 30 30 Q20 15 30 5' fill='%234a9b6b'/%3E%3Cpath d='M30 30 Q42 38 30 52 Q18 38 30 30' fill='%236bc48a'/%3E%3C/svg%3E");
-    background-size: 60px 60px;
-    position: relative;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: $bg-green-odd;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 Q40 15 30 30 Q20 15 30 5' fill='%234a9b6b'/%3E%3Cpath d='M30 30 Q42 38 30 52 Q18 38 30 30' fill='%236bc48a'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+  position: relative;
 }
 
 .search-box {
@@ -30,8 +30,6 @@ body {
   }
 }
 
-
-
 .page-wrapper {
   position: relative;
 }
@@ -50,7 +48,7 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 3px solid rgba(0,0,0,0.1);
+  border: 3px solid rgba(0, 0, 0, 0.1);
   border-top-color: $color-green-active;
   animation: spin 0.8s linear infinite;
 }
@@ -77,7 +75,7 @@ body {
   flex-wrap: wrap;
   gap: 1.5rem;
   padding: 0.5rem 0.5rem;
-  
+
   & input {
     width: 400px !important;
   }
@@ -90,18 +88,18 @@ body {
   gap: 0.75rem;
   font-size: 1.4rem;
   margin-bottom: 0.5rem;
-  
+
   .product-code {
     font-weight: 700;
     color: $color-green;
     font-size: 1.6rem;
   }
-  
+
   .divider {
     color: $color-green-active;
     font-weight: 500;
   }
-  
+
   .product-name {
     font-weight: 500;
     color: $color-green;
@@ -112,8 +110,8 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  
-  @include media("max", "sm") {
+
+  @include media('max', 'sm') {
     grid-template-columns: 1fr;
   }
 }

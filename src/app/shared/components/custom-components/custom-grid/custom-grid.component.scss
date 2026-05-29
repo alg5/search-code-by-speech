@@ -1,8 +1,8 @@
 @use 'variables' as *;
 
 .custom-grid-container {
-    background-color: transparent;
-    overflow-x: auto;
+  background-color: transparent;
+  overflow-x: auto;
 }
 
 .table-container {
@@ -13,7 +13,8 @@
   width: 100%;
   table-layout: auto;
 
-  th, td {
+  th,
+  td {
     white-space: normal;
     word-break: normal;
     word-wrap: break-word;
@@ -28,19 +29,19 @@
 }
 
 .cell-link {
-    cursor: pointer;
-    color: $color-green-active;
-    line-height: 1.38;
-    text-decoration: underline;
-    
-    &:hover {
-      color: $color-green;
-    }
+  cursor: pointer;
+  color: $color-green-active;
+  line-height: 1.38;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-green;
   }
+}
 
 .cell-numeric {
-    direction: ltr;
-  }
+  direction: ltr;
+}
 
 .td-editable-wrapper-close {
   display: flex;
@@ -71,7 +72,7 @@
   align-items: center;
 }
 
-.td-editable-wrapper-open input[type="number"] {
+.td-editable-wrapper-open input[type='number'] {
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -93,7 +94,7 @@
 .save-button-wrapper .btn {
   max-width: 100px;
   padding-left: 10px;
-  padding-right: 10px;  
+  padding-right: 10px;
   box-sizing: border-box;
 }
 
@@ -102,25 +103,25 @@
 }
 
 .comment {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .custom-cell {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 
 .disabled {
   cursor: not-allowed;
-  pointer-events: none; 
+  pointer-events: none;
   background-color: $bg-gray;
   color: #666;
 }
 
 .btn-disabled {
   cursor: not-allowed;
-  pointer-events: none; 
+  pointer-events: none;
   border: none;
   border-radius: 36px;
   padding-top: 12px;
@@ -138,11 +139,11 @@ tr.total-row {
     background-color: $bg-green-odd !important;
     font-weight: 600;
     color: $color-green;
-    
+
     &:first-child {
       display: flex;
       justify-content: flex-end;
-      
+
       &.td-grow {
         flex: 2.05;
       }
@@ -162,38 +163,36 @@ tr.footer-row > td {
 }
 
 .icon-comments-wrapper {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .comments-exist {
-    border-radius: 50%;
-    background: $bg-green-highlight;
-    background-size: contain;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  border-radius: 50%;
+  background: $bg-green-highlight;
+  background-size: contain;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
-
 .paginator-bar .report-text {
-    display: flex;
-    width: 20%;
-    align-items: center;
-    padding-right: 1rem;
-    line-height: 1.81;
-    font-size: 18px;
-  }
+  display: flex;
+  width: 20%;
+  align-items: center;
+  padding-right: 1rem;
+  line-height: 1.81;
+  font-size: 18px;
+}
 
 .paginator-bar .data {
-    margin-top: 0.3em;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
+  margin-top: 0.3em;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
 .dirty-indicator {
   border-radius: 4px;
@@ -222,7 +221,7 @@ tr.footer-row > td {
   align-self: stretch;
   border-radius: 8px 8px 0 0;
   background: $color-green !important;
-  
+
   .title {
     display: flex;
     gap: 8px;
@@ -233,11 +232,11 @@ tr.footer-row > td {
     font-weight: 700;
     color: white;
   }
-  
+
   .close-icon {
     cursor: pointer;
     color: white;
-  } 
+  }
 }
 
 .editable-input.is-invalid {

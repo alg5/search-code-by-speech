@@ -14,7 +14,7 @@
   width: 100%;
 }
 ::ng-deep .tooltip-width-lg {
-   max-width: 400px !important; 
+  max-width: 400px !important;
   word-wrap: break-word !important;
   white-space: pre-wrap !important;
 }
@@ -31,14 +31,14 @@
 }
 /* СТИЛИ для обрезания текста в выпадающем списке */
 .option-item {
-  width: 225px;             
-  overflow: hidden;         
-  text-overflow: ellipsis;  
-  white-space: nowrap;      
+  width: 225px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   height: 43px; /* corresponds to virtualScrollItemSize */
   display: flex;
   align-items: center;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 :ng-deep .p-multiselect-item {
   padding: 0 !important;
@@ -49,12 +49,11 @@
 //   border: 1px solid red !important; /* Для отладки, удалите позже */
 // }
 :host ::ng-deep .sfr-search-multiselect {
-
-  max-width: 150px; 
-  // border: 1px solid red !important; /* Для отладки, удалите позже */  
+  max-width: 150px;
+  // border: 1px solid red !important; /* Для отладки, удалите позже */
 }
 // :host(.sfr-search-multiselect) {
-//   width: 150px !important; 
+//   width: 150px !important;
 //   max-width: 100%;
 //   border: 1px solid red !important; /* Для отладки */
 // }
@@ -156,7 +155,7 @@
   color: #005b9e;
 }
 
-::ng-deep  .p-popover-content {
+::ng-deep .p-popover-content {
   transform-origin: right top !important;
   padding-left: 0 !important;
   padding-right: 0.5rem !important;

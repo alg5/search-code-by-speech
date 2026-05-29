@@ -18,21 +18,20 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   private readonly breadcrumbService = inject(BreadcrumbService);
   private subscription?: Subscription;
 
-    breadcrumbs$ = this.breadcrumbService.getBreadcrumbs();
-
+  breadcrumbs$ = this.breadcrumbService.getBreadcrumbs();
 
   breadcrumbs: MenuItem[] = [];
 
   home: MenuItem = {
     icon: 'pi pi-home',
-    routerLink: '/'
+    routerLink: '/',
   };
 
   ngOnInit() {
-    this.subscription = this.breadcrumbService.getBreadcrumbs().subscribe(
-      breadcrumbs => this.breadcrumbs = breadcrumbs
-    );  
-}
+    this.subscription = this.breadcrumbService
+      .getBreadcrumbs()
+      .subscribe((breadcrumbs) => (this.breadcrumbs = breadcrumbs));
+  }
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();

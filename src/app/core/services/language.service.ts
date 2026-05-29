@@ -12,7 +12,7 @@ export class LanguageService {
   currentLang = signal<ILang | null>(null);
   isLangLoaded = signal(false);
 
-  availableLangCodes = computed(() => this.languages().map(l => l.code));
+  availableLangCodes = computed(() => this.languages().map((l) => l.code));
   langChanges$ = toObservable(this.currentLang);
 
   private readonly STORAGE_KEY = 'spr_lang';
@@ -32,18 +32,18 @@ export class LanguageService {
       error: () => {
         const fallback: ILang[] = [
           { code: 'en', label: 'English', iconClass: 'fi fi-gb' },
-          { code: 'ru', label: 'Русский', iconClass: 'fi fi-ru' }
+          { code: 'ru', label: 'Русский', iconClass: 'fi fi-ru' },
         ];
         this.languages.set(fallback);
         this.restoreLanguage(fallback);
         this.isLangLoaded.set(true);
-      }
+      },
     });
   }
 
   private restoreLanguage(available: ILang[]): void {
     const saved = localStorage.getItem(this.STORAGE_KEY);
-    const savedLang = saved ? available.find(l => l.code === saved) : null;
+    const savedLang = saved ? available.find((l) => l.code === saved) : null;
     this.currentLang.set(savedLang ?? available[0] ?? null);
   }
 
@@ -65,7 +65,7 @@ export class LanguageService {
   translate(
     key: string,
     fallback: string = '',
-    variables?: Record<string, string | number>
+    variables?: Record<string, string | number>,
   ): string {
     const lang = this.langCode();
     const value: TranslationValue | undefined = this._translations[key];
@@ -80,10 +80,7 @@ export class LanguageService {
       for (const varKey in variables) {
         if (Object.prototype.hasOwnProperty.call(variables, varKey)) {
           const regex = new RegExp(`{{\\s*${varKey}\\s*}}`, 'g');
-          translatedText = translatedText.replace(
-            regex,
-            String(variables[varKey])
-          );
+          translatedText = translatedText.replace(regex, String(variables[varKey]));
         }
       }
     }

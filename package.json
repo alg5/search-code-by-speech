@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "build:prod": "ng build --configuration=production",
-    "deploy": "ng build --configuration=production --base-href /search-code-by-speech/ && npx angular-cli-ghpages --dir=dist/voice-code-search/browser"  },
+    "deploy": "ng build --configuration=production --base-href /search-code-by-speech/ && npx angular-cli-ghpages --dir=dist/voice-code-search/browser"
+  },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
@@ -50,6 +51,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "prettier": "^3.8.3",
     "typescript": "~5.9.2"
   }
 }

@@ -1,7 +1,7 @@
-.dropdown-row{
-    display: flex;
-    align-items: center;
-    // border: 1px solid lime;
+.dropdown-row {
+  display: flex;
+  align-items: center;
+  // border: 1px solid lime;
 }
 //*************************
 .custom-dropdown-wrapper {
@@ -14,7 +14,7 @@
     font-weight: 500;
     color: #374151;
     margin-bottom: 0.25rem;
-    
+
     &.required::after {
       content: ' *';
       color: #dc3545;
@@ -35,7 +35,7 @@
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  padding: 0.5rem 0.75rem; 
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
 }
 

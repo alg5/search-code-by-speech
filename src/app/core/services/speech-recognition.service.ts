@@ -1,26 +1,25 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { 
-  SpeechRecognitionEvent, 
-  SpeechRecognitionResultList, 
-  SpeechRecognitionResult, 
+import {
+  SpeechRecognitionEvent,
+  SpeechRecognitionResultList,
+  SpeechRecognitionResult,
   SpeechRecognitionAlternative,
-  SpeechRecognitionErrorEvent
+  SpeechRecognitionErrorEvent,
 } from '../../shared/models/speechRecognition.models';
 import { LanguageService } from './language.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpeechRecognitionService {
   private langService = inject(LanguageService);
-  
+
   private recognition!: any;
   isListening = signal(false);
   private isStarting = false;
   private isStopping = false;
-  
+
   onResult = new Subject<string>();
   onError = new Subject<string>();
   onStatusChange = new Subject<boolean>();
@@ -39,39 +38,39 @@ export class SpeechRecognitionService {
 
   constructor() {
     let previousLang = '';
-    
+
     effect(() => {
       const lang = this.langService.langCode();
-      
+
       if (!previousLang) {
         previousLang = lang;
         return;
       }
-      
+
       if (lang === previousLang) {
         return;
       }
-      
+
       previousLang = lang;
-      
+
       if (this.isListening() && this.recognition) {
         this.isStopping = true;
         this.isStarting = false;
-        
+
         const oldOnEnd = this.recognition.onend;
         this.recognition.onend = null;
-        
+
         try {
           this.recognition.abort();
         } catch (e) {}
-        
+
         setTimeout(() => {
           if (this.isListening()) {
             this.recognition.lang = lang;
             this.recognition.onend = oldOnEnd;
             this.isStopping = false;
             this.isStarting = true;
-            
+
             try {
               this.recognition.start();
             } catch (e) {
@@ -87,8 +86,8 @@ export class SpeechRecognitionService {
   }
 
   init() {
-    const SpeechRecognition = (window as any).SpeechRecognition ||
-                             (window as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       this.onError.next('Speech Recognition API not supported');
@@ -139,11 +138,11 @@ export class SpeechRecognitionService {
         this.isStarting = false;
         this.isListening.set(false);
         this.onStatusChange.next(false);
-        
+
         try {
           this.recognition.abort();
         } catch (e) {}
-        
+
         setTimeout(() => {
           if (this.isListening()) {
             this.recognition = null as any;
@@ -202,15 +201,15 @@ export class SpeechRecognitionService {
       this.onStatusChange.next(true);
     } catch (error) {
       this.onError.next('start_error');
-      
+
       try {
         this.recognition.abort();
       } catch (e) {}
-      
+
       this.isListening.set(false);
       this.onStatusChange.next(false);
     }
-    
+
     this.isStarting = false;
   }
 
@@ -218,7 +217,7 @@ export class SpeechRecognitionService {
     if (this.isListening()) {
       this.isStopping = true;
       this.isStarting = false;
-      
+
       if (this.recognition) {
         try {
           this.recognition.stop();
@@ -226,10 +225,10 @@ export class SpeechRecognitionService {
           this.recognition.abort();
         }
       }
-      
+
       this.isListening.set(false);
       this.onStatusChange.next(false);
-      
+
       setTimeout(() => {
         this.isStopping = false;
       }, 100);

@@ -1,15 +1,14 @@
 <header class="app-header">
   <div class="header-container">
-
     <!-- Left: Иконка + Breadcrumb + Админ -->
-<!-- Left: Иконка + Breadcrumb + Админ -->
+    <!-- Left: Иконка + Breadcrumb + Админ -->
     <div class="header-left">
-      <img src="assets/images/scale.svg" alt="Весы" class="logo-icon">
-      
-      @if(isAdmin()){
+      <img src="assets/images/scale.svg" alt="Весы" class="logo-icon" />
+
+      @if (isAdmin()) {
         <div class="admin-block">
           <spr-breadcrumb></spr-breadcrumb>
-          
+
           <div class="admin-actions" (click)="goToAdminDashboard()">
             <a class="admin-dashboard-link">
               <i class="pi pi-cog"></i>
@@ -17,9 +16,8 @@
             </a>
           </div>
         </div>
-      }      
+      }
     </div>
-
 
     <!-- Center (desktop only) -->
     <div class="header-subtitle">
@@ -34,18 +32,25 @@
       <spr-lang-switch class="lang-switch"></spr-lang-switch>
 
       <ng-container *ngIf="!isUserLoggedIn; else loggedInTemplate">
-        <div class="sign-in-icon-wrapper"
-             tabindex="0"
-             aria-label="{{ 'auth.signIn' | translate }}"
-             title="{{ 'auth.signIn' | translate }}"
-             (click)="onSignIn()">
+        <div
+          class="sign-in-icon-wrapper"
+          tabindex="0"
+          aria-label="{{ 'auth.signIn' | translate }}"
+          title="{{ 'auth.signIn' | translate }}"
+          (click)="onSignIn()"
+        >
           <i class="pi pi-user sign-in-icon"></i>
         </div>
       </ng-container>
 
       <ng-template #loggedInTemplate>
         <div class="user-dropdown-wrapper">
-          <button pButton type="button" class="p-button-text p-button-plain user-btn" (click)="toggleUserMenu()">
+          <button
+            pButton
+            type="button"
+            class="p-button-text p-button-plain user-btn"
+            (click)="toggleUserMenu()"
+          >
             <i class="pi pi-user"></i>
             <i class="pi pi-chevron-down"></i>
           </button>

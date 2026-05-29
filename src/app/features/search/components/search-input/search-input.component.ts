@@ -11,7 +11,7 @@ import {
   Output,
   signal,
   ViewChild,
-  ElementRef
+  ElementRef,
 } from '@angular/core';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
@@ -35,7 +35,7 @@ import { AdminSearchSettingsComponent } from '../admin-search-settings/admin-sea
     ToastModule,
     TooltipModule,
     TranslatePipe,
-    AdminSearchSettingsComponent
+    AdminSearchSettingsComponent,
   ],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
@@ -59,7 +59,6 @@ export class SearchInputComponent implements OnInit {
   settingsOpen = signal(false);
   isListening = signal(false);
   isLoading = signal(false);
-  
 
   // micError and hasMicrophone are kept separate for future expansion:
   // - micError: microphone not found
@@ -81,12 +80,12 @@ export class SearchInputComponent implements OnInit {
 
   constructor() {
     effect(() => {
-        const lang = this.lang();
-        const isLoaded = this.languageService.isLangLoaded();
-        
-        if (isLoaded && lang) {
-          this.loadRecentProducts();
-        }
+      const lang = this.lang();
+      const isLoaded = this.languageService.isLangLoaded();
+
+      if (isLoaded && lang) {
+        this.loadRecentProducts();
+      }
     });
   }
 
@@ -97,33 +96,32 @@ export class SearchInputComponent implements OnInit {
     this.speechService.checkMicrophone().then((hasMic) => {
       this.micError.set(!hasMic);
       this.hasMicrophone.set(hasMic);
-      
+
       if (!hasMic) {
         console.warn('⚠️ Microphone not available on this device');
       }
     });
-    
+
     // on the mobile brouser, we can try to request microphone access immediately to avoid issues when user tries to start voice search for the first time
     if (/iPhone|iPad|Android|Mobile/.test(navigator.userAgent)) {
       console.log('📱 Mobile device detected, requesting microphone access...');
-      navigator.mediaDevices?.getUserMedia({ audio: true })
-        .then(stream => {
+      navigator.mediaDevices
+        ?.getUserMedia({ audio: true })
+        .then((stream) => {
           // Close the stream immediately since we just wanted to trigger the permission prompt
-          stream.getTracks().forEach(track => track.stop());
+          stream.getTracks().forEach((track) => track.stop());
           console.log('✅ Microphone permission granted');
         })
-        .catch(err => {
+        .catch((err) => {
           console.warn('⚠️ Microphone permission denied:', err);
         });
     }
 
     // Debounce for search input
-    this.searchTextChanged$
-      .pipe(debounceTime(300))
-      .subscribe((text) => {
-        console.log('debounced search:', text);
-        this.search({ query: text });
-      });
+    this.searchTextChanged$.pipe(debounceTime(300)).subscribe((text) => {
+      console.log('debounced search:', text);
+      this.search({ query: text });
+    });
 
     this.speechService.onResult.subscribe((text) => {
       this.searchText.set(text);
@@ -141,7 +139,7 @@ export class SearchInputComponent implements OnInit {
     // Subscribe to speech errors and show them to user
     this.speechService.onError.subscribe((err) => {
       console.log(' Speech Service Error:', err);
-      
+
       if (err && err.toLowerCase().includes('microphone')) {
         this.micError.set(true);
         this.messageService.add({
@@ -152,12 +150,13 @@ export class SearchInputComponent implements OnInit {
         });
         return;
       }
-      
+
       if (err === 'start_error') {
         this.messageService.add({
           severity: 'warn',
           summary: 'Voice Recognition Error',
-          detail: 'Failed to start voice recognition. Please ensure microphone permission is granted and try again.',
+          detail:
+            'Failed to start voice recognition. Please ensure microphone permission is granted and try again.',
           sticky: true,
         });
         return;
@@ -184,8 +183,7 @@ export class SearchInputComponent implements OnInit {
       // Validate structure - must have both fields
       const valid = items.filter(
         (item): item is IRecentProduct =>
-          typeof item.scale_code === 'number' &&
-          typeof item.display_name === 'string'
+          typeof item.scale_code === 'number' && typeof item.display_name === 'string',
       );
 
       this.recentProducts.set(valid);

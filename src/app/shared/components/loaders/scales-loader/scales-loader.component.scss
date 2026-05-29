@@ -1,101 +1,130 @@
- .scales-loader {
-    width: 80px;
-    height: 80px;
-    position: relative;
-  }
-  .scales-loader .beam {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    width: 60px;
-    height: 3px;
-    background: #4a9b6b;
-    border-radius: 2px;
-    transform: translateX(-50%);
-    transform-origin: center;
-    animation: scalesTilt 2s ease-in-out infinite;
-  }
-  .scales-loader .pillar {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    width: 3px;
-    height: 30px;
-    background: #4a9b6b;
-    transform: translateX(-50%);
-    border-radius: 2px;
-  }
-  .scales-loader .base {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    width: 24px;
-    height: 4px;
-    background: #4a9b6b;
-    border-radius: 2px;
-    transform: translateX(-50%);
-  }
-  .scales-loader .pan {
-    position: absolute;
-    width: 20px;
-    height: 3px;
-    background: #6bc48a;
-    border-radius: 2px;
-    top: 20px;
-  }
-  .scales-loader .pan-left {
-    left: 2px;
-    animation: panLeftMove 2s ease-in-out infinite;
-  }
-  .scales-loader .pan-right {
-    right: 2px;
-    animation: panRightMove 2s ease-in-out infinite;
-  }
-  .scales-loader .pan::after {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    width: 1.5px;
-    height: 8px;
-    background: #6bc48a;
-    transform: translateX(-50%);
-    border-radius: 1px;
-  }
-  .scales-loader .dot {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    background: #8fd4a8;
-    border-radius: 50%;
-    top: 12px;
-  }
-  .scales-loader .dot-left {
-    left: 8px;
-    animation: dotLeftMove 2s ease-in-out infinite;
-  }
-  .scales-loader .dot-right {
-    right: 8px;
-    animation: dotRightMove 2s ease-in-out infinite;
-  }
+.scales-loader {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+.scales-loader .beam {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 60px;
+  height: 3px;
+  background: #4a9b6b;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transform-origin: center;
+  animation: scalesTilt 2s ease-in-out infinite;
+}
+.scales-loader .pillar {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  width: 3px;
+  height: 30px;
+  background: #4a9b6b;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+.scales-loader .base {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  width: 24px;
+  height: 4px;
+  background: #4a9b6b;
+  border-radius: 2px;
+  transform: translateX(-50%);
+}
+.scales-loader .pan {
+  position: absolute;
+  width: 20px;
+  height: 3px;
+  background: #6bc48a;
+  border-radius: 2px;
+  top: 20px;
+}
+.scales-loader .pan-left {
+  left: 2px;
+  animation: panLeftMove 2s ease-in-out infinite;
+}
+.scales-loader .pan-right {
+  right: 2px;
+  animation: panRightMove 2s ease-in-out infinite;
+}
+.scales-loader .pan::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 1.5px;
+  height: 8px;
+  background: #6bc48a;
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+.scales-loader .dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: #8fd4a8;
+  border-radius: 50%;
+  top: 12px;
+}
+.scales-loader .dot-left {
+  left: 8px;
+  animation: dotLeftMove 2s ease-in-out infinite;
+}
+.scales-loader .dot-right {
+  right: 8px;
+  animation: dotRightMove 2s ease-in-out infinite;
+}
 
-  @keyframes scalesTilt {
-    0%, 100% { transform: translateX(-50%) rotate(-8deg); }
-    50% { transform: translateX(-50%) rotate(8deg); }
+@keyframes scalesTilt {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-8deg);
   }
-  @keyframes panLeftMove {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+  50% {
+    transform: translateX(-50%) rotate(8deg);
   }
-  @keyframes panRightMove {
-    0%, 100% { transform: translateY(-4px); }
-    50% { transform: translateY(0); }
+}
+@keyframes panLeftMove {
+  0%,
+  100% {
+    transform: translateY(0);
   }
-  @keyframes dotLeftMove {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(-6px); opacity: 0.6; }
+  50% {
+    transform: translateY(-4px);
   }
-  @keyframes dotRightMove {
-    0%, 100% { transform: translateY(-6px); opacity: 0.6; }
-    50% { transform: translateY(0); opacity: 1; }
+}
+@keyframes panRightMove {
+  0%,
+  100% {
+    transform: translateY(-4px);
   }
+  50% {
+    transform: translateY(0);
+  }
+}
+@keyframes dotLeftMove {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 0.6;
+  }
+}
+@keyframes dotRightMove {
+  0%,
+  100% {
+    transform: translateY(-6px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

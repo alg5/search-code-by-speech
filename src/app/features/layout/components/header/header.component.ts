@@ -9,18 +9,13 @@ import { SupabaseService } from '../../../../core/services/supabase.service';
 
 @Component({
   selector: 'spr-header',
-  imports: [
-    CommonModule,
-    TranslatePipe,
-    LangSwitchComponent,
-    BreadcrumbComponent
-  ],
+  imports: [CommonModule, TranslatePipe, LangSwitchComponent, BreadcrumbComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
   private readonly router = inject(Router);
-   private readonly cdr = inject(ChangeDetectorRef)
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly supabaseService = inject(SupabaseService);
 
   userName = 'header.guest';
@@ -46,7 +41,7 @@ export class HeaderComponent {
       console.log('User token found in localStorage:', parsedToken.user.user_metadata.full_name);
       this.userName = parsedToken.user.user_metadata.full_name || 'header.user';
       // const profile = this.supabaseService.profile;
-      // this.isAdmin = parsedToken.user.user_metadata.is_admin || false; 
+      // this.isAdmin = parsedToken.user.user_metadata.is_admin || false;
       this.isUserLoggedIn = true;
     }
   }
@@ -76,8 +71,7 @@ export class HeaderComponent {
     this.isUserMenuOpen = false;
     this.router.navigate(['/user/profile']);
   }
-  goToAdminDashboard(){
+  goToAdminDashboard() {
     this.router.navigate(['/admin']);
   }
 }
-

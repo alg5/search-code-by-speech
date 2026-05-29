@@ -4,15 +4,12 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-  ],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-
-  private readonly renderer = inject(Renderer2) ;
+  private readonly renderer = inject(Renderer2);
 
   async ngOnInit() {
     // forcing light mode to avoid dark mode issues in some components (like PrimeNG DataTable)

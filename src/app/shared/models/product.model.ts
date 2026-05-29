@@ -1,5 +1,3 @@
-
-
 // export interface IProduct {
 //   id: number;
 //   scale_code: number;
@@ -22,7 +20,7 @@
 //   };
 
 //   fuseScore?: number;
-//   base_priority?: number; 
+//   base_priority?: number;
 //   final_score?: number;
 // }
 export interface IProduct {
@@ -64,7 +62,6 @@ export interface IProduct {
     name_fr?: string;
     priority?: number;
   };
-
 }
 export interface IRecentProduct {
   scale_code: number;
