@@ -3,15 +3,17 @@
 
 ## 📖 About
 
-**KitchenScaleCode Voice Finder** is a web application that allows users 
-to quickly find product codes for smart kitchen scales using 
-**voice input**. Instead of manually scrolling through a booklet 
-of 1000+ product codes, users can simply **say the product name** 
-and instantly get the corresponding scale code.
+**KitchenScaleCode Voice (KSC Voice)**
 
-This project was built as a personal pet-project to explore 
-voice recognition technologies and their practical applications 
-in everyday kitchen use.
+KitchenScaleCode Voice (KSC Voice) is a web application that allows users to quickly find product codes for smart kitchen scales using voice input. Instead of manually scrolling through a booklet of 1000+ product codes, users can simply say the product name and instantly get the corresponding scale code.
+
+**The Problem:** The original manufacturer booklet lists 1000+ products **only in English**, making it difficult for non-English speakers to find codes for everyday items like "Яблоки" or "תפוחים". This creates a significant barrier for elderly users, immigrants, or anyone who is not fluent in English.
+
+**The Solution:** KSC Voice supports **4 languages** (EN, RU, HE, FR) with native voice recognition. Speak naturally in your language — get the code instantly. No language barriers, no manual scrolling.
+
+**Extensibility:** The application is architected for easy language expansion. New languages can be added **without code changes** — simply by updating the configuration file and adding translations. This design allows the project to scale to any number of languages without redeployment.
+
+This project was built as a personal pet-project to explore voice recognition technologies and their practical applications in everyday kitchen use.
 
 ---
 
@@ -59,7 +61,23 @@ User speaks: "Apple" ↓ Voice Recognition converts to text ↓ App searches dat
 ## Screenshots
 ### Home Page (English)
 ![Home Page EN](docs/screenshots/homepage-en.png)
-Coming soon
+
+### Home Page (Hebrew)
+![Home Page HE](docs/screenshots/homepage-he.png)
+
+### Voice Search Active
+![Voice Search](docs/screenshots/voice-search.png)
+
+### Voice Search Active (Hebrew)
+![Voice Search](docs/screenshots/voice-search-he.png)
+
+
+### Search Result
+![Result](docs/screenshots/result.png)
+
+### Admin Dashboard
+![Admin](docs/screenshots/admin-dashboard.png)
+
 
 ## ✨ Features
 
@@ -112,10 +130,10 @@ This project is intended as a portfolio piece and may be integrated into a
 commercial product in the future.
 
 ## 👤 Contact
-[Anna Gubanov]
-💼 LinkedIn: www.linkedin.com/in/anna-gubanov
-🐙 GitHub: [your-github](https://github.com/alg5)
-📧 Email: anna.gubanov1@gmail.com
+[Anna Gubanov]  
+💼 LinkedIn: www.linkedin.com/in/anna-gubanov     
+🐙 GitHub: [your-github](https://github.com/alg5)  
+📧 Email: anna.gubanov1@gmail.com  
 
 
 ## Getting Started
