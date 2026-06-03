@@ -43,7 +43,7 @@ This project is built as a full-stack Supabase-powered application with a strong
 - RPC-based search layer for performance and control
 - Web Speech API integration for voice-driven UX
 
-- ## ✨ Core Features
+ ## ✨ Core Features
 
 - 🎙️ Voice Search — hands-free product lookup
 - ⌨️ Text Search — fallback manual search
@@ -65,7 +65,7 @@ This project is built as a full-stack Supabase-powered application with a strong
 - Confidence-based ranking algorithm
 - Language-aware search matching
   
-- ## 🛠️ Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology | Purpose |
 |:---|:---|:---|
