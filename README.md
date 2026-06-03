@@ -138,7 +138,7 @@ commercial product in the future.
 ## 👤 Contact
 [Anna Gubanov]  
 💼 LinkedIn: [Anna Gubanov](https://www.linkedin.com/in/anna-gubanov)  
-🐙 GitHub: https://github.com/alg5
+🐙 GitHub: https://github.com/alg5  
 📧 Email: anna.gubanov1@gmail.com  
 
 
