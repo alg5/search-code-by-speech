@@ -15,11 +15,11 @@ For smart kitchen scales specifically, this becomes a practical problem in every
 
 **Extensibility:** The application is architected for easy language expansion. New languages can be added **without code changes** — simply by updating the configuration file and adding translations. This design allows the project to scale to any number of languages without redeployment.
 
-This project was built as a personal pet-project to explore voice recognition technologies and their practical application in real-world kitchen workflows.
+This project was built as a personal pet project to explore voice recognition technologies and their practical application in real-world kitchen workflows.
 
 ---
 
-### How it works
+## ⚙️ How It Works
 
 ```text
 User speaks: "Apple"
@@ -117,7 +117,7 @@ This project is built as a full-stack Supabase-powered application with a strong
 - 🔵 **Bluetooth integration** — send code directly to scale  
 - 📱 **PWA** — install as mobile app  
 
-- ## Author
+## Author
 Anna Gubanov
 
 ## ⚖️ Legal Notice
@@ -137,8 +137,8 @@ commercial product in the future.
 
 ## 👤 Contact
 [Anna Gubanov]  
-💼 LinkedIn: www.linkedin.com/in/anna-gubanov     
-🐙 GitHub: [your-github](https://github.com/alg5)  
+💼 LinkedIn: [Anna Gubanov](https://www.linkedin.com/in/anna-gubanov)  
+🐙 GitHub: https://github.com/alg5
 📧 Email: anna.gubanov1@gmail.com  
 
 
