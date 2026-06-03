@@ -7,47 +7,78 @@
 
 KitchenScaleCode Voice (KSC Voice) is a web application that allows users to quickly find product codes for smart kitchen scales using voice input. Instead of manually scrolling through a booklet of 1000+ product codes, users can simply say the product name and instantly get the corresponding scale code.
 
-**The Problem:** The original manufacturer booklet lists 1000+ products **only in English**, making it difficult for non-English speakers to find codes for everyday items like "Яблоки" or "תפוחים". This creates a significant barrier for elderly users, immigrants, or anyone who is not fluent in English.
+**The Problem:** The original manufacturer booklet lists 1000+ products **only in English**, making it difficult for non-English speakers to find codes for everyday items like "Яблоки" or "תפוחים". This creates a significant barrier for users who are not fluent in English or simply prefer to interact in their native language.
+
+For smart kitchen scales specifically, this becomes a practical problem in everyday usage, not just a language limitation.
 
 **The Solution:** KSC Voice supports **4 languages** (EN, RU, HE, FR) with native voice recognition. Speak naturally in your language — get the code instantly. No language barriers, no manual scrolling.
 
 **Extensibility:** The application is architected for easy language expansion. New languages can be added **without code changes** — simply by updating the configuration file and adding translations. This design allows the project to scale to any number of languages without redeployment.
 
-This project was built as a personal pet-project to explore voice recognition technologies and their practical applications in everyday kitchen use.
+This project was built as a personal pet-project to explore voice recognition technologies and their practical application in real-world kitchen workflows.
 
 ---
 
-## ❓ Problem Statement
+### How it works
 
-Smart kitchen scales (like NK695 and compatible models) require 
-users to input a **numeric product code** to get accurate 
-nutritional information for each food item.
-
-
+```text
+User speaks: "Apple"
+        ↓
+Voice recognition converts speech to text
+        ↓
+App performs fuzzy search in the product database
+        ↓
+Result: Apples, fresh, with skin — Scale Code: 325
+```
 ---
 
-## 💡 Solution
+## 🏗️ Architecture Highlights
 
-This app solves the problem by providing:
+This project is built as a full-stack Supabase-powered application with a strong focus on:
 
-1. **🎙️ Voice Search** — Say the product name, get the code instantly
-2. **⌨️ Text Search** — Type the product name if you prefer
-3. **📊 Nutritional Data** — View nutritional information 
-   from USDA FoodData Central API
-4. **⚡ Fast Lookup** — Results appear in milliseconds
+- Secure row-level data access (RLS policies)
+- Server-side fuzzy search using PostgreSQL pg_trgm
+- Multilingual data architecture (EN / RU / HE / FR)
+- Role-based data exposure (admin vs user)
+- RPC-based search layer for performance and control
+- Web Speech API integration for voice-driven UX
+
+- ## ✨ Core Features
+
+- 🎙️ Voice Search — hands-free product lookup
+- ⌨️ Text Search — fallback manual search
+- ⚡ Fast Results — sub-second fuzzy matching
+- 🌍 Multilingual UI (EN, RU, HE, FR)
+- 📋 Copy-to-clipboard product codes
+
+## 🔐 Admin Features
+
+- Product management dashboard
+- Category and processing configuration
+- Search tuning via database parameters
+- Controlled data exposure via roles
+
+## 🚀 Advanced Features
+
+- PostgreSQL fuzzy search (pg_trgm)
+- Server-side normalization of queries
+- Confidence-based ranking algorithm
+- Language-aware search matching
+  
+- ## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+|:---|:---|:---|
+| **Frontend** | Angular 20.3.8 | SPA framework |
+| **UI Components** | PrimeNG | UI component library |
+| **Styling** | SCSS | Custom styles & theming |
+| **Voice Input** | Web Speech API | Speech-to-text recognition |
+| **Database** | Supabase (PostgreSQL) | Data storage & REST API |
+| **Search** | PostgreSQL pg_trgm | Fuzzy text matching |
+| **Auth** | Supabase Auth | User authentication |
+| **Deployment** | GitHub Pages | Static hosting |
 
 
-
-User speaks: "Apple" ↓ Voice Recognition converts to text ↓ App searches database ↓ Result: Apples, fresh, with skin — Scale Code: 325
----
-
-- ## Tech Stack
-
-- **Frontend:** Angular 20, PrimeNG, TypeScript, SCSS
-- **Backend:** Supabase (PostgreSQL + Auth)
-- **Search:** Fuzzy search via PostgreSQL pg_trgm extension
-- **Voice:** Web Speech API with cross-browser support
-- **Deployment:** GitHub Pages
 
 ## 🎬 Demo
 
@@ -79,37 +110,12 @@ User speaks: "Apple" ↓ Voice Recognition converts to text ↓ App searches dat
 ![Admin](docs/screenshots/admin-dashboard.png)
 
 
-## ✨ Features
-
-- **Voice Search** — hands-free product lookup using Web Speech API
-- **Smart Search** — fuzzy matching powered by PostgreSQL pg_trgm extension
-- **Favorites** — save frequently used products
-- **Multi-language** — EN, RU, HE, FR with RTL support
-- **Admin Dashboard** — manage products, categories, and search settings
-- **Responsive Design** — works on desktop and mobile
-- **Copy to Clipboard** — instant scale code copying
-
-- ## 🛠️ Tech Stack
-
-| Layer | Technology | Purpose |
-|:---|:---|:---|
-| **Frontend** | Angular 20.3.8 | SPA framework |
-| **UI Components** | PrimeNG | UI component library |
-| **Styling** | SCSS | Custom styles & theming |
-| **Voice Input** | Web Speech API | Speech-to-text recognition |
-| **Database** | Supabase (PostgreSQL) | Data storage & REST API |
-| **Search** | PostgreSQL pg_trgm | Fuzzy text matching |
-| **Auth** | Supabase Auth | User authentication |
-| **Deployment** | GitHub Pages | Static hosting |
 
 ## Future Improvements
 
 - 🌍 **Multi-language voice support** — migrate to Transloco library for scalable i18n  
-- 📸 **Product image recognition** — take a photo, get the code  
-- 🍽️ **Meal tracking** — log daily food intake  
 - 🔵 **Bluetooth integration** — send code directly to scale  
 - 📱 **PWA** — install as mobile app  
-- 🤖 **AI suggestions** — predict products based on time of 
 
 - ## Author
 Anna Gubanov
